@@ -16,8 +16,8 @@
             <Image x:Name ="SungJik" Height="400" Canvas.Left="220" Canvas.Top="320" Width="400" Visibility="Hidden"/>
             <Image x:Name ="Pig" Height="400" Canvas.Left="445" Canvas.Top="320" Width="400"  Visibility="Hidden"/>
             <Image x:Name = "Mice"  Height="400" Canvas.Left="668" Canvas.Top="320" Width="400"  Visibility="Hidden"/>
-            <Image x:Name="Replay"  Height="114" Canvas.Left="440" Canvas.Top="380" Width="114" Visibility="Hidden"  />
-            <Image x:Name = "Home"  Height="114" Canvas.Left="728" Canvas.Top="380" Width="114"  Visibility="Hidden" />
+            <Image x:Name="Home"  Height="114" Canvas.Left="440" Canvas.Top="380" Width="114" Visibility="Hidden"  />
+            <Image x:Name = "Replay"  Height="114" Canvas.Left="728" Canvas.Top="380" Width="114"  Visibility="Hidden" />
             <Image x:Name="HandR" Height="124" Canvas.Left="804" Canvas.Top="226" Width="110"  Visibility="Visible"/>
             <Image x:Name="HandL" Height="124" Canvas.Left="804" Canvas.Top="226" Width="110"  Visibility="Visible"/>
         </Canvas>

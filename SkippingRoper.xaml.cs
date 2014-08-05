@@ -278,38 +278,38 @@ namespace SungJik_SungHwa
 
             switch (counter)
             {
-                    /*
-                case 0:
-                    counter++;
-                    animation.From = 0.0;
-                    animation.To = 0.0;
-                    animation.AccelerationRatio = 0.0;
-                    animation.Duration = new Duration(TimeSpan.FromSeconds(5));
-                    animation.FillBehavior = FillBehavior.HoldEnd;
-                    animation.Completed += animation_Completed;
-                    titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
-                    break;
-                case 1:
-                    counter++;
-                    animation.From = 0.0;
-                    animation.To = -800.0;
-                    animation.AccelerationRatio = 1.0;
-                    animation.Duration = new Duration(TimeSpan.FromSeconds(5));
-                    animation.FillBehavior = FillBehavior.Stop;
-                    animation.Completed += animation_Completed;
-                    titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
-                    break;
-                case 2:
-                    counter++;
-                    titleImage.Visibility = System.Windows.Visibility.Hidden;
-                    //14/07/24 : skip 버튼이 제목이 지나간뒤 보여진다
-                    skipButton.Visibility = System.Windows.Visibility.Visible;
-                    HandR.Visibility = System.Windows.Visibility.Visible;
-                    //14/08/0 hand left 추가
-                    HandL.Visibility = System.Windows.Visibility.Visible;
-                    guide();
-                    prepareKinect();
-                    break;*/
+                /*
+            case 0:
+                counter++;
+                animation.From = 0.0;
+                animation.To = 0.0;
+                animation.AccelerationRatio = 0.0;
+                animation.Duration = new Duration(TimeSpan.FromSeconds(5));
+                animation.FillBehavior = FillBehavior.HoldEnd;
+                animation.Completed += animation_Completed;
+                titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
+                break;
+            case 1:
+                counter++;
+                animation.From = 0.0;
+                animation.To = -800.0;
+                animation.AccelerationRatio = 1.0;
+                animation.Duration = new Duration(TimeSpan.FromSeconds(5));
+                animation.FillBehavior = FillBehavior.Stop;
+                animation.Completed += animation_Completed;
+                titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
+                break;
+            case 2:
+                counter++;
+                titleImage.Visibility = System.Windows.Visibility.Hidden;
+                //14/07/24 : skip 버튼이 제목이 지나간뒤 보여진다
+                skipButton.Visibility = System.Windows.Visibility.Visible;
+                HandR.Visibility = System.Windows.Visibility.Visible;
+                //14/08/0 hand left 추가
+                HandL.Visibility = System.Windows.Visibility.Visible;
+                guide();
+                prepareKinect();
+                break;*/
                 case 0:
                     counter++;
                     introText.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide_2.png") as ImageSource;
@@ -396,11 +396,15 @@ namespace SungJik_SungHwa
                 Canvas.SetLeft(HandL, HandLeftColorImagePoint.X - HandL.Width / 2);
                 Canvas.SetTop(HandL, HandLeftColorImagePoint.Y - HandL.Height / 2);
 
-                if (((Canvas.GetLeft(HandR) + HandR.Width / 2 > Canvas.GetLeft(skipButton)) && (Canvas.GetLeft(HandR) + HandR.Width / 2 < Canvas.GetLeft(skipButton) + skipButton.Width) && (Canvas.GetTop(HandR) + HandR.Height / 2 > Canvas.GetTop(skipButton)) && (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(skipButton) + skipButton.Height)) || 
-                    ((Canvas.GetLeft(HandL) + HandL.Width / 2 > Canvas.GetLeft(skipButton)) && (Canvas.GetLeft(HandL) + HandL.Width / 2 < Canvas.GetLeft(skipButton) + skipButton.Width) && (Canvas.GetTop(HandL) + HandL.Height / 2 > Canvas.GetTop(skipButton)) && (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(skipButton) + skipButton.Height)))
+                if (((Canvas.GetLeft(HandR) + HandR.Width / 2 > Canvas.GetLeft(skipButton)) && (Canvas.GetLeft(HandR) + HandR.Width / 2 < Canvas.GetLeft(skipButton) + skipButton.Width) && (Canvas.GetTop(HandR) + HandR.Height / 2 > Canvas.GetTop(skipButton)) && (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(skipButton) + skipButton.Height)))
                 {
                     skipButton.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "skip_on.png") as ImageSource;
-                    counter = 6;
+                    counter = 3;
+                }
+                if (((Canvas.GetLeft(HandL) + HandL.Width / 2 > Canvas.GetLeft(skipButton)) && (Canvas.GetLeft(HandL) + HandL.Width / 2 < Canvas.GetLeft(skipButton) + skipButton.Width) && (Canvas.GetTop(HandL) + HandL.Height / 2 > Canvas.GetTop(skipButton)) && (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(skipButton) + skipButton.Height)))
+                {
+                    skipButton.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "skip_on.png") as ImageSource;
+                    counter = 3;
                 }
             }
         }
@@ -517,7 +521,8 @@ namespace SungJik_SungHwa
                 if (gameState == SELECTING)
                 {
                     //위치 지정시
-                    if (((Canvas.GetLeft(HandR) + HandR.Width / 2 > Canvas.GetLeft(SungJik) + 90) && (Canvas.GetLeft(HandR) + HandR.Width / 2 < Canvas.GetLeft(SungJik) + 290) && (Canvas.GetTop(HandR) + HandR.Height / 2 > Canvas.GetTop(SungJik) + 80) && (Canvas.GetTop(HandR) + HandR.Height / 2 < Canvas.GetTop(SungJik) + SungJik.Height)) || ((Canvas.GetLeft(HandL) + HandL.Width / 2 > Canvas.GetLeft(SungJik) + 90) && (Canvas.GetLeft(HandL) + HandL.Width / 2 < Canvas.GetLeft(SungJik) + 290) && (Canvas.GetTop(HandL) + HandL.Height / 2 > Canvas.GetTop(SungJik) + 80) && (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(SungJik) + SungJik.Height)))
+                    if (((Canvas.GetLeft(HandR) + HandR.Width / 2 > Canvas.GetLeft(SungJik) + 90) && (Canvas.GetLeft(HandR) + HandR.Width / 2 < Canvas.GetLeft(SungJik) + 290) && (Canvas.GetTop(HandR) + HandR.Height / 2 > Canvas.GetTop(SungJik) + 80) && (Canvas.GetTop(HandR) + HandR.Height / 2 < Canvas.GetTop(SungJik) + SungJik.Height)) ||
+                        ((Canvas.GetLeft(HandL) + HandL.Width / 2 > Canvas.GetLeft(SungJik) + 90) && (Canvas.GetLeft(HandL) + HandL.Width / 2 < Canvas.GetLeft(SungJik) + 290) && (Canvas.GetTop(HandL) + HandL.Height / 2 > Canvas.GetTop(SungJik) + 80) && (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(SungJik) + SungJik.Height)))
                     {
                         SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].jump) as ImageSource;
                         Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].wait) as ImageSource;
