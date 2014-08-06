@@ -134,7 +134,11 @@ namespace SungJik_SungHwa
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
             this.Left = (desktopWorkingArea.Right - this.Width) / 2;
             this.Top = (desktopWorkingArea.Bottom - this.Height) / 2;
-            Screen.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "bg.png") as ImageSource;
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.UriSource = new Uri(baseDirectory + "bg.gif");
+            image.EndInit();
+            ImageBehavior.SetAnimatedSource(Screen, image);
             //키넥트가 연결되어 있는지 확인한다. 만일 연결되어 있으면 선언한 sensor와 연결된 kinect의 정보를 준다
             if (KinectSensor.KinectSensors.Count > 0)
                 sensor = KinectSensor.KinectSensors[0];
