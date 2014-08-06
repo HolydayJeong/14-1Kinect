@@ -134,11 +134,7 @@ namespace SungJik_SungHwa
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
             this.Left = (desktopWorkingArea.Right - this.Width) / 2;
             this.Top = (desktopWorkingArea.Bottom - this.Height) / 2;
-            var image = new BitmapImage();
-            image.BeginInit();
-            image.UriSource = new Uri(baseDirectory + "bg.gif");
-            image.EndInit();
-            ImageBehavior.SetAnimatedSource(Screen, image);
+            Screen.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "bg.png") as ImageSource;
             //키넥트가 연결되어 있는지 확인한다. 만일 연결되어 있으면 선언한 sensor와 연결된 kinect의 정보를 준다
             if (KinectSensor.KinectSensors.Count > 0)
                 sensor = KinectSensor.KinectSensors[0];
@@ -272,7 +268,7 @@ namespace SungJik_SungHwa
             animation.From = 0.0;
             animation.To = 0.0;
             animation.AccelerationRatio = 0.0;
-            animation.Duration = new Duration(TimeSpan.FromSeconds(7));
+            animation.Duration = new Duration(TimeSpan.FromSeconds(5));
             animation.FillBehavior = FillBehavior.Stop;
             animation.Completed += animation_Completed;
             titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
@@ -323,7 +319,7 @@ namespace SungJik_SungHwa
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
-                    animation.Duration = new Duration(TimeSpan.FromSeconds(4));
+                    animation.Duration = new Duration(TimeSpan.FromSeconds(8));
                     animation.FillBehavior = FillBehavior.Stop;
                     animation.Completed += animation_Completed;
                     titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
@@ -334,7 +330,7 @@ namespace SungJik_SungHwa
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
-                    animation.Duration = new Duration(TimeSpan.FromSeconds(4));
+                    animation.Duration = new Duration(TimeSpan.FromSeconds(8));
                     animation.FillBehavior = FillBehavior.Stop;
                     animation.Completed += animation_Completed;
                     titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
@@ -345,7 +341,7 @@ namespace SungJik_SungHwa
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
-                    animation.Duration = new Duration(TimeSpan.FromSeconds(4));
+                    animation.Duration = new Duration(TimeSpan.FromSeconds(2));
                     animation.FillBehavior = FillBehavior.Stop;
                     animation.Completed += animation_Completed;
                     titleCanvas.BeginAnimation(Canvas.TopProperty, animation);

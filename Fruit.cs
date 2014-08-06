@@ -199,7 +199,7 @@ namespace EatingFruit
                     gameState = playing;
                     
                     DropFruit();        //게임 시작! 이미지 떨어뜨린다! 
-                    //Score();
+                    Score();
                     canvas1.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);    
                     break;
 
