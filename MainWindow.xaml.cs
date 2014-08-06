@@ -18,14 +18,6 @@ using WpfAnimatedGif;
 using EatingFruit;
 using System.Windows.Threading;
 
-public class Constants_MAIN
-{
-    public const int NONE = 0;
-    public const int DIBIPRESSED = 1;
-    public const int JUMPPRESSED = 2;
-    public const int FRUITPRESSED = 3;
-    public const int ALL = 4;
-}
 namespace SungJik_SungHwa
 {
     /// <summary>
@@ -33,6 +25,12 @@ namespace SungJik_SungHwa
     /// </summary>
     public partial class MainWindow : Window
     {
+        const int NONE = 0;
+        const int DIBIPRESSED = 1;
+        const int JUMPPRESSED = 2;
+        const int FRUITPRESSED = 3;
+        const int ALL = 4;
+
         //kinect sensor를 선언함 
         KinectSensor sensor;
         // 항상 6여야 한다. 
@@ -85,7 +83,7 @@ namespace SungJik_SungHwa
                 sensor.SkeletonStream.EnableTrackingInNearRange = true;
                 //sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
 
-                Menu(Constants_MAIN.NONE, baseDirectory);
+                Menu(NONE, baseDirectory);
 
                 // 시작 화면 스타트
                 var image = new BitmapImage();
@@ -186,7 +184,7 @@ namespace SungJik_SungHwa
                 {
                     Begin.Visibility = System.Windows.Visibility.Hidden;
 
-                    Menu(Constants_MAIN.ALL, baseDirectory);
+                    Menu(ALL, baseDirectory);
 
                     int i = 0;
                     foreach (Image target in images)
@@ -205,13 +203,13 @@ namespace SungJik_SungHwa
                             {
                                 box.Text = "Pressing";
                                 if (target.Name == "Dibi")
-                                    i = Constants_MAIN.DIBIPRESSED;
+                                    i = DIBIPRESSED;
                                 else if (target.Name == "Jump")
-                                    i = Constants_MAIN.JUMPPRESSED;
+                                    i = JUMPPRESSED;
                                 else if (target.Name == "Fruit")
-                                    i = Constants_MAIN.FRUITPRESSED;
+                                    i = FRUITPRESSED;
                                 else
-                                    i = Constants_MAIN.NONE;
+                                    i = NONE;
                                 box.Text += " I : " + i;
                                 Menu(i, baseDirectory);
 
@@ -227,27 +225,24 @@ namespace SungJik_SungHwa
                 }
             }
         }
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-        }
 
         private void Menu_Click(int i)
         {
             switch (i)
             {
-                case Constants_MAIN.DIBIPRESSED:
+                case DIBIPRESSED:
                     Dibi Dibi = new Dibi();
                     App.Current.MainWindow = Dibi;
                     this.Close();
                     Dibi.Show();
                     return;
-                case Constants_MAIN.JUMPPRESSED:
+                case JUMPPRESSED:
                     SkippingRoper skippingRope = new SkippingRoper();
                     App.Current.MainWindow = skippingRope;
                     this.Close();
                     skippingRope.Show();
                     return;
-                case Constants_MAIN.FRUITPRESSED:
+                case FRUITPRESSED:
                     Fruit fruit = new Fruit();
                     App.Current.MainWindow = fruit;
                     this.Close();
@@ -256,59 +251,31 @@ namespace SungJik_SungHwa
             }
         }
 
-        private void Dibi_Click()
-        {
-            Dibi Dibi = new Dibi();
-            App.Current.MainWindow = Dibi;
-            this.Close();
-            Dibi.Show();
-            return;
-        }
-
-        private void Jump_Click()
-        {
-            SkippingRoper skippingRope = new SkippingRoper();
-            App.Current.MainWindow = skippingRope;
-            this.Close();
-            skippingRope.Show();
-            return;
-        }
-
-        private void Fruit_Click()
-        {
-            Fruit fruit = new Fruit();
-            App.Current.MainWindow = fruit;
-            this.Close();
-            fruit.Show();
-            return;
-        }
-
-
         private void Menu(int i, string ImagePath)
         {
             Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
             {
                 switch (i)
                 {
-                    case Constants_MAIN.NONE:
+                    case NONE:
                         Dibi.Visibility = System.Windows.Visibility.Hidden;
                         Jump.Visibility = System.Windows.Visibility.Hidden;
                         Fruit.Visibility = System.Windows.Visibility.Hidden;
                         Hand.Visibility = System.Windows.Visibility.Hidden;
                         break;
-                    case Constants_MAIN.DIBIPRESSED:
+                    case DIBIPRESSED:
                         Dibi.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "menu1_on.png") as ImageSource;
                         Dibi.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_MAIN.JUMPPRESSED:
+                    case JUMPPRESSED:
                         Jump.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "menu2_on.png") as ImageSource;
                         Jump.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_MAIN.FRUITPRESSED:
+                    case FRUITPRESSED:
                         Fruit.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "menu3_on.png") as ImageSource;
                         Fruit.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_MAIN.ALL:
+                    case ALL:
                         Dibi.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "menu1.png") as ImageSource;
                         Dibi.Visibility = System.Windows.Visibility.Visible;
                         Jump.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "menu2.png") as ImageSource;
@@ -319,6 +286,10 @@ namespace SungJik_SungHwa
                         break;
                 }
             }));
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
         }
     }
 }

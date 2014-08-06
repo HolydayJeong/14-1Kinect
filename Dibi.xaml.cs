@@ -22,30 +22,6 @@ using System.Windows.Threading;
 using System.Windows.Media.Animation;
 using System.ComponentModel;
 
-
-
-public class Constants_DIBI
-{
-    public const int NONE = 0;
-    public const int GAMESTATEYELLOW = 1;
-    public const int GAMESTATEVISIBLE = 2;
-    public const int SKIPHIDDEN = 3;
-    public const int SKIPVISIBLE = 4;
-    public const int LOSE = 5;
-    public const int WIN = 6;
-    public const int SCISSOR = 7;
-    public const int ROCK = 8;
-    public const int PAPER = 9;
-    public const int SOONGMAIN = 10;
-    public const int FINALWIN = 11;
-    public const int FINALLOSE = 12;
-    public const int HANDSUP = 13;
-    public const int HANDSDOWN = 14;
-    public const int REPLAYPRESSED = 15;
-    public const int HOMEPRESSED = 16;
-
-}
-
 namespace SungJik_SungHwa
 {
     /// <summary>
@@ -57,6 +33,24 @@ namespace SungJik_SungHwa
 
     public partial class Dibi : Window
     {
+        const int NONE = 0;
+        const int GAMESTATEYELLOW = 1;
+        const int GAMESTATEVISIBLE = 2;
+        const int SKIPHIDDEN = 3;
+        const int SKIPVISIBLE = 4;
+        const int LOSE = 5;
+        const int WIN = 6;
+        const int SCISSOR = 7;
+        const int ROCK = 8;
+        const int PAPER = 9;
+        const int SOONGMAIN = 10;
+        const int FINALWIN = 11;
+        const int FINALLOSE = 12;
+        const int HANDSUP = 13;
+        const int HANDSDOWN = 14;
+        const int REPLAYPRESSED = 15;
+        const int HOMEPRESSED = 16;
+
         SungJik_SungHwa.PressButton Press = new SungJik_SungHwa.PressButton();
 
         public Dibi()
@@ -72,8 +66,9 @@ namespace SungJik_SungHwa
 
         string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "dibi\\";
 
-        int gamestate = 111;  // 게임 시작을 알려주는 
+        int gamestate = 0;  // 게임 시작을 알려주는 
         //10 : 대기, 0 : 인트로시작, 1 : 자세인식, 2 : intro, 3 : 디비디비딥 출력, 4 : 자세인식, 5 : 승패 판결후 게임 종료, 6 : 처음으로, 다시하기, 5초대기
+        // 01이 뒤에 붙으면 중간단계
 
         int monkeySate = 0; // 원숭이가 낸거 0 : 대기, 1 : 가위, 2 : 주먹, 3 : 보
         int playerState = 0;// 사람이 낸거 0 : 대기, 1 : 가위, 2 : 주먹, 3 : 보
@@ -191,9 +186,9 @@ namespace SungJik_SungHwa
 
 
                 //Position.Text = RHandDepthPoint.X + " " + RHandDepthPoint.Y;
-                if (gamestate == 111)
+                if (gamestate == 0)
                 {
-                    gamestate = 0;
+                    gamestate = 101;
                     skip.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "skip.png") as ImageSource;
                     skip.Visibility = System.Windows.Visibility.Hidden;
 
@@ -201,65 +196,9 @@ namespace SungJik_SungHwa
                     ThreadStart threadStart = new ThreadStart(GameState);
                     Thread newThread = new Thread(threadStart);
                     newThread.Start();
+                    gamestate = 1;
                 }
-                else if (gamestate == 10)
-                {
-                    Point replayTopLeft = new Point(Canvas.GetLeft(replay), Canvas.GetTop(replay));
-
-                    Point homeTopLeft = new Point(Canvas.GetLeft(home), Canvas.GetTop(home));
-
-                    //해상도 확장으로 인한 변수 값 조정 
-                    //(해상도 줄이면 이곳을 주석처리하고 이미지 크기에 /2 지우면 됨)
-                    replayTopLeft.X = replayTopLeft.X / 2;
-                    replayTopLeft.Y = replayTopLeft.Y / 2;
-                    homeTopLeft.X = homeTopLeft.X / 2;
-                    homeTopLeft.Y = homeTopLeft.Y / 2;
-                    // 변수값 조정 끝
-
-                         // 리플레이
-                    if (RHandDepthPoint.X > replayTopLeft.X && RHandDepthPoint.X < replayTopLeft.X + skip.ActualWidth / 2 && RHandDepthPoint.Y > replayTopLeft.Y && RHandDepthPoint.Y < replayTopLeft.Y + skip.ActualHeight / 2)
-                    //if (RHandDepthPoint.X > 400 && RHandDepthPoint.X < 471 && RHandDepthPoint.Y > 100 && RHandDepthPoint.Y < 140)
-                    {
-                        Menu(Constants_DIBI.REPLAYPRESSED, baseDirectory);
-                        /*
-                        video.Visibility = System.Windows.Visibility.Visible;
-                        video.Source = new Uri(baseDirectory + "sequence02.mov");
-                        video.Play();
-                        */
-                        //MessageBox.Show("start");
-                        Press.detectPressure(RHandDepthPoint.Depth);
-                        if (Press.isPressed() == true)
-                        {
-                            Press.reset();
-                            gamestate = 0;                 // 마구 들어옴 방지
-                            Menu(0, baseDirectory);
-
-                            Console.WriteLine("Thread Make playstate : " + playerState + " / gamestate : " + gamestate + " / gameCount : " + WinCount);
-                            ThreadStart threadStart = new ThreadStart(GameState);
-                            Thread newThread = new Thread(threadStart);
-                            newThread.Start();
-                        }
-                    }
-                        // 홈으로 가기
-                    else if (RHandDepthPoint.X > homeTopLeft.X && RHandDepthPoint.X < homeTopLeft.X + home.ActualWidth / 2 && RHandDepthPoint.Y > homeTopLeft.Y && RHandDepthPoint.Y < homeTopLeft.Y + home.ActualHeight / 2)
-                    {
-                        Menu(Constants_DIBI.HOMEPRESSED, baseDirectory);
-                        Press.detectPressure(RHandDepthPoint.Depth);
-                        if (Press.isPressed() == true)
-                        {
-                            Press.reset();
-
-                            MainWindow main = new MainWindow();
-                            App.Current.MainWindow = main;
-                            this.Close();
-                            main.Show();
-                            return;
-                        }
-                    }
-                    else
-                        Menu(1, baseDirectory);
-                }
-                else if (gamestate == 11)    //스킵용
+                else if (gamestate == 2)    //스킵용
                 {
                     Point targetTopLeft = new Point(Canvas.GetLeft(skip), Canvas.GetTop(skip));
                     targetTopLeft.X = targetTopLeft.X / 2;
@@ -267,17 +206,17 @@ namespace SungJik_SungHwa
 
                     if (RHandDepthPoint.X > targetTopLeft.X && RHandDepthPoint.X < targetTopLeft.X + skip.ActualWidth / 2 && RHandDepthPoint.Y > targetTopLeft.Y && RHandDepthPoint.Y < targetTopLeft.Y + skip.ActualHeight / 2)
                     {
-                            Press.reset();
-                            gamestate = 3;  // 인트로 스킵
-                            Console.WriteLine("gamestate : " + gamestate);
+                        Press.reset();
+                        gamestate = 4;  // 인트로 스킵
+                        Console.WriteLine("gamestate : " + gamestate);
                     }
                 }
-                else if (gamestate == 1 || gamestate == 5)
+                else if (gamestate == 3 || gamestate == 6)
                 {
-                    if (gamestate == 1)
-                        gamestate = 2;  // 다른 프로세스 들어옴 방지.
-                    else if (gamestate == 5)
-                        gamestate = 6;
+                    if (gamestate == 3)
+                        gamestate = 301;  // 다른 프로세스 들어옴 방지.
+                    else if (gamestate == 6)
+                        gamestate = 601;    // 프로세스 난입 방지
 
 
                     if (LHandDepthPoint.X <= LShoulderDepthPoint.X && RHandDepthPoint.X >= RShoulderDepthPoint.X)  // 양쪽손 > 양쪽어깨 비교(벌릴때 / 보)
@@ -285,56 +224,56 @@ namespace SungJik_SungHwa
                         //case 보자기
                         if (bodyDepthPoint.Y > LHandDepthPoint.Y && bodyDepthPoint.Y > RHandDepthPoint.Y)   // 몸 < 양손 비교하기
                         {
-                            playerState = Constants_DIBI.PAPER;
+                            playerState = PAPER;
                         }
                         else
                         {
-                            Form = Constants_DIBI.HANDSUP;
-                            Alert(Constants_DIBI.HANDSUP, baseDirectory);
+                            Form = HANDSUP;
+                            Alert(HANDSUP, baseDirectory);
                             playerState = 1;
                         }
                     }
-                    else if (LHandDepthPoint.X > LShoulderDepthPoint.X && RHandDepthPoint.X < RShoulderDepthPoint.X && LElbowDepthPoint.X < LShoulderDepthPoint.X && RElbowDepthPoint.X > RShoulderDepthPoint.X) 
-                        // 양쪽손 in 양쪽어깨 양쪽 팔꿈치 out 어깨  비교 (모을때 / 묵)
+                    else if (LHandDepthPoint.X > LShoulderDepthPoint.X && RHandDepthPoint.X < RShoulderDepthPoint.X && LElbowDepthPoint.X < LShoulderDepthPoint.X && RElbowDepthPoint.X > RShoulderDepthPoint.X)
+                    // 양쪽손 in 양쪽어깨 양쪽 팔꿈치 out 어깨  비교 (모을때 / 묵)
                     {
                         // case 묵
                         if (headDepthPoint.Y < LHandDepthPoint.Y && headDepthPoint.Y < RHandDepthPoint.Y)   // 머리 > 양손 비교하기
                             if (bodyDepthPoint.Y > LHandDepthPoint.Y && bodyDepthPoint.Y > RHandDepthPoint.Y)   // 몸 < 양손 비교하기
                             {
-                                playerState = Constants_DIBI.ROCK;
+                                playerState = ROCK;
                             }
                             else
                             {
-                                Form = Constants_DIBI.HANDSUP;
-                                Alert(Constants_DIBI.HANDSUP, baseDirectory);
+                                Form = HANDSUP;
+                                Alert(HANDSUP, baseDirectory);
                                 playerState = 2;
                             }
                         else
                         {
-                            Form = Constants_DIBI.HANDSDOWN;
-                            Alert(Constants_DIBI.HANDSDOWN, baseDirectory);
+                            Form = HANDSDOWN;
+                            Alert(HANDSDOWN, baseDirectory);
                             playerState = 3;
                         }
                     }
 
-                    else if (RHandDepthPoint.X >= bodyDepthPoint.X && LWristDepthPoint.X > bodyDepthPoint.X)  // 왼쪽어깨 < 왼손 , 머리 < 오른손
+                    else if (RHandDepthPoint.X >= bodyDepthPoint.X && LWristDepthPoint.X > LShoulderDepthPoint.X)  // 왼쪽어깨 < 왼손 , 머리 < 오른손
                     {
                         //case 가위
                         if (headDepthPoint.Y < LHandDepthPoint.Y && headDepthPoint.Y < RHandDepthPoint.Y)   // 머리 > 양손 비교하기
                             if (hipDepthPoint.Y > LHandDepthPoint.Y && hipDepthPoint.Y > RHandDepthPoint.Y)   // 엉덩이 < 양손 비교하기Form = "가위";
                             {
-                                playerState = Constants_DIBI.SCISSOR;
+                                playerState = SCISSOR;
                             }
                             else
                             {
-                                Form = Constants_DIBI.HANDSUP;
-                                Alert(Constants_DIBI.HANDSUP, baseDirectory);
+                                Form = HANDSUP;
+                                Alert(HANDSUP, baseDirectory);
                                 playerState = 4;
                             }
                         else
                         {
-                            Form = Constants_DIBI.HANDSDOWN;
-                            Alert(Constants_DIBI.HANDSDOWN, baseDirectory);
+                            Form = HANDSDOWN;
+                            Alert(HANDSDOWN, baseDirectory);
                             playerState = 5;
                         }
                     }
@@ -362,19 +301,19 @@ namespace SungJik_SungHwa
                         + "\n" + Form
                         + "\n" + test;
                     */
-                    if (gamestate == 6)     // 게임 중이므로 판별로 넘어가야함
+                    if (gamestate == 601)     // 게임 중이므로 판별로 넘어가야함
                     {
-                        Thread.Sleep(1200); // 숭익이가 낸거 보여주기 (1.2초동안)
-                        checkWin();
-                        gamestate = 7;       // 아무런 명령이 없는 7으로 바꿈
+                        gamestate = 7;       // 대기 및 판별인 7로 넘어감
                     }
                 }
-                else if (gamestate == 8)
+                else if (gamestate == 9)
                 {
+                    gamestate = 901;    // 프로세스 난입 방지
+
                     db1.Visibility = System.Windows.Visibility.Hidden;
                     db2.Visibility = System.Windows.Visibility.Hidden;
                     dip.Visibility = System.Windows.Visibility.Hidden;
-                    Alert(Constants_DIBI.NONE, baseDirectory);
+                    Alert(NONE, baseDirectory);
 
                     Console.WriteLine("Game Over  : " + WinCount + " : " + LoseCount);
 
@@ -385,41 +324,96 @@ namespace SungJik_SungHwa
                             //doNotice("승리!!");
                             System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "win.wav");
                             sp.Play();
-                            SoongOut(Constants_DIBI.FINALWIN, baseDirectory);
-                            Alert(Constants_DIBI.FINALWIN, baseDirectory);
+                            SoongOut(FINALWIN, baseDirectory);
+                            Alert(FINALWIN, baseDirectory);
                         }
                         else if (LoseCount == 3)
                         {
                             //doNotice("패배!!");
                             System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "loose.wav");
                             sp.Play();
-                            SoongOut(Constants_DIBI.FINALLOSE, baseDirectory);
-                            Alert(Constants_DIBI.FINALLOSE, baseDirectory);
+                            SoongOut(FINALLOSE, baseDirectory);
+                            Alert(FINALLOSE, baseDirectory);
                         }
-                        gamestate = 9;
+                        gamestate = 10;
                     }
                     else
                     {
-                        SoongOut(Constants_DIBI.SOONGMAIN, baseDirectory);
-                        gamestate = 4;
+                        SoongOut(SOONGMAIN, baseDirectory);
+                        gamestate = 5;  // 디비디비딥 출력
                     }
                 }
-                else if (gamestate == 88)
+                else if (gamestate == 11)   // 끝 정리.
                 {
-                    gamestate = 881;
+                    gamestate = 1101;
                     ImageBehavior.SetAnimatedSource(monkey, null);  // 이미지 없애기
                     ImageBehavior.SetAnimatedSource(Alertimg, null);  // 이미지 없애기
-                    Alert(Constants_DIBI.NONE, baseDirectory);
-                    SoongOut(Constants_DIBI.SOONGMAIN, baseDirectory);
+                    Alert(NONE, baseDirectory);
+                    SoongOut(SOONGMAIN, baseDirectory);
                     Console.WriteLine("in");
                     score.Visibility = System.Windows.Visibility.Hidden;
+                    SoongOut(NONE, baseDirectory);
                     Menu(1, baseDirectory);
 
                     WinCount = 0;
                     LoseCount = 0;
                     playerState = 0;
                     monkeySate = 0;
-                    gamestate = 10;
+                    gamestate = 12;
+                }
+                else if (gamestate == 12)
+                {
+                    Point replayTopLeft = new Point(Canvas.GetLeft(replay), Canvas.GetTop(replay));
+
+                    Point homeTopLeft = new Point(Canvas.GetLeft(home), Canvas.GetTop(home));
+
+                    //해상도 확장으로 인한 변수 값 조정 
+                    //(해상도 줄이면 이곳을 주석처리하고 이미지 크기에 /2 지우면 됨)
+                    replayTopLeft.X = replayTopLeft.X / 2;
+                    replayTopLeft.Y = replayTopLeft.Y / 2;
+                    homeTopLeft.X = homeTopLeft.X / 2;
+                    homeTopLeft.Y = homeTopLeft.Y / 2;
+                    // 변수값 조정 끝
+
+                    // 리플레이
+                    if (RHandDepthPoint.X > replayTopLeft.X && RHandDepthPoint.X < replayTopLeft.X + skip.ActualWidth / 2 && RHandDepthPoint.Y > replayTopLeft.Y && RHandDepthPoint.Y < replayTopLeft.Y + skip.ActualHeight / 2)
+                    //if (RHandDepthPoint.X > 400 && RHandDepthPoint.X < 471 && RHandDepthPoint.Y > 100 && RHandDepthPoint.Y < 140)
+                    {
+                        Menu(REPLAYPRESSED, baseDirectory);
+                        /*
+                        video.Visibility = System.Windows.Visibility.Visible;
+                        video.Source = new Uri(baseDirectory + "sequence02.mov");
+                        video.Play();
+                        */
+                        //MessageBox.Show("start");
+                        Press.detectPressure(RHandDepthPoint.Depth);
+                        if (Press.isPressed() == true)
+                        {
+                            gamestate = 1201;
+                            Press.reset();                 
+                            Menu(0, baseDirectory);
+
+                            gamestate = 1;      // 다시 초기화
+                        }
+                    }
+                    // 홈으로 가기
+                    else if (RHandDepthPoint.X > homeTopLeft.X && RHandDepthPoint.X < homeTopLeft.X + home.ActualWidth / 2 && RHandDepthPoint.Y > homeTopLeft.Y && RHandDepthPoint.Y < homeTopLeft.Y + home.ActualHeight / 2)
+                    {
+                        Menu(HOMEPRESSED, baseDirectory);
+                        Press.detectPressure(RHandDepthPoint.Depth);
+                        if (Press.isPressed() == true)
+                        {
+                            gamestate = 1201;   // 프로세스 난입 방지
+                            Press.reset();
+                            MainWindow main = new MainWindow();
+                            App.Current.MainWindow = main;
+                            this.Close();
+                            main.Show();
+                            return;
+                        }
+                    }
+                    else
+                        Menu(1, baseDirectory);
                 }
             }
         }
@@ -428,85 +422,82 @@ namespace SungJik_SungHwa
         {
             while (gamestate > -1)
             {
-                if (gamestate == 0) // 가이드 시작
+                if (gamestate == 1) // 가이드 시작
                 {
                     guide(1, baseDirectory);
                     Thread.Sleep(2000);
-                    gamestate = 11;
+                    gamestate = 2;
 
-                    SkipControl(Constants_DIBI.SKIPVISIBLE);
+                    SkipControl(SKIPVISIBLE);
 
                     guide(2, baseDirectory);
                     Thread.Sleep(2500);
-                    if (gamestate == 3)
+                    if (gamestate == 4) /// 바꿔줘 아래 위 전부다 
                         continue;
 
                     guide(3, baseDirectory);
-                    SoongOut(Constants_DIBI.SCISSOR, baseDirectory);
-                    gamestate = 1;
-                    while (playerState != Constants_DIBI.SCISSOR)
+                    SoongOut(SCISSOR, baseDirectory);
+                    gamestate = 3;
+                    SkipControl(SKIPHIDDEN);
+                    while (playerState != SCISSOR)
                     {
-                        SkipControl(Constants_DIBI.SKIPHIDDEN);
                         Console.WriteLine("playerstate : " + playerState);
                         Alert(Form, baseDirectory);
                         Thread.Sleep(800);
-                        Alert(Constants_DIBI.NONE, baseDirectory);
-                        gamestate = 1;
+                        Alert(NONE, baseDirectory);
+                        gamestate = 3;
                     }
-                    gamestate = 11;
+                    gamestate = 2;
                     SoongOut(0, baseDirectory);
-                    SkipControl(Constants_DIBI.SKIPVISIBLE);
+                    SkipControl(SKIPVISIBLE);
 
-                    if (gamestate == 3)
-                        continue;
                     guide(4, baseDirectory);
                     Thread.Sleep(2000);
-                    if (gamestate == 3)
+                    if (gamestate == 4)
                         continue;
                     guide(5, baseDirectory);
-                    SoongOut(Constants_DIBI.ROCK, baseDirectory);
-                    gamestate = 1;
-                    while (playerState != Constants_DIBI.ROCK)
+                    SoongOut(ROCK, baseDirectory);
+                    gamestate = 3;
+                    SkipControl(SKIPHIDDEN);
+                    while (playerState != ROCK)
                     {
-                        SkipControl(Constants_DIBI.SKIPHIDDEN);
                         Console.WriteLine("playerstate : " + playerState);
                         Alert(Form, baseDirectory);
                         Thread.Sleep(800);
-                        Alert(Constants_DIBI.NONE, baseDirectory);
-                        gamestate = 1;
+                        Alert(NONE, baseDirectory);
+                        gamestate = 3;
                     }
-                    gamestate = 11;
+                    gamestate = 2;
                     SoongOut(0, baseDirectory);
-                    SkipControl(Constants_DIBI.SKIPVISIBLE);
-                    if (gamestate == 3)
-                        continue;
+                    SkipControl(SKIPVISIBLE);
 
                     guide(4, baseDirectory);
                     Thread.Sleep(2000);
-                    if (gamestate == 3)
+                    if (gamestate == 4)
                         continue;
                     guide(6, baseDirectory);
-                    SoongOut(Constants_DIBI.PAPER, baseDirectory);
-                    gamestate = 1;
-                    while (playerState != Constants_DIBI.PAPER)
+                    SoongOut(PAPER, baseDirectory);
+                    gamestate = 3;
+                    SkipControl(SKIPHIDDEN);
+                    while (playerState != PAPER)
                     {
-                        SkipControl(Constants_DIBI.SKIPHIDDEN);
                         Console.WriteLine("playerstate : " + playerState);
                         Alert(Form, baseDirectory);
                         Thread.Sleep(800);
-                        Alert(Constants_DIBI.NONE, baseDirectory);
-                        gamestate = 1;
+                        Alert(NONE, baseDirectory);
+                        gamestate = 3;
                     }
                     SoongOut(0, baseDirectory);
 
                     guide(4, baseDirectory);
                     Thread.Sleep(2000);
 
-                    gamestate = 3;
+                    gamestate = 4;
                 }
-                else if (gamestate == 3) // 인트로 Song 시작
+                else if (gamestate == 4) // 인트로 Song 시작
                 {
-                    SkipControl(Constants_DIBI.SKIPHIDDEN);
+                    gamestate = 401;    // 프로세스 난입 방지
+                    SkipControl(SKIPHIDDEN);
                     guide(7, baseDirectory);
                     Thread.Sleep(2000);
                     guide(8, baseDirectory);
@@ -516,39 +507,45 @@ namespace SungJik_SungHwa
                     Console.WriteLine(baseDirectory + "startsong.wav");
                     Console.WriteLine("gamestate : " + gamestate);
                     System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "startsong.wav");
-                    sp.Play();
-                    Thread.Sleep(8000);
-                    SoongOut(Constants_DIBI.SOONGMAIN, baseDirectory);
+                    sp.PlaySync();
+                    SoongOut(SOONGMAIN, baseDirectory);
 
-                    gamestate = 4;
+                    gamestate = 5;
                 }
-                else if (gamestate == 4)    // 디비디비딥 출력
+                else if (gamestate == 5)    // 디비디비딥 출력
                 {
-                    Console.WriteLine("Begin : " + System.DateTime.Now.ToString("mm:ss"));
-                    sp1.Play();
-                    while (!sp1.IsLoadCompleted) ;
-                    Thread.Sleep(3000);
+                    gamestate = 501;
+                    //Console.WriteLine("Begin : " + System.DateTime.Now.ToString("mm:ss"));
+                    sp1.PlaySync(); // 플레이가 끝날때까지 대기함.
                     Console.WriteLine("Finish : " + System.DateTime.Now.ToString("mm:ss"));
                     Console.WriteLine("gamestate : " + gamestate);
 
                     monkeySate = random.Next(0, 100);   // 원숭이 랜덤 출력
                     monkeySate = (monkeySate % 3) + 7;  // 7 : 가위, 8 : 바위, 9 : 보
 
-                    Console.WriteLine("Image Change " + monkeySate);
+                    //Console.WriteLine("Image Change " + monkeySate);
                     SoongOut(monkeySate, baseDirectory);
                     
-                    gamestate = 5;  // 판별 
+                    gamestate = 6;  // 판별 
                 }
-                else if (gamestate == 7)    // 가위바위보 한번 끝
+                else if(gamestate == 7)
                 {
-                    Console.WriteLine("gamestate : " + gamestate);
-                    Thread.Sleep(1000);
-                    gamestate = 8;  // 가위바위보 준비 초기화 혹은 게임 끝
+                    gamestate = 701;    // 프로세스 난입 방지
+                    Thread.Sleep(800);
+                    checkWin();
+                    gamestate = 8;
                 }
-                else if (gamestate == 9)    // 전체 끝
+                else if (gamestate == 8)    // 가위바위보 한번 끝
+                {
+                    gamestate = 801;
+                    Console.WriteLine("gamestate : " + gamestate);
+                    Thread.Sleep(1000); // 한판 이김, 짐 숭익이 보여주기
+                    gamestate = 9;  // 가위바위보 준비 초기화 혹은 게임 끝
+                }
+                else if (gamestate == 10)    // 전체 끝
                 {
                     Thread.Sleep(3000);
-                    gamestate = 88;  // 가위바위보 준비 초기화 혹은 게임 끝
+                    gamestate = 11;  // 가위바위보 준비 초기화 혹은 게임 끝
                 }
 
                 Thread.Sleep(300);
@@ -561,20 +558,20 @@ namespace SungJik_SungHwa
             {
                 switch (i)
                 {
-                    case Constants_DIBI.NONE:
+                    case NONE:
                         Alertimg.Visibility = System.Windows.Visibility.Hidden;
                         break;
-                    case Constants_DIBI.HANDSUP:
+                    case HANDSUP:
                         ImagePath += "guide_9.png";
                         Alertimg.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
                         Alertimg.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_DIBI.HANDSDOWN:
+                    case HANDSDOWN:
                         ImagePath += "guide_10.png";
                         Alertimg.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
                         Alertimg.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_DIBI.FINALWIN:
+                    case FINALWIN:
                         var image = new BitmapImage();
                         image.BeginInit();
                         image.UriSource = new Uri(baseDirectory + "YOU-WIN.gif");
@@ -583,7 +580,7 @@ namespace SungJik_SungHwa
                         Alertimg.Visibility = System.Windows.Visibility.Visible;
                         ImageBehavior.SetAnimatedSource(Alertimg, image); // 이미지 띄우기
                         break;
-                    case Constants_DIBI.FINALLOSE:
+                    case FINALLOSE:
                         var image1 = new BitmapImage();
                         image1.BeginInit();
                         image1.UriSource = new Uri(baseDirectory + "YOU-LOSE.gif");
@@ -598,54 +595,57 @@ namespace SungJik_SungHwa
 
         private void checkWin() // 이겼는지 졌는지 판별
         {
-            if (monkeySate == playerState)
+            Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
             {
-                Console.WriteLine("Count up 1");
-            }
-            else if (playerState == Constants_DIBI.SCISSOR)
-            {
-                if (monkeySate == Constants_DIBI.ROCK)
+                if (monkeySate == playerState)
                 {
-                    Console.WriteLine("Count up 2");
-                    WinLoseCount(Constants_DIBI.LOSE);
+                    Console.WriteLine("Count up 1");
                 }
-                else if (monkeySate == Constants_DIBI.PAPER)
+                else if (playerState == SCISSOR)
                 {
-                    Console.WriteLine("Count up 3");
-                    WinLoseCount(Constants_DIBI.WIN);
+                    if (monkeySate == ROCK)
+                    {
+                        Console.WriteLine("Count up 2");
+                        WinLoseCount(LOSE);
+                    }
+                    else if (monkeySate == PAPER)
+                    {
+                        Console.WriteLine("Count up 3");
+                        WinLoseCount(WIN);
+                    }
                 }
-            }
-            else if (playerState == Constants_DIBI.ROCK)
-            {
-                if (monkeySate == Constants_DIBI.SCISSOR)
+                else if (playerState == ROCK)
                 {
-                    Console.WriteLine("Count up 4");
-                    WinLoseCount(Constants_DIBI.WIN);
+                    if (monkeySate == SCISSOR)
+                    {
+                        Console.WriteLine("Count up 4");
+                        WinLoseCount(WIN);
+                    }
+                    else if (monkeySate == PAPER)
+                    {
+                        Console.WriteLine("Count up 5");
+                        WinLoseCount(LOSE);
+                    }
                 }
-                else if (monkeySate == Constants_DIBI.PAPER)
+                else if (playerState == PAPER)
                 {
-                    Console.WriteLine("Count up 5");
-                    WinLoseCount(Constants_DIBI.LOSE);
+                    if (monkeySate == SCISSOR)
+                    {
+                        Console.WriteLine("Count up 6");
+                        WinLoseCount(LOSE);
+                    }
+                    else if (monkeySate == ROCK)
+                    {
+                        Console.WriteLine("Count up 7");
+                        WinLoseCount(WIN);
+                    }
                 }
-            }
-            else if (playerState == Constants_DIBI.PAPER)
-            {
-                if (monkeySate == Constants_DIBI.SCISSOR)
-                {
-                    Console.WriteLine("Count up 6");
-                    WinLoseCount(Constants_DIBI.LOSE);
-                }
-                else if (monkeySate == Constants_DIBI.ROCK)
-                {
-                    Console.WriteLine("Count up 7");
-                    WinLoseCount(Constants_DIBI.WIN);
-                }
-            }
 
-            score.Text = WinCount + " : " + LoseCount;
-            score.Visibility = System.Windows.Visibility.Visible;
+                score.Text = WinCount + " : " + LoseCount;
+                score.Visibility = System.Windows.Visibility.Visible;
 
-            Console.WriteLine("Game = " + WinCount);
+                Console.WriteLine("Game = " + WinCount);
+            }));
         }
 
         private void guide(int i, string ImagePath)
@@ -716,11 +716,11 @@ namespace SungJik_SungHwa
                         home.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "home_db.png") as ImageSource;
                         home.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_DIBI.REPLAYPRESSED:
+                    case REPLAYPRESSED:
                         replay.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "re_db_on.png") as ImageSource;
                         replay.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_DIBI.HOMEPRESSED:
+                    case HOMEPRESSED:
                         home.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "home_db_on.png") as ImageSource;
                         home.Visibility = System.Windows.Visibility.Visible;
                         break;
@@ -740,13 +740,13 @@ namespace SungJik_SungHwa
             {
                 switch (num)
                 {
-                    case Constants_DIBI.GAMESTATEVISIBLE:
+                    case GAMESTATEVISIBLE:
                         skip.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_DIBI.SKIPHIDDEN:
+                    case SKIPHIDDEN:
                         skip.Visibility = System.Windows.Visibility.Hidden;
                         break;
-                    case Constants_DIBI.SKIPVISIBLE:
+                    case SKIPVISIBLE:
                         skip.Visibility = System.Windows.Visibility.Visible;
                         break;
                 }
@@ -759,35 +759,35 @@ namespace SungJik_SungHwa
             {
                 switch (num)
                 {
-                    case Constants_DIBI.NONE: // 가리기
+                    case NONE: // 가리기
                         monkey.Visibility = System.Windows.Visibility.Hidden;
                         break;
-                    case Constants_DIBI.SCISSOR:
+                    case SCISSOR:
                         ImagePath += "sung_scissors.png";
                         monkey.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
                         monkey.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_DIBI.ROCK:
+                    case ROCK:
                         ImagePath += "sung_rock.png";
                         monkey.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
                         monkey.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_DIBI.PAPER:
+                    case PAPER:
                         ImagePath += "sung_paper.png";
                         monkey.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
                         monkey.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_DIBI.SOONGMAIN:
+                    case SOONGMAIN:
                         ImagePath += "sung_main.png";
                         monkey.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
                         monkey.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_DIBI.FINALWIN:
+                    case FINALWIN:
                         ImagePath += "sung_fail.png";
                         monkey.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
                         monkey.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_DIBI.FINALLOSE:
+                    case FINALLOSE:
                         var image = new BitmapImage();
                         image.BeginInit();
                         image.UriSource = new Uri(baseDirectory + "sung_win.gif");
@@ -805,11 +805,11 @@ namespace SungJik_SungHwa
         {
             switch (i)
             {
-                case Constants_DIBI.LOSE:
+                case LOSE:
                     monkey.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "sung_win.png") as ImageSource;
                     LoseCount++;
                     break;
-                case Constants_DIBI.WIN:
+                case WIN:
                     monkey.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "sung_fail2.png") as ImageSource;
                     WinCount++;
                     break;
