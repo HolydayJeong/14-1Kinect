@@ -9,7 +9,7 @@ namespace SungJik_SungHwa
 {
     class PressButton
     {
-        private const int PRESS_CONFIRM = 12;
+        private const int PRESS_CONFIRM = 10;
         private int Press = 0;
         private int originalDepth = 0;
 
@@ -49,5 +49,12 @@ namespace SungJik_SungHwa
             }
             else return false;
         }
+        public int wideRange()
+        {
+            if (originalDepth == 0)
+                return 0;
+            else return 15;
+        }
+
     }
 }
