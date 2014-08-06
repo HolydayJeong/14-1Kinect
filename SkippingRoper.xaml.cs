@@ -272,7 +272,7 @@ namespace SungJik_SungHwa
             animation.From = 0.0;
             animation.To = 0.0;
             animation.AccelerationRatio = 0.0;
-            animation.Duration = new Duration(TimeSpan.FromSeconds(5));
+            animation.Duration = new Duration(TimeSpan.FromSeconds(7));
             animation.FillBehavior = FillBehavior.Stop;
             animation.Completed += animation_Completed;
             titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
@@ -323,7 +323,7 @@ namespace SungJik_SungHwa
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
-                    animation.Duration = new Duration(TimeSpan.FromSeconds(8));
+                    animation.Duration = new Duration(TimeSpan.FromSeconds(4));
                     animation.FillBehavior = FillBehavior.Stop;
                     animation.Completed += animation_Completed;
                     titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
@@ -334,7 +334,7 @@ namespace SungJik_SungHwa
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
-                    animation.Duration = new Duration(TimeSpan.FromSeconds(8));
+                    animation.Duration = new Duration(TimeSpan.FromSeconds(4));
                     animation.FillBehavior = FillBehavior.Stop;
                     animation.Completed += animation_Completed;
                     titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
@@ -345,7 +345,7 @@ namespace SungJik_SungHwa
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
-                    animation.Duration = new Duration(TimeSpan.FromSeconds(2));
+                    animation.Duration = new Duration(TimeSpan.FromSeconds(4));
                     animation.FillBehavior = FillBehavior.Stop;
                     animation.Completed += animation_Completed;
                     titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
