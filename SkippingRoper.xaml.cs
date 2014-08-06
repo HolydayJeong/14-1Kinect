@@ -17,6 +17,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Threading;
 using WpfAnimatedGif;
+ //
 
 //추가해주어야 할 부분 using을 쓰면 kinect library를 불러올 수 있다.
 using Microsoft.Kinect;
