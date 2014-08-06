@@ -174,7 +174,7 @@ namespace SungJik_SungHwa
                     targetTopLeft.Y /= 2;
                     box.Text = "TopLeft X : " + targetTopLeft.X + "Width : " + Jump.ActualWidth + " TopLeft Y : " + targetTopLeft.Y + " Height : " + Jump.ActualHeight + "Body X: " + bodyDepthPoint.X + "Body Y: " + bodyDepthPoint.Y;
                     //if (bodyDepthPoint.X > targetTopLeft.X && bodyDepthPoint.X < targetTopLeft.X + Jump.ActualWidth/2 && bodyDepthPoint.Y > targetTopLeft.Y && bodyDepthPoint.Y < targetTopLeft.Y + Jump.ActualHeight)
-                    if(bodyDepthPoint.X > 310 && bodyDepthPoint.X < 350 && bodyDepthPoint.Y > 290 && bodyDepthPoint.Y < 320)
+                    if(bodyDepthPoint.X > 310 && bodyDepthPoint.X < 350 && bodyDepthPoint.Y > 220 && bodyDepthPoint.Y < 250)
                     {
                         gamestate = 2;
                     }
@@ -233,6 +233,7 @@ namespace SungJik_SungHwa
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
         }
+
         private void Dibi_Click()
         {
             Dibi Dibi = new Dibi();
