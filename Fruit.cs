@@ -207,13 +207,33 @@ namespace EatingFruit
                 case 5:
                     counter++;
                     bgm2.Stop();
+
+                    var LastSung = new BitmapImage();
+
                     gameover.Play();
                     Home.Visibility = Visibility.Visible;
                     Replay.Visibility = Visibility.Visible;
                     Hand.Visibility = Visibility.Visible;
+                    SungHwa.Visibility = Visibility.Hidden;
+                    m1.Visibility = Visibility.Hidden;
+                    m10.Visibility = Visibility.Hidden;
+                    m100.Visibility = Visibility.Hidden;
+                    m1000.Visibility = Visibility.Hidden;
+                    m10000.Visibility = Visibility.Hidden;
+
+
+                    LastSung.BeginInit();
+                    LastSung.UriSource = new Uri(baseDirectory + "lastsung.gif");
+
+                    ImageBehavior.SetRepeatBehavior(Ready, new RepeatBehavior(7));
+                    LastSung.EndInit();
+
+                    ImageBehavior.SetAnimatedSource(SungGiF, LastSung);
+
                     LastScore(); //최종 점수 출력 
 
-                    gameState = option; // Home replay, 선택할 수 있도록 상태 변경 
+                    gameState = option; // Home replay, 선택할 수 있도록 상태 변경
+
                     break;
 
                 default:
@@ -521,13 +541,14 @@ namespace EatingFruit
             _100.Visibility = Visibility.Hidden;
             _1000.Visibility = Visibility.Hidden;
             _10000.Visibility = Visibility.Hidden;
+            SungGiF.Visibility = Visibility.Hidden;
             score = 0;
-            //Ready.Visibility = Visibility.Visible;
-            //Go.Visibility = Visibility.Visible;
+
+
             FruitScoreCanvas.Visibility = Visibility.Visible;
             gameState = begin;
             counter = 0;
-            //  Score.Text = score.ToString();
+
             DoubleAnimation_Ready();
         }
       
@@ -618,6 +639,7 @@ namespace EatingFruit
             Canvas.SetZIndex(shape, 2);
             Canvas.SetZIndex(Background2, 3);
             Canvas.SetZIndex(SungHwa, 4);
+            Canvas.SetZIndex(SungGiF, 4);
             Canvas.SetZIndex(Home, 4);
             Canvas.SetZIndex(Replay, 4);
             Canvas.SetZIndex(Ready, 4);
