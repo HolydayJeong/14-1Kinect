@@ -24,7 +24,7 @@ using System.ComponentModel;
 
 
 
-static class Constants_DIBI
+public class Constants_DIBI
 {
     public const int NONE = 0;
     public const int GAMESTATEYELLOW = 1;
@@ -364,6 +364,7 @@ namespace SungJik_SungHwa
                     */
                     if (gamestate == 6)     // 게임 중이므로 판별로 넘어가야함
                     {
+                        Thread.Sleep(1200); // 숭익이가 낸거 보여주기 (1.2초동안)
                         checkWin();
                         gamestate = 7;       // 아무런 명령이 없는 7으로 바꿈
                     }
@@ -385,6 +386,7 @@ namespace SungJik_SungHwa
                             System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "win.wav");
                             sp.Play();
                             SoongOut(Constants_DIBI.FINALWIN, baseDirectory);
+                            Alert(Constants_DIBI.FINALWIN, baseDirectory);
                         }
                         else if (LoseCount == 3)
                         {
@@ -534,7 +536,6 @@ namespace SungJik_SungHwa
 
                     Console.WriteLine("Image Change " + monkeySate);
                     SoongOut(monkeySate, baseDirectory);
-                    Thread.Sleep(1200);
                     
                     gamestate = 5;  // 판별 
                 }
@@ -573,17 +574,78 @@ namespace SungJik_SungHwa
                         Alertimg.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
                         Alertimg.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case Constants_DIBI.FINALLOSE:
+                    case Constants_DIBI.FINALWIN:
                         var image = new BitmapImage();
                         image.BeginInit();
-                        image.UriSource = new Uri(baseDirectory + "YOU-LOSE.gif");
+                        image.UriSource = new Uri(baseDirectory + "YOU-WIN.gif");
                         ImageBehavior.SetRepeatBehavior(Alertimg, new RepeatBehavior(3));
                         image.EndInit();
                         Alertimg.Visibility = System.Windows.Visibility.Visible;
                         ImageBehavior.SetAnimatedSource(Alertimg, image); // 이미지 띄우기
                         break;
+                    case Constants_DIBI.FINALLOSE:
+                        var image1 = new BitmapImage();
+                        image1.BeginInit();
+                        image1.UriSource = new Uri(baseDirectory + "YOU-LOSE.gif");
+                        ImageBehavior.SetRepeatBehavior(Alertimg, new RepeatBehavior(3));
+                        image1.EndInit();
+                        Alertimg.Visibility = System.Windows.Visibility.Visible;
+                        ImageBehavior.SetAnimatedSource(Alertimg, image1); // 이미지 띄우기
+                        break;
                 }
             }));
+        }
+
+        private void checkWin() // 이겼는지 졌는지 판별
+        {
+            if (monkeySate == playerState)
+            {
+                Console.WriteLine("Count up 1");
+            }
+            else if (playerState == Constants_DIBI.SCISSOR)
+            {
+                if (monkeySate == Constants_DIBI.ROCK)
+                {
+                    Console.WriteLine("Count up 2");
+                    WinLoseCount(Constants_DIBI.LOSE);
+                }
+                else if (monkeySate == Constants_DIBI.PAPER)
+                {
+                    Console.WriteLine("Count up 3");
+                    WinLoseCount(Constants_DIBI.WIN);
+                }
+            }
+            else if (playerState == Constants_DIBI.ROCK)
+            {
+                if (monkeySate == Constants_DIBI.SCISSOR)
+                {
+                    Console.WriteLine("Count up 4");
+                    WinLoseCount(Constants_DIBI.WIN);
+                }
+                else if (monkeySate == Constants_DIBI.PAPER)
+                {
+                    Console.WriteLine("Count up 5");
+                    WinLoseCount(Constants_DIBI.LOSE);
+                }
+            }
+            else if (playerState == Constants_DIBI.PAPER)
+            {
+                if (monkeySate == Constants_DIBI.SCISSOR)
+                {
+                    Console.WriteLine("Count up 6");
+                    WinLoseCount(Constants_DIBI.LOSE);
+                }
+                else if (monkeySate == Constants_DIBI.ROCK)
+                {
+                    Console.WriteLine("Count up 7");
+                    WinLoseCount(Constants_DIBI.WIN);
+                }
+            }
+
+            score.Text = WinCount + " : " + LoseCount;
+            score.Visibility = System.Windows.Visibility.Visible;
+
+            Console.WriteLine("Game = " + WinCount);
         }
 
         private void guide(int i, string ImagePath)
@@ -721,7 +783,7 @@ namespace SungJik_SungHwa
                         monkey.Visibility = System.Windows.Visibility.Visible;
                         break;
                     case Constants_DIBI.FINALWIN:
-                        ImagePath += "sung_main1.png";
+                        ImagePath += "sung_fail.png";
                         monkey.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
                         monkey.Visibility = System.Windows.Visibility.Visible;
                         break;
@@ -737,57 +799,7 @@ namespace SungJik_SungHwa
             }));
         }
 
-        private void checkWin() // 이겼는지 졌는지 판별
-        {
-            if (monkeySate == playerState)
-            {
-                Console.WriteLine("Count up 1");
-            }
-            else if (playerState == Constants_DIBI.SCISSOR)
-            {
-                if (monkeySate == Constants_DIBI.ROCK)
-                {
-                    Console.WriteLine("Count up 2");
-                    WinLoseCount(Constants_DIBI.LOSE);
-                }
-                else if (monkeySate == Constants_DIBI.PAPER)
-                {
-                    Console.WriteLine("Count up 3");
-                    WinLoseCount(Constants_DIBI.WIN);
-                }
-            }
-            else if (playerState == Constants_DIBI.ROCK)
-            {
-                if (monkeySate == Constants_DIBI.SCISSOR)
-                {
-                    Console.WriteLine("Count up 4");
-                    WinLoseCount(Constants_DIBI.WIN);
-                }
-                else if (monkeySate == Constants_DIBI.PAPER)
-                {
-                    Console.WriteLine("Count up 5");
-                    WinLoseCount(Constants_DIBI.LOSE);
-                }
-            }
-            else if (playerState == Constants_DIBI.PAPER)
-            {
-                if (monkeySate == Constants_DIBI.SCISSOR)
-                {
-                    Console.WriteLine("Count up 6");
-                    WinLoseCount(Constants_DIBI.LOSE);
-                }
-                else if (monkeySate == Constants_DIBI.ROCK)
-                {
-                    Console.WriteLine("Count up 7");
-                    WinLoseCount(Constants_DIBI.WIN);
-                }
-            }
-
-            score.Text = WinCount + " : " + LoseCount;
-            score.Visibility = System.Windows.Visibility.Visible;
-
-            Console.WriteLine("Game = " + WinCount);
-        }
+        
 
         private void WinLoseCount(int i)
         {
