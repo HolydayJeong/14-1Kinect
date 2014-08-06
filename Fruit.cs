@@ -51,7 +51,8 @@ namespace EatingFruit
 
         //음악 
         System.Media.SoundPlayer bgm1 = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/과일/" + "fruitbgm-wav.wav");
-   //     System.Media.SoundPlayer bgm2 = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/과일/" + "Pixel Peeker Polka - faster-wav.wav");
+        System.Media.SoundPlayer bgm2 = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/과일/" + "Pixel Peeker Polka - faster-wav.wav");
+        System.Media.SoundPlayer gameover = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/과일/" + "Run Amok-wav.wav");
 
         
         public Fruit()
@@ -132,7 +133,7 @@ namespace EatingFruit
             // 과일점수판 끝까지 떨어뜨림 
                 case 1:
                     counter++;
-                    bgm1.Play();
+                    bgm2.Play();
                     Ready.Visibility = Visibility.Hidden;
                     ReadyDoubleAnimation.From = 0;
                     ReadyDoubleAnimation.To = 1200;
@@ -198,20 +199,20 @@ namespace EatingFruit
                     gameState = playing;
                     
                     DropFruit();        //게임 시작! 이미지 떨어뜨린다! 
+                    Score();
                     canvas1.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);    
                     break;
 
                 // 게임 끝난후 화면에 점수 표시, Home Replay 버튼을 보여준다. 
                 case 5:
                     counter++;
-                    bgm1.Stop();
+                    bgm2.Stop();
+                    gameover.Play();
                     Home.Visibility = Visibility.Visible;
                     Replay.Visibility = Visibility.Visible;
                     Hand.Visibility = Visibility.Visible;
                     LastScore(); //최종 점수 출력 
 
-                   
-                  
                     gameState = option; // Home replay, 선택할 수 있도록 상태 변경 
                     break;
 
@@ -253,36 +254,139 @@ namespace EatingFruit
  
 
         }
-      
-        void LastScore()
+
+        void Score()
         {
-            int NScore=0;
+            int NScore = 0;
             if (score < 0)
                 NScore = Math.Abs(score);
             else
                 NScore = score;
 
-          //  Console.WriteLine(score / 1000);
-            if(score<0)
-                _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc-.png") as ImageSource;
+            //  Console.WriteLine(score / 1000);
+            if (score < 0)
+                m10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n-.png") as ImageSource;
             else
             {
-                if (NScore / 1000 == 0) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc0.png") as ImageSource;
-                else if (NScore / 1000 == 1) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc1.png") as ImageSource;
-                else if (NScore / 1000 == 2) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc2.png") as ImageSource;
-                else if (NScore / 1000 == 3) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc3.png") as ImageSource;
-                else if (NScore / 1000 == 4) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc4.png") as ImageSource;
-                else if (NScore / 1000 == 5) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc5.png") as ImageSource;
-                else if (NScore / 1000 == 6) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc6.png") as ImageSource;
-                else if (NScore / 1000 == 7) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc7.png") as ImageSource;
-                else if (NScore / 1000 == 8) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc8.png") as ImageSource;
-                else if (NScore / 1000 == 9) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc9.png") as ImageSource;
+                if (NScore / 10000 == 0) m10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n0.png") as ImageSource;
+                else if (NScore / 10000 == 1) m10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n1.png") as ImageSource;
+                else if (NScore / 10000 == 2) m10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n2.png") as ImageSource;
+                else if (NScore / 10000 == 3) m10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n3.png") as ImageSource;
+                else if (NScore / 10000 == 4) m10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n4.png") as ImageSource;
+                else if (NScore / 10000 == 5) m10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n5.png") as ImageSource;
+                else if (NScore / 10000 == 6) m10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n6.png") as ImageSource;
+                else if (NScore / 10000 == 7) m10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n7.png") as ImageSource;
+                else if (NScore / 10000 == 8) m10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n8.png") as ImageSource;
+                else if (NScore / 10000 == 9) m10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n9.png") as ImageSource;
                 else return;
             }
+            m10000.Visibility = Visibility.Visible;
+
+            NScore = NScore % 10000;
+            if (NScore / 1000 == 0) m1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n0.png") as ImageSource;
+            else if (NScore / 1000 == 1) m1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n1.png") as ImageSource;
+            else if (NScore / 1000 == 2) m1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n2.png") as ImageSource;
+            else if (NScore / 1000 == 3) m1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n3.png") as ImageSource;
+            else if (NScore / 1000 == 4) m1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n4.png") as ImageSource;
+            else if (NScore / 1000 == 5) m1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n5.png") as ImageSource;
+            else if (NScore / 1000 == 6) m1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n6.png") as ImageSource;
+            else if (NScore / 1000 == 7) m1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n7.png") as ImageSource;
+            else if (NScore / 1000 == 8) m1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n8.png") as ImageSource;
+            else if (NScore / 1000 == 9) m1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n9.png") as ImageSource;
+            else return;
+
+            m1000.Visibility = Visibility.Visible;
+
+            NScore = NScore % 1000;
+            //  Console.WriteLine(NScore/100);
+            if (NScore / 100 == 0) m100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n0.png") as ImageSource;
+            else if (NScore / 100 == 1) m100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n1.png") as ImageSource;
+            else if (NScore / 100 == 2) m100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n2.png") as ImageSource;
+            else if (NScore / 100 == 3) m100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n3.png") as ImageSource;
+            else if (NScore / 100 == 4) m100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n4.png") as ImageSource;
+            else if (NScore / 100 == 5) m100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n5.png") as ImageSource;
+            else if (NScore / 100 == 6) m100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n6.png") as ImageSource;
+            else if (NScore / 100 == 7) m100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n7.png") as ImageSource;
+            else if (NScore / 100 == 8) m100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n8.png") as ImageSource;
+            else if (NScore / 100 == 9) m100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n9.png") as ImageSource;
+            else return;
+            m100.Visibility = Visibility.Visible;
+
+            NScore = NScore % 100;
+            //   Console.WriteLine(NScore/10);
+            if (NScore / 10 == 0) m10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n0.png") as ImageSource;
+            else if (NScore / 10 == 1) m10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n1.png") as ImageSource;
+            else if (NScore / 10 == 2) m10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n2.png") as ImageSource;
+            else if (NScore / 10 == 3) m10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n3.png") as ImageSource;
+            else if (NScore / 10 == 4) m10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n4.png") as ImageSource;
+            else if (NScore / 10 == 5) m10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n5.png") as ImageSource;
+            else if (NScore / 10 == 6) m10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n6.png") as ImageSource;
+            else if (NScore / 10 == 7) m10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n7.png") as ImageSource;
+            else if (NScore / 10 == 8) m10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n8.png") as ImageSource;
+            else if (NScore / 10 == 9) m10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n9.png") as ImageSource;
+            else return;
+            m10.Visibility = Visibility.Visible;
+
+            //  Console.WriteLine(NScore%10);
+            if (NScore % 10 == 0) m1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n0.png") as ImageSource;
+            else if (NScore % 10 == 1) m1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n1.png") as ImageSource;
+            else if (NScore % 10 == 2) m1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n2.png") as ImageSource;
+            else if (NScore % 10 == 3) m1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n3.png") as ImageSource;
+            else if (NScore % 10 == 4) m1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n4.png") as ImageSource;
+            else if (NScore % 10 == 5) m1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n5.png") as ImageSource;
+            else if (NScore % 10 == 6) m1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n6.png") as ImageSource;
+            else if (NScore % 10 == 7) m1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n7.png") as ImageSource;
+            else if (NScore % 10 == 8) m1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n8.png") as ImageSource;
+            else if (NScore % 10 == 9) m1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n9.png") as ImageSource;
+            else return;
+            m1.Visibility = Visibility.Visible;
+
+        }
+
+        void LastScore()
+        {
+            int NScore = 0;
+            if (score < 0)
+                NScore = Math.Abs(score);
+            else
+                NScore = score;
+
+            //  Console.WriteLine(score / 1000);
+            if (score < 0)
+                _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc-.png") as ImageSource;
+            else
+            {
+                if (NScore / 10000 == 0) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc0.png") as ImageSource;
+                else if (NScore / 10000 == 1) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc1.png") as ImageSource;
+                else if (NScore / 10000 == 2) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc2.png") as ImageSource;
+                else if (NScore / 10000 == 3) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc3.png") as ImageSource;
+                else if (NScore / 10000 == 4) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc4.png") as ImageSource;
+                else if (NScore / 10000 == 5) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc5.png") as ImageSource;
+                else if (NScore / 10000 == 6) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc6.png") as ImageSource;
+                else if (NScore / 10000 == 7) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc7.png") as ImageSource;
+                else if (NScore / 10000 == 8) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc8.png") as ImageSource;
+                else if (NScore / 10000 == 9) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc9.png") as ImageSource;
+                else return;
+            }
+            _10000.Visibility = Visibility.Visible;
+
+
+            NScore = NScore % 10000;
+            if (NScore / 1000 == 0) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc0.png") as ImageSource;
+            else if (NScore / 1000 == 1) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc1.png") as ImageSource;
+            else if (NScore / 1000 == 2) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc2.png") as ImageSource;
+            else if (NScore / 1000 == 3) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc3.png") as ImageSource;
+            else if (NScore / 1000 == 4) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc4.png") as ImageSource;
+            else if (NScore / 1000 == 5) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc5.png") as ImageSource;
+            else if (NScore / 1000 == 6) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc6.png") as ImageSource;
+            else if (NScore / 1000 == 7) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc7.png") as ImageSource;
+            else if (NScore / 1000 == 8) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc8.png") as ImageSource;
+            else if (NScore / 1000 == 9) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc9.png") as ImageSource;
+            else return;
 
             _1000.Visibility = Visibility.Visible;
             NScore = NScore % 1000;
-          //  Console.WriteLine(NScore/100);
+            //  Console.WriteLine(NScore/100);
             if (NScore / 100 == 0) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc0.png") as ImageSource;
             else if (NScore / 100 == 1) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc1.png") as ImageSource;
             else if (NScore / 100 == 2) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc2.png") as ImageSource;
@@ -297,7 +401,7 @@ namespace EatingFruit
             _100.Visibility = Visibility.Visible;
 
             NScore = NScore % 100;
-         //   Console.WriteLine(NScore/10);
+            //   Console.WriteLine(NScore/10);
             if (NScore / 10 == 0) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc0.png") as ImageSource;
             else if (NScore / 10 == 1) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc1.png") as ImageSource;
             else if (NScore / 10 == 2) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc2.png") as ImageSource;
@@ -311,7 +415,7 @@ namespace EatingFruit
             else return;
             _10.Visibility = Visibility.Visible;
 
-          //  Console.WriteLine(NScore%10);
+            //  Console.WriteLine(NScore%10);
             if (NScore % 10 == 0) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc0.png") as ImageSource;
             else if (NScore % 10 == 1) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc1.png") as ImageSource;
             else if (NScore % 10 == 2) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc2.png") as ImageSource;
@@ -326,6 +430,7 @@ namespace EatingFruit
             _1.Visibility = Visibility.Visible;
 
         }
+
         //게임을 startButton을 누르고 시작한다. 
         private void StartGame(Skeleton me, AllFramesReadyEventArgs e)
         {
@@ -366,6 +471,7 @@ namespace EatingFruit
                         Press.detectPressure(handDepthPoint.Depth);
                         if (Press.isPressed() == true)
                         {
+                            gameover.Stop();
                             MainWindow main = new MainWindow();
                             App.Current.MainWindow = main;
                             this.Close();
@@ -387,6 +493,7 @@ namespace EatingFruit
                         if (Press.isPressed() == true)
                         {
                             Press.reset();
+                            gameover.Stop();
                             RestartGame();
                         }
                     }
@@ -408,21 +515,21 @@ namespace EatingFruit
             Replay.Visibility = Visibility.Hidden;
             Home.Visibility = Visibility.Hidden;
             Hand.Visibility = Visibility.Hidden;
-            
+
             _1.Visibility = Visibility.Hidden;
             _10.Visibility = Visibility.Hidden;
             _100.Visibility = Visibility.Hidden;
             _1000.Visibility = Visibility.Hidden;
-            
+            _10000.Visibility = Visibility.Hidden;
             score = 0;
             //Ready.Visibility = Visibility.Visible;
             //Go.Visibility = Visibility.Visible;
             FruitScoreCanvas.Visibility = Visibility.Visible;
             gameState = begin;
             counter = 0;
-            Score.Text = score.ToString();
+            //  Score.Text = score.ToString();
             DoubleAnimation_Ready();
-       }
+        }
       
         void DropFruit()
         {
@@ -496,10 +603,10 @@ namespace EatingFruit
 
             DoubleAnimation_Drop(shape, address, XPos, 1, sec, begin);
         }
-    
-        public void DoubleAnimation_Drop(Canvas shape, string address, int Xpos, int Acceleration, int sec,int begin)
+
+        public void DoubleAnimation_Drop(Canvas shape, string address, int Xpos, int Acceleration, int sec, int begin)
         {
-           //더블 애니메이션 하나 설정
+            //더블 애니메이션 하나 설정
             DoubleAnimation MyDoubleAnimation = new DoubleAnimation();
 
             //if(SungHwaTopLeft.Y == shape.RenderTransform.Value.OffsetY )
@@ -509,9 +616,8 @@ namespace EatingFruit
 
             Canvas.SetZIndex(Background1, 1);
             Canvas.SetZIndex(shape, 2);
-            Canvas.SetZIndex(Background2,3);
+            Canvas.SetZIndex(Background2, 3);
             Canvas.SetZIndex(SungHwa, 4);
-            Canvas.SetZIndex(Score, 4);
             Canvas.SetZIndex(Home, 4);
             Canvas.SetZIndex(Replay, 4);
             Canvas.SetZIndex(Ready, 4);
@@ -521,10 +627,19 @@ namespace EatingFruit
             Canvas.SetZIndex(_10, 5);
             Canvas.SetZIndex(_100, 5);
             Canvas.SetZIndex(_1000, 5);
+            Canvas.SetZIndex(_10000, 5);
+
+
+            Canvas.SetZIndex(m1, 5);
+            Canvas.SetZIndex(m10, 5);
+            Canvas.SetZIndex(m100, 5);
+            Canvas.SetZIndex(m1000, 5);
+            Canvas.SetZIndex(m10000, 5);
+
             Canvas.SetZIndex(Hand, 5);
 
-            Canvas.SetLeft(shape,Xpos);  // 바나나 X좌표 위치 
-         
+            Canvas.SetLeft(shape, Xpos);  // 바나나 X좌표 위치 
+
             //가속도 값 설정하기  0.0 ~1.0까지, Deceleration 속성을 지정하면 점점 느려지게 움직인다. 
             MyDoubleAnimation.AccelerationRatio = Acceleration;                                //파라미터로 받아와서 랜덤 설정 
 
@@ -535,7 +650,7 @@ namespace EatingFruit
             //애니메이션 효과를 적용한후에는 속성 값 변경하기 
             //FillBehavior 애니메이션의 반복설정 stop : 한번하고 끝, forever 애니메이션 후 계속 반복
             MyDoubleAnimation.FillBehavior = FillBehavior.Stop;
-            MyDoubleAnimation.BeginTime = new TimeSpan(0,0,begin);
+            MyDoubleAnimation.BeginTime = new TimeSpan(0, 0, begin);
 
             //Complete 내부 구현 xPos값을 가져와서 쓰기위하여 불러온다
             MyDoubleAnimation.Completed += (object sender, EventArgs e) =>
@@ -543,7 +658,7 @@ namespace EatingFruit
                 DoubleAnimation MyAnimation = new DoubleAnimation();
                 //Xpos와 숭화의 좌표가 어긋나면 그대로 떨어진다
                 //** 여길 수정
-                if (Xpos < Canvas.GetLeft(SungHwa) || Xpos > (Canvas.GetLeft(SungHwa) + SungHwa.ActualWidth))
+                if (Xpos < Canvas.GetLeft(SungHwa) - 15 || Xpos > (Canvas.GetLeft(SungHwa) + SungHwa.ActualWidth) + 15)
                 {
                     //Console.WriteLine(Canvas.GetLeft(SungHwa) + " " + (Canvas.GetLeft(SungHwa) + 100) + " " + Xpos);
                     MyAnimation.From = 560; // 처음 시작 하는 값 from
@@ -561,65 +676,65 @@ namespace EatingFruit
                     MyAnimation.FillBehavior = FillBehavior.Stop;
                     shape.BeginAnimation(Canvas.TopProperty, MyAnimation);
                 }
-                
+
                 //GetScore 
-                if (Xpos > Canvas.GetLeft(SungHwa) && Xpos < (Canvas.GetLeft(SungHwa) + SungHwa.ActualWidth))
+                if (Xpos > Canvas.GetLeft(SungHwa) - 15 && Xpos < (Canvas.GetLeft(SungHwa) + SungHwa.ActualWidth + 15))
                 {
                     //똥 -100 
                     if (address == "dd_1.png")
                     {
                         score -= 100;
-                        Score.Text = score.ToString();
+                        Score();
                     }
-                        
+
                     //레인보우 바나나 +100
                     else if (address == "rb_1.png")
                     {
                         score += 100;
-                        Score.Text = score.ToString();
+                        Score();
                     }
                     //바나나 +50
                     else if (address == "bnn_1.png")
                     {
                         score += 50;
-                        Score.Text = score.ToString();
+                        Score();
                     }
 
                     //메론 +30
                     else if (address == "melon_1.png")
                     {
                         score += 30;
-                        Score.Text = score.ToString();
+                        Score();
                     }
 
                     //수박 +10
                     else if (address == "wn_1.png")
                     {
                         score += 10;
-                        Score.Text = score.ToString();
+                        Score();
                     }
 
                     //복숭아 + 5
                     else if (address == "pe_1.png")
                     {
-                        score += 5 ;
-                        Score.Text = score.ToString();
+                        score += 5;
+                        Score();
                     }
 
                     //썩은바나나 - 50
                     else if (address == "rbnn_1.png")
                     {
                         score -= 50;
-                        Score.Text = score.ToString();
+                        Score();
                     }
-                   
+
                     //귀요미 여친  
                     else
                     {
                         score += 200;
-                        Score.Text = score.ToString();
+                        Score();
                     }
-                    
+
                 }
             };
             shape.BeginAnimation(Canvas.TopProperty, MyDoubleAnimation);
