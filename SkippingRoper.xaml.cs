@@ -97,7 +97,7 @@ namespace SungJik_SungHwa
 
         System.Media.SoundPlayer gameover = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/줄넘기/" + "gameOver.wav");
         System.Media.SoundPlayer backGround = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/줄넘기/" + "background.wav");
-        System.Media.SoundPlayer win = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/줄넘기/" + "win.wav");
+        System.Media.SoundPlayer win = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/줄넘기/" + "monkey.wav");
 
 
         Character[] characters = new Character[3]{
@@ -131,6 +131,9 @@ namespace SungJik_SungHwa
         //윈도우가 불러오면 하는 이벤트
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
+            this.Left = (desktopWorkingArea.Right - this.Width) / 2;
+            this.Top = (desktopWorkingArea.Bottom - this.Height) / 2;
             Screen.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "bg.png") as ImageSource;
             //키넥트가 연결되어 있는지 확인한다. 만일 연결되어 있으면 선언한 sensor와 연결된 kinect의 정보를 준다
             if (KinectSensor.KinectSensors.Count > 0)
@@ -396,7 +399,7 @@ namespace SungJik_SungHwa
                 Canvas.SetLeft(HandL, HandLeftColorImagePoint.X - HandL.Width / 2);
                 Canvas.SetTop(HandL, HandLeftColorImagePoint.Y - HandL.Height / 2);
 
-                if (((Canvas.GetLeft(HandR) + HandR.Width / 2 > Canvas.GetLeft(skipButton)) && (Canvas.GetLeft(HandR) + HandR.Width / 2 < Canvas.GetLeft(skipButton) + skipButton.Width) && (Canvas.GetTop(HandR) + HandR.Height / 2 > Canvas.GetTop(skipButton)) && (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(skipButton) + skipButton.Height)))
+                if ((Canvas.GetLeft(HandR) + HandR.Width / 2 > Canvas.GetLeft(skipButton)) && (Canvas.GetLeft(HandR) + HandR.Width / 2 < Canvas.GetLeft(skipButton) + skipButton.Width) && (Canvas.GetTop(HandR) + HandR.Height / 2 > Canvas.GetTop(skipButton)) && (Canvas.GetTop(HandR) + HandL.Height / 2 < Canvas.GetTop(skipButton) + skipButton.Height))
                 {
                     skipButton.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "skip_on.png") as ImageSource;
                     counter = 3;
@@ -777,7 +780,6 @@ namespace SungJik_SungHwa
                 {
                     if (Math.Abs(kneeR.Y - originalRKnee) >= 10 || Math.Abs(kneeL.Y - originalLKnee) >= 10)
                     {
-                        Console.WriteLine(kneeR.Y + " " + originalRKnee + " " + kneeL.Y + " " + originalLKnee);
                         time++;
                         jump = true;
                         scoring = true;
@@ -922,6 +924,9 @@ namespace SungJik_SungHwa
 
                         if (PressingBR.isPressed() == true || PressingBL.isPressed() == true)
                         {
+                            PressingBR.reset();
+                            PressingBL.reset();
+                            stop = false;
                             goHome();
                         }
 
@@ -968,7 +973,7 @@ namespace SungJik_SungHwa
             SungJik.Visibility = System.Windows.Visibility.Visible;
             Pig.Visibility = System.Windows.Visibility.Visible;
             Mice.Visibility = System.Windows.Visibility.Visible;
-            counter = 7;
+            counter = 4;
 
         }
 
