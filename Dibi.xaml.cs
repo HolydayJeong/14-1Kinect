@@ -50,6 +50,9 @@ namespace SungJik_SungHwa
         const int HANDSDOWN = 14;
         const int REPLAYPRESSED = 15;
         const int HOMEPRESSED = 16;
+        const int NOTRECOGNIZED = 17;
+        const int BGHIDDEN = 18;
+        const int BGVISIBLE = 19;
 
         SungJik_SungHwa.PressButton Press = new SungJik_SungHwa.PressButton();
 
@@ -190,7 +193,10 @@ namespace SungJik_SungHwa
                 {
                     gamestate = 101;
                     skip.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "skip.png") as ImageSource;
-                    skip.Visibility = System.Windows.Visibility.Hidden;
+                    SkipControl(SKIPHIDDEN);
+                    bg.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "bg2.png") as ImageSource;
+                    BgControl(BGHIDDEN, baseDirectory);
+                   
 
                     Console.WriteLine("Thread Make playstate : " + playerState + " / gamestate : " + gamestate + " / gameCount : " + WinCount);
                     ThreadStart threadStart = new ThreadStart(GameState);
@@ -279,7 +285,7 @@ namespace SungJik_SungHwa
                     }
                     else
                     {
-                        Form = 0;
+                        Form = NOTRECOGNIZED;
                         playerState = 6;
                     }
 
@@ -310,9 +316,6 @@ namespace SungJik_SungHwa
                 {
                     gamestate = 901;    // 프로세스 난입 방지
 
-                    db1.Visibility = System.Windows.Visibility.Hidden;
-                    db2.Visibility = System.Windows.Visibility.Hidden;
-                    dip.Visibility = System.Windows.Visibility.Hidden;
                     Alert(NONE, baseDirectory);
 
                     Console.WriteLine("Game Over  : " + WinCount + " : " + LoseCount);
@@ -571,6 +574,11 @@ namespace SungJik_SungHwa
                         Alertimg.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
                         Alertimg.Visibility = System.Windows.Visibility.Visible;
                         break;
+                    case NOTRECOGNIZED:
+                        ImagePath += "guide_12.png";
+                        Alertimg.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
+                        Alertimg.Visibility = System.Windows.Visibility.Visible;
+                        break;
                     case FINALWIN:
                         var image = new BitmapImage();
                         image.BeginInit();
@@ -590,6 +598,14 @@ namespace SungJik_SungHwa
                         ImageBehavior.SetAnimatedSource(Alertimg, image1); // 이미지 띄우기
                         break;
                 }
+            }));
+        }
+
+        private void BgControl(int i, string ImagePath)
+        {
+            Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
+            {
+
             }));
         }
 
@@ -728,12 +744,6 @@ namespace SungJik_SungHwa
             }));
         }
 
-        private void startsong()
-        {
-            System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "startsong.wav");
-            sp.Play();
-        }
-        
         private void SkipControl(int num)  // skip 버튼 컨트롤 하기
         {
             Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
@@ -752,6 +762,14 @@ namespace SungJik_SungHwa
                 }
             }));
         }
+
+        private void startsong()
+        {
+            System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "startsong.wav");
+            sp.Play();
+        }
+        
+       
 
         private void SoongOut(int num, string ImagePath)    // 숭이의 그림을 바꾸는 것
         {
