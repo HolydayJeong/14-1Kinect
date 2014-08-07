@@ -108,12 +108,15 @@ namespace SungJik_SungHwa
 
         string[] addresses = new string[FRAME_MAX];
 
-        PressButton PressingBR = new PressButton();
-        PressButton PressingBL = new PressButton();
+        PressButton PressingBR;
+        PressButton PressingBL;
 
         //메w인 화면
         public SkippingRoper()
         {
+            PressingBR = new PressButton(baseDirectory + "finger.png", baseDirectory + "finger_Press.png");
+            PressingBL = new PressButton(baseDirectory + "finger2.png", baseDirectory + "finger2_Press.png");
+
             sound.Open(new Uri(baseDirectory + "jump.wav"));
             //backGround.Open(new Uri(baseDirectory + "background.wav"));
 
@@ -529,22 +532,30 @@ namespace SungJik_SungHwa
                 if (gameState == SELECTING)
                 {
                     //위치 지정시
-                    if (((Canvas.GetLeft(HandR) + HandR.Width / 2 > Canvas.GetLeft(SungJik) + 90 - PressingBR.wideRange()) && (Canvas.GetLeft(HandR) + HandR.Width / 2 < Canvas.GetLeft(SungJik) + 290 + PressingBR.wideRange()) && (Canvas.GetTop(HandR) + HandR.Height / 2 > Canvas.GetTop(SungJik) + 80 - PressingBR.wideRange()) && (Canvas.GetTop(HandR) + HandR.Height / 2 < Canvas.GetTop(SungJik) + SungJik.Height + PressingBR.wideRange())) ||
-                        ((Canvas.GetLeft(HandL) + HandL.Width / 2 - PressingBL.wideRange() > Canvas.GetLeft(SungJik) + 90) && (Canvas.GetLeft(HandL) + HandL.Width / 2 < Canvas.GetLeft(SungJik) + 290 + PressingBL.wideRange()) && (Canvas.GetTop(HandL) + HandL.Height / 2 > Canvas.GetTop(SungJik) + 80 - PressingBL.wideRange()) && (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(SungJik) + SungJik.Height + PressingBL.wideRange())))
+                    if ((
+                        (Canvas.GetLeft(HandR) + HandR.Width / 2 > Canvas.GetLeft(SungJik) + 90 - PressingBR.wideRange()) && 
+                        (Canvas.GetLeft(HandR) + HandR.Width / 2 < Canvas.GetLeft(SungJik) + 290 + PressingBR.wideRange()) && 
+                        (Canvas.GetTop(HandR) + HandR.Height / 2 > Canvas.GetTop(SungJik) + 80 - PressingBR.wideRange()) && 
+                        (Canvas.GetTop(HandR) + HandR.Height / 2 < Canvas.GetTop(SungJik) + SungJik.Height + PressingBR.wideRange())) 
+                        ||
+                        ((Canvas.GetLeft(HandL) + HandL.Width / 2 > Canvas.GetLeft(SungJik) + 90 - PressingBL.wideRange()) && 
+                        (Canvas.GetLeft(HandL) + HandL.Width / 2 < Canvas.GetLeft(SungJik) + 290 + PressingBL.wideRange()) && 
+                        (Canvas.GetTop(HandL) + HandL.Height / 2 > Canvas.GetTop(SungJik) + 80 - PressingBL.wideRange()) && 
+                        (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(SungJik) + SungJik.Height + PressingBL.wideRange())))
                     {
                         SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].jump) as ImageSource;
                         Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].wait) as ImageSource;
                         Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].wait) as ImageSource;
 
 
-                        PressingBR.detectPressure(HandRightDepthImagePoint.Depth);
-                        PressingBL.detectPressure(HandLeftDepthImagePoint.Depth);
+                        PressingBR.detectPressure(HandRightDepthImagePoint.Depth,ref HandR);
+                        PressingBL.detectPressure(HandLeftDepthImagePoint.Depth, ref HandL);
 
-                        if (PressingBR.isPressed() == true || PressingBL.isPressed() == true)
+                        if (PressingBR.isConfirmed() == true || PressingBL.isConfirmed() == true)
                         {
                             gameState = PLAYING;
-                            PressingBR.reset();
-                            PressingBL.reset();
+                            PressingBR.reset(ref HandR);
+                            PressingBL.reset(ref HandL);
 
                             selected = true;
                             selectedChar = SUNGJIK;
@@ -553,40 +564,58 @@ namespace SungJik_SungHwa
 
                     }
 
-                    else if (((Canvas.GetLeft(HandR) + HandR.Width / 2 > Canvas.GetLeft(Pig) + 90) && (Canvas.GetLeft(HandR) + HandR.Width / 2 < Canvas.GetLeft(Pig) + 290) && (Canvas.GetTop(HandR) + HandR.Height / 2 > Canvas.GetTop(Pig) + 80) && (Canvas.GetTop(HandR) + HandR.Height / 2 < Canvas.GetTop(Pig) + Pig.Height)) || ((Canvas.GetLeft(HandL) + HandL.Width / 2 > Canvas.GetLeft(Pig) + 90) && (Canvas.GetLeft(HandL) + HandL.Width / 2 < Canvas.GetLeft(Pig) + 290) && (Canvas.GetTop(HandL) + HandL.Height / 2 > Canvas.GetTop(Pig) + 80) && (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(Pig) + Pig.Height)))
+                    else if ((
+                        (Canvas.GetLeft(HandR) + HandR.Width / 2 > Canvas.GetLeft(Pig) + 90 - PressingBR.wideRange()) &&
+                        (Canvas.GetLeft(HandR) + HandR.Width / 2 < Canvas.GetLeft(Pig) + 290 + PressingBR.wideRange()) &&
+                        (Canvas.GetTop(HandR) + HandR.Height / 2 > Canvas.GetTop(Pig) + 80 - PressingBR.wideRange()) &&
+                        (Canvas.GetTop(HandR) + HandR.Height / 2 < Canvas.GetTop(Pig) + Pig.Height + PressingBR.wideRange())) 
+                        ||
+                        ((Canvas.GetLeft(HandL) + HandL.Width / 2 > Canvas.GetLeft(Pig) + 90 - PressingBL.wideRange()) &&
+                        (Canvas.GetLeft(HandL) + HandL.Width / 2 < Canvas.GetLeft(Pig) + 290 + PressingBL.wideRange()) &&
+                        (Canvas.GetTop(HandL) + HandL.Height / 2 > Canvas.GetTop(Pig) + 80 - PressingBL.wideRange()) &&
+                        (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(Pig) + Pig.Height + PressingBL.wideRange())))
                     {
                         Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].jump) as ImageSource;
                         SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].wait) as ImageSource;
                         Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].wait) as ImageSource;
 
-                        PressingBR.detectPressure(HandRightDepthImagePoint.Depth);
-                        PressingBL.detectPressure(HandLeftDepthImagePoint.Depth);
+                        PressingBR.detectPressure(HandRightDepthImagePoint.Depth, ref HandR);
+                        PressingBL.detectPressure(HandLeftDepthImagePoint.Depth, ref HandL);
 
-                        if (PressingBR.isPressed() == true || PressingBL.isPressed() == true)
+                        if (PressingBR.isConfirmed() == true || PressingBL.isConfirmed() == true)
                         {
                             gameState = PLAYING;
 
-                            PressingBR.reset();
-                            PressingBL.reset();
+                            PressingBR.reset(ref HandR);
+                            PressingBL.reset(ref HandL);
                             selected = true;
                             selectedChar = PIG;
                             countingDown();
                         }
                     }
-                    else if (((Canvas.GetLeft(HandR) + HandR.Width / 2 > Canvas.GetLeft(Mice) + 90) && (Canvas.GetLeft(HandR) + HandR.Width / 2 < Canvas.GetLeft(Mice) + 290) && (Canvas.GetTop(HandR) + HandR.Height / 2 > Canvas.GetTop(Mice) + 80) && (Canvas.GetTop(HandR) + HandR.Height / 2 < Canvas.GetTop(Mice) + Mice.Height)) || ((Canvas.GetLeft(HandL) + HandL.Width / 2 > Canvas.GetLeft(Mice) + 90) && (Canvas.GetLeft(HandL) + HandL.Width / 2 < Canvas.GetLeft(Mice) + 290) && (Canvas.GetTop(HandL) + HandL.Height / 2 > Canvas.GetTop(Mice) + 80) && (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(Mice) + Mice.Height)))
+                    else if ((
+                        (Canvas.GetLeft(HandR) + HandR.Width / 2 > Canvas.GetLeft(Mice) + 90 - PressingBR.wideRange()) &&
+                        (Canvas.GetLeft(HandR) + HandR.Width / 2 < Canvas.GetLeft(Mice) + 290 + PressingBR.wideRange()) &&
+                        (Canvas.GetTop(HandR) + HandR.Height / 2 > Canvas.GetTop(Mice) + 80 - PressingBR.wideRange()) &&
+                        (Canvas.GetTop(HandR) + HandR.Height / 2 < Canvas.GetTop(Mice) + Mice.Height + PressingBR.wideRange())) 
+                        ||
+                        ((Canvas.GetLeft(HandL) + HandL.Width / 2 > Canvas.GetLeft(Mice) + 90 - PressingBL.wideRange()) &&
+                        (Canvas.GetLeft(HandL) + HandL.Width / 2 < Canvas.GetLeft(Mice) + 290 + PressingBL.wideRange()) &&
+                        (Canvas.GetTop(HandL) + HandL.Height / 2 > Canvas.GetTop(Mice) + 80 - PressingBL.wideRange()) &&
+                        (Canvas.GetTop(HandL) + HandL.Height / 2 < Canvas.GetTop(Mice) + Mice.Height + PressingBL.wideRange())))
                     {
                         Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].jump) as ImageSource;
                         SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].wait) as ImageSource;
                         Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].wait) as ImageSource;
 
-                        PressingBR.detectPressure(HandRightDepthImagePoint.Depth);
-                        PressingBL.detectPressure(HandLeftDepthImagePoint.Depth);
+                        PressingBR.detectPressure(HandRightDepthImagePoint.Depth, ref HandR);
+                        PressingBL.detectPressure(HandLeftDepthImagePoint.Depth, ref HandL);
 
-                        if (PressingBR.isPressed() == true || PressingBL.isPressed() == true)
+                        if (PressingBR.isConfirmed() == true || PressingBL.isConfirmed() == true)
                         {
                             gameState = PLAYING;
-                            PressingBR.reset();
-                            PressingBL.reset();
+                            PressingBR.reset(ref HandR);
+                            PressingBL.reset(ref HandL);
 
                             selected = true;
                             selectedChar = MICE;
@@ -600,8 +629,8 @@ namespace SungJik_SungHwa
                             ) as ImageSource;
                         SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].wait) as ImageSource;
                         Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].wait) as ImageSource;
-                        PressingBR.reset();
-                        PressingBL.reset();
+                        PressingBR.reset(ref HandR);
+                        PressingBL.reset(ref HandL);
                     }
                 }
 
@@ -915,14 +944,14 @@ namespace SungJik_SungHwa
                         Home.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "home_jump.png") as ImageSource;
                         lock (thisLock)
                         {
-                            PressingBR.detectPressure(HandRightDepthImagePoint.Depth);
-                            PressingBL.detectPressure(HandLeftDepthImagePoint.Depth);
+                            PressingBR.detectPressure(HandRightDepthImagePoint.Depth, ref HandR);
+                            PressingBL.detectPressure(HandLeftDepthImagePoint.Depth, ref HandL);
 
-                            if (PressingBR.isPressed() == true || PressingBL.isPressed() == true)
+                            if (PressingBR.isConfirmed() == true || PressingBL.isConfirmed() == true)
                             {
                                 gameState = SELECTING;
-                                PressingBR.reset();
-                                PressingBL.reset();
+                                PressingBR.reset(ref HandR);
+                                PressingBL.reset(ref HandL);
                                 stop = false;
                                 restartGame();
                             }
@@ -942,13 +971,13 @@ namespace SungJik_SungHwa
                     {
                         Replay.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "re_jump.png") as ImageSource;
                         Home.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "home_jump_on.png") as ImageSource;
-                        PressingBR.detectPressure(HandRightDepthImagePoint.Depth);
-                        PressingBL.detectPressure(HandLeftDepthImagePoint.Depth);
+                        PressingBR.detectPressure(HandRightDepthImagePoint.Depth, ref HandR);
+                        PressingBL.detectPressure(HandLeftDepthImagePoint.Depth, ref HandL);
 
-                        if (PressingBR.isPressed() == true || PressingBL.isPressed() == true)
+                        if (PressingBR.isConfirmed() == true || PressingBL.isConfirmed() == true)
                         {
-                            PressingBR.reset();
-                            PressingBL.reset();
+                            PressingBR.reset(ref HandR);
+                            PressingBL.reset(ref HandL);
                             stop = false;
                             goHome();
                         }
@@ -958,8 +987,8 @@ namespace SungJik_SungHwa
                     {
                         Replay.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "re_jump.png") as ImageSource;
                         Home.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "home_jump.png") as ImageSource;
-                        PressingBR.reset();
-                        PressingBL.reset();
+                        PressingBR.reset(ref HandR);
+                        PressingBL.reset(ref HandL);
                     }
                 }
             }
