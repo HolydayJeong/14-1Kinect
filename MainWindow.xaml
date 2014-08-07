@@ -5,12 +5,12 @@
     <Grid Height="960" Name="User_ViewGrid" Width="1280">
         <Canvas Height="960" HorizontalAlignment="Left" Margin="2,-1,0,0" Name="canvas1" VerticalAlignment="Top" Width="1280">
             <Image Name="Screen" Height="960"  Stretch="Fill" Width="1280" Canvas.Top="10" />
-            <Image Name="Jump" Source="Images/bt2_jump.png" Canvas.Left="479" Canvas.Top="404" Height="166"  Width="326" Visibility="Visible"/>
-            <Image Name="Fruit" Source="Images/bt3_fruit.png" Canvas.Left="828" Canvas.Top="404" Height="166"  Width="326" Visibility="Visible" />
-            <Image Name="Dibi" Source="Images/bt1_db.png" Canvas.Left="120" Canvas.Top="404" Height="166"  Width="326" Visibility="Visible"/>
+            <Image Name="Dibi" Source="bin/Debug/Main/menu1.png" Canvas.Left="120" Canvas.Top="404" Height="364"  Width="240" Visibility="Visible"/>
+            <Image Name="Jump" Source="bin/Debug/Main/menu2.png" Canvas.Left="479" Canvas.Top="404" Height="364"  Width="240" Visibility="Visible"/>
+            <Image Name="Fruit" Source="bin/Debug/Main/menu3.png" Canvas.Left="828" Canvas.Top="404" Height="364"  Width="240" Visibility="Visible" />
+            <Image Canvas.Left="1116" Canvas.Top="562" Height="72" Name="Hand" Stretch="Fill" Width="73" Source="Images/Hand.png" />
             <Image Name="Begin" Height="960" Width="1270" Canvas.Left="10"/>
-            <TextBox Name="box" Height="165" Canvas.Left="83" TextWrapping="Wrap" Text="TextBox" Canvas.Top="721" FontSize="30" Width="1120"/>
-            <Image Canvas.Left="890" Canvas.Top="606" Height="72" x:Name="Hand" Stretch="Fill" Width="73" Source="Images/Hand.png" />
+            <TextBox Name="box" Height="105" Canvas.Left="120" TextWrapping="Wrap" Text="TextBox" Canvas.Top="51" FontSize="30" Width="1120"/>
         </Canvas>
     </Grid>
 </Window>
