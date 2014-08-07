@@ -37,6 +37,7 @@ namespace EatingFruit
         //과일을 담는 캔버스 
         Canvas[] canvasPool1 = new Canvas[40];
         Canvas FruitScoreCanvas = new Canvas();
+        Canvas GuideCanvas = new Canvas();
 
         int score = 0;
         
@@ -96,28 +97,43 @@ namespace EatingFruit
 
         //애니메이션을 제어하기 위한 변수 
         int counter = 0;
-       
+
         public void DoubleAnimation_Ready()
         {
+            FruitScoreCanvas.Visibility = Visibility.Hidden;
+            bgm2.Play();
             DoubleAnimation ReadyDoubleAnimation = new DoubleAnimation();
-
-            ReadyDoubleAnimation.From =-900;
+            ReadyDoubleAnimation.From = 0;
             ReadyDoubleAnimation.To = 0;
             ReadyDoubleAnimation.AccelerationRatio = 0;
-            ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(3)); //3초간 보여준다
+            ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(5));
             ReadyDoubleAnimation.FillBehavior = FillBehavior.Stop;
-            ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed; //이벤트 핸들러
-            
-            FruitScoreCanvas.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);
+            ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed;
+
+            GuideCanvas.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);
+
         }
-          
+
         void ReadyDoubleAnimation_Completed(object sender, EventArgs e)
         {
             DoubleAnimation ReadyDoubleAnimation = new DoubleAnimation();
             switch (counter)
             {
-                //과일 점수판 3초간 잠시 멈춰 서 있기 
                 case 0:
+                    counter++;
+                    GuideCanvas.Visibility = Visibility.Hidden;
+                    FruitScoreCanvas.Visibility = Visibility.Visible;
+                    ReadyDoubleAnimation.From = -900;
+                    ReadyDoubleAnimation.To = 0;
+                    ReadyDoubleAnimation.AccelerationRatio = 0;
+                    ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(2)); //3초간 보여준다
+                    ReadyDoubleAnimation.FillBehavior = FillBehavior.Stop;
+                    ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed; //이벤트 핸들러
+                    FruitScoreCanvas.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);
+                    break;
+
+                //과일 점수판 3초간 잠시 멈춰 서 있기 
+                case 1:
                     Ready.Visibility = Visibility.Hidden;
                     counter++;
                     ReadyDoubleAnimation.From = 0;
@@ -126,14 +142,13 @@ namespace EatingFruit
                     ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(3));
                     ReadyDoubleAnimation.FillBehavior = FillBehavior.Stop;
                     ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed;
-                    
+
                     FruitScoreCanvas.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);
                     break;
 
-            // 과일점수판 끝까지 떨어뜨림 
-                case 1:
+                // 과일점수판 끝까지 떨어뜨림 
+                case 2:
                     counter++;
-                    bgm2.Play();
                     Ready.Visibility = Visibility.Hidden;
                     ReadyDoubleAnimation.From = 0;
                     ReadyDoubleAnimation.To = 1200;
@@ -141,50 +156,51 @@ namespace EatingFruit
                     ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(2));
                     ReadyDoubleAnimation.FillBehavior = FillBehavior.HoldEnd;
                     ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed;
-                  
+
                     FruitScoreCanvas.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);
                     break;
 
-           // Ready Go 애니메이션을 보여준다. 
-                case 2:
+                // Ready Go 애니메이션을 보여준다. 
+                case 3:
                     counter++;
+                    FruitScoreCanvas.Visibility = Visibility.Hidden;
                     var image = new BitmapImage();
                     Ready.Visibility = Visibility.Visible;
                     ReadyDoubleAnimation.From = 0.0;
                     ReadyDoubleAnimation.To = 0.0;
-                    ReadyDoubleAnimation.AccelerationRatio=0.0;
-                    ReadyDoubleAnimation.Duration= new Duration(TimeSpan.FromSeconds(2));
-                    ReadyDoubleAnimation.FillBehavior=FillBehavior.HoldEnd;
+                    ReadyDoubleAnimation.AccelerationRatio = 0.0;
+                    ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(2));
+                    ReadyDoubleAnimation.FillBehavior = FillBehavior.HoldEnd;
                     ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed;
-                    
+
                     image.BeginInit();
                     image.UriSource = new Uri(baseDirectory + "ready.gif");
                     ImageBehavior.SetRepeatBehavior(Ready, new RepeatBehavior(1));
                     image.EndInit();
                     ImageBehavior.SetAnimatedSource(Ready, image);
-                  
-                    canvas1.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);    
+
+                    canvas1.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);
                     break;
 
-           
+
                 // Ready Go 애니메이션을 숨기고 게임 시작 
 
-                case 3:
+                case 4:
                     counter++;
                     Ready.Visibility = Visibility.Hidden;
                     Go.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "go.png") as ImageSource;
                     Go.Visibility = Visibility.Visible;
                     ReadyDoubleAnimation.From = 0.0;
                     ReadyDoubleAnimation.To = 0.0;
-                    ReadyDoubleAnimation.AccelerationRatio=0.0;
-                    ReadyDoubleAnimation.Duration= new Duration(TimeSpan.FromSeconds(2));
-                    ReadyDoubleAnimation.FillBehavior=FillBehavior.HoldEnd;
+                    ReadyDoubleAnimation.AccelerationRatio = 0.0;
+                    ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(2));
+                    ReadyDoubleAnimation.FillBehavior = FillBehavior.HoldEnd;
                     ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed;
 
                     canvas1.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);
                     break;
 
-                case 4:
+                case 5:
                     counter++;
                     Ready.Visibility = Visibility.Hidden;
                     Go.Visibility = Visibility.Hidden;
@@ -192,19 +208,19 @@ namespace EatingFruit
 
                     ReadyDoubleAnimation.From = 0.0;
                     ReadyDoubleAnimation.To = 0.0;
-                    ReadyDoubleAnimation.AccelerationRatio=0.0;
-                    ReadyDoubleAnimation.Duration= new Duration(TimeSpan.FromSeconds(30)); //게임시간 약 30초 
-                    ReadyDoubleAnimation.FillBehavior=FillBehavior.Stop;
+                    ReadyDoubleAnimation.AccelerationRatio = 0.0;
+                    ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(60)); //게임시간 약 30초 
+                    ReadyDoubleAnimation.FillBehavior = FillBehavior.Stop;
                     ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed;
                     gameState = playing;
-                    
+
                     DropFruit();        //게임 시작! 이미지 떨어뜨린다! 
                     Score();
-                    canvas1.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);    
+                    canvas1.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);
                     break;
 
                 // 게임 끝난후 화면에 점수 표시, Home Replay 버튼을 보여준다. 
-                case 5:
+                case 6:
                     counter++;
                     bgm2.Stop();
 
@@ -544,7 +560,7 @@ namespace EatingFruit
             SungGiF.Visibility = Visibility.Hidden;
             score = 0;
 
-
+            GuideCanvas.Visibility = Visibility.Visible;
             FruitScoreCanvas.Visibility = Visibility.Visible;
             gameState = begin;
             counter = 0;
