@@ -12,7 +12,9 @@
             <Image Height="600" Name="monkey" Canvas.Left="700" Canvas.Top="284" Width="490" RenderTransformOrigin="0.5,0.5"/>
             <Image Name="skip" Height="87" Width="143" Canvas.Left="801" Canvas.Top="198"/>
             <Image Name="Alertimg" Height="210" Width="436" Canvas.Left="34" Canvas.Top="518" />
-            <TextBlock Name="score" Foreground="Green" FontSize="100" Canvas.Left="34" TextWrapping="Wrap" Text="0 : 0" Canvas.Top="33" Height="134" Width="206"  Visibility="Hidden"/>
+            <Image Name="score1" Canvas.Left="90" Canvas.Top="50" Height="101" Width="40" Source="bin/Debug/dibi/nc1.png"/>
+            <Image Name="colon" Canvas.Left="130" Canvas.Top="50" Height="101" Width="40" Source="bin/Debug/dibi/colon.png"/>
+            <Image Name="score2" Canvas.Left="170" Canvas.Top="50" Height="101" Width="40" Source="bin/Debug/dibi/nc4.png"/>
             <Image Name="notice" Canvas.Left="170" Canvas.Top="10" />
             <Image Name="home" Height="124" Canvas.Left="440" Canvas.Top="310" Width="124"/>
             <Image Name="replay" Height="124" Canvas.Left="728" Canvas.Top="310" Width="124"/>

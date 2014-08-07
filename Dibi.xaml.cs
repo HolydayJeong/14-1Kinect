@@ -36,8 +36,8 @@ namespace SungJik_SungHwa
         const int NONE = 0;
         const int GAMESTATEYELLOW = 1;
         const int GAMESTATEVISIBLE = 2;
-        const int SKIPHIDDEN = 3;
-        const int SKIPVISIBLE = 4;
+        //const int SKIPHIDDEN = 3;
+        //const int SKIPVISIBLE = 4;
         const int LOSE = 5;
         const int WIN = 6;
         const int SCISSOR = 7;
@@ -51,8 +51,8 @@ namespace SungJik_SungHwa
         const int REPLAYPRESSED = 15;
         const int HOMEPRESSED = 16;
         const int NOTRECOGNIZED = 17;
-        const int BGHIDDEN = 18;
-        const int BGVISIBLE = 19;
+        const int HIDDEN = 18;
+        const int VISIBLE = 19;
 
         SungJik_SungHwa.PressButton Press = new SungJik_SungHwa.PressButton();
 
@@ -76,6 +76,7 @@ namespace SungJik_SungHwa
         int monkeySate = 0; // 원숭이가 낸거 0 : 대기, 1 : 가위, 2 : 주먹, 3 : 보
         int playerState = 0;// 사람이 낸거 0 : 대기, 1 : 가위, 2 : 주먹, 3 : 보
 
+        int GameCount = 0;       // 게임 횟수
         int WinCount = 0;       // 이긴 횟수
         int LoseCount = 0;      // 진 횟수
 
@@ -180,9 +181,7 @@ namespace SungJik_SungHwa
 
                 Canvas.SetLeft(Soong, headColorPoint.X - Soong.Width / 2);
                 Canvas.SetTop(Soong, headColorPoint.Y - Soong.Width / 2);
-
-                String test = "";
-
+                
                 int HandLength = Math.Abs(RElbowDepthPoint.Y - RWristDepthPoint.Y) * 2;
                 int ElboDistance = RElbowDepthPoint.X - LElbowDepthPoint.X;
 
@@ -193,11 +192,15 @@ namespace SungJik_SungHwa
                 {
                     gamestate = 101;
                     skip.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "skip.png") as ImageSource;
-                    SkipControl(SKIPHIDDEN);
+                    SkipControl(HIDDEN);
                     bg.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "bg2.png") as ImageSource;
-                    BgControl(BGHIDDEN, baseDirectory);
-                   
+                    BgControl(HIDDEN, baseDirectory);
 
+                    colon.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "colon.png") as ImageSource;
+                    ScoreControl(0, baseDirectory, score1);
+                    ScoreControl(0, baseDirectory, score2);
+                    ScoreControl(HIDDEN, baseDirectory, null);
+                    
                     Console.WriteLine("Thread Make playstate : " + playerState + " / gamestate : " + gamestate + " / gameCount : " + WinCount);
                     ThreadStart threadStart = new ThreadStart(GameState);
                     Thread newThread = new Thread(threadStart);
@@ -289,24 +292,6 @@ namespace SungJik_SungHwa
                         playerState = 6;
                     }
 
-                    test = "발꿈치 거리 : " + (ElboDistance).ToString() + " , 손 길이 : " + (HandLength).ToString();
-                    /*
-                    Position.FontSize = 11;
-                    Position.Text = "Y Head : " + headDepthPoint.Y.ToString() + "  /  Neck : " + neckDepthPoint.Y.ToString() + "  /  Body : " + bodyDepthPoint.Y.ToString()
-                        + "  /  Hip : " + hipDepthPoint.Y.ToString()
-                        + "  /  Left : " + LHandDepthPoint.Y.ToString() + " ,  Left Shoulder : " + LShoulderDepthPoint.Y.ToString() + "  ,  Left Wrist: " + LWristDepthPoint.Y.ToString()
-                        + "  ,  Left Elbow : " + LElbowDepthPoint.Y.ToString()
-                        + "  /  Right : " + RHandDepthPoint.Y.ToString() + "  ,  Right Shoulder : " + RShoulderDepthPoint.Y.ToString() + "  ,  Right Wrist: " + RWristDepthPoint.Y.ToString()
-                        + "  ,  Right Elbow : " + RElbowDepthPoint.Y.ToString()
-                        + "\nX Head : " + headDepthPoint.X.ToString() + "  /  Neck : " + neckDepthPoint.X.ToString() + "  /  Body : " + bodyDepthPoint.X.ToString()
-                            + "  /  Hip : " + hipDepthPoint.X.ToString()
-                        + "  /  Left : " + LHandDepthPoint.X.ToString() + "  ,  Left Shoulder : " + LShoulderDepthPoint.X.ToString() + "  ,  Left Wrist: " + LWristDepthPoint.X.ToString()
-                        + "  ,  Left Elbow : " + LElbowDepthPoint.X.ToString()
-                        + "  /  Right : " + RHandDepthPoint.X.ToString() + "  ,  Right Shoulder : " + RShoulderDepthPoint.X.ToString() + "  ,  Right Wrist: " + RWristDepthPoint.X.ToString()
-                        + "  ,  Right Elbow : " + RElbowDepthPoint.X.ToString()
-                        + "\n" + Form
-                        + "\n" + test;
-                    */
                     if (gamestate == 601)     // 게임 중이므로 판별로 넘어가야함
                     {
                         gamestate = 7;       // 대기 및 판별인 7로 넘어감
@@ -320,23 +305,24 @@ namespace SungJik_SungHwa
 
                     Console.WriteLine("Game Over  : " + WinCount + " : " + LoseCount);
 
-                    if (WinCount == 3 || LoseCount == 3)
+                    if (GameCount == 5)
                     {
                         if (WinCount == 3)
                         {
                             //doNotice("승리!!");
-                            System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "win.wav");
-                            sp.Play();
                             SoongOut(FINALWIN, baseDirectory);
                             Alert(FINALWIN, baseDirectory);
+                            System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "win.wav");
+                            sp.PlaySync();
+                            
                         }
                         else if (LoseCount == 3)
                         {
                             //doNotice("패배!!");
-                            System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "loose.wav");
-                            sp.Play();
                             SoongOut(FINALLOSE, baseDirectory);
                             Alert(FINALLOSE, baseDirectory);
+                            System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "loose.wav");
+                            sp.PlaySync();                            
                         }
                         gamestate = 10;
                     }
@@ -352,11 +338,10 @@ namespace SungJik_SungHwa
                     ImageBehavior.SetAnimatedSource(monkey, null);  // 이미지 없애기
                     ImageBehavior.SetAnimatedSource(Alertimg, null);  // 이미지 없애기
                     Alert(NONE, baseDirectory);
-                    SoongOut(SOONGMAIN, baseDirectory);
-                    Console.WriteLine("in");
-                    score.Visibility = System.Windows.Visibility.Hidden;
+                    BgControl(HIDDEN, baseDirectory);
                     SoongOut(NONE, baseDirectory);
                     Menu(1, baseDirectory);
+                    ScoreControl(HIDDEN, null, null);
 
                     WinCount = 0;
                     LoseCount = 0;
@@ -367,8 +352,8 @@ namespace SungJik_SungHwa
                 else if (gamestate == 12)
                 {
                     Point replayTopLeft = new Point(Canvas.GetLeft(replay), Canvas.GetTop(replay));
-
                     Point homeTopLeft = new Point(Canvas.GetLeft(home), Canvas.GetTop(home));
+
 
                     //해상도 확장으로 인한 변수 값 조정 
                     //(해상도 줄이면 이곳을 주석처리하고 이미지 크기에 /2 지우면 됨)
@@ -431,7 +416,7 @@ namespace SungJik_SungHwa
                     Thread.Sleep(2000);
                     gamestate = 2;
 
-                    SkipControl(SKIPVISIBLE);
+                    SkipControl(VISIBLE);
 
                     guide(2, baseDirectory);
                     Thread.Sleep(2500);
@@ -441,7 +426,7 @@ namespace SungJik_SungHwa
                     guide(3, baseDirectory);
                     SoongOut(SCISSOR, baseDirectory);
                     gamestate = 3;
-                    SkipControl(SKIPHIDDEN);
+                    SkipControl(HIDDEN);
                     while (playerState != SCISSOR)
                     {
                         Console.WriteLine("playerstate : " + playerState);
@@ -452,7 +437,7 @@ namespace SungJik_SungHwa
                     }
                     gamestate = 2;
                     SoongOut(0, baseDirectory);
-                    SkipControl(SKIPVISIBLE);
+                    SkipControl(VISIBLE);
 
                     guide(4, baseDirectory);
                     Thread.Sleep(2000);
@@ -461,7 +446,7 @@ namespace SungJik_SungHwa
                     guide(5, baseDirectory);
                     SoongOut(ROCK, baseDirectory);
                     gamestate = 3;
-                    SkipControl(SKIPHIDDEN);
+                    SkipControl(HIDDEN);
                     while (playerState != ROCK)
                     {
                         Console.WriteLine("playerstate : " + playerState);
@@ -472,7 +457,7 @@ namespace SungJik_SungHwa
                     }
                     gamestate = 2;
                     SoongOut(0, baseDirectory);
-                    SkipControl(SKIPVISIBLE);
+                    SkipControl(VISIBLE);
 
                     guide(4, baseDirectory);
                     Thread.Sleep(2000);
@@ -481,7 +466,7 @@ namespace SungJik_SungHwa
                     guide(6, baseDirectory);
                     SoongOut(PAPER, baseDirectory);
                     gamestate = 3;
-                    SkipControl(SKIPHIDDEN);
+                    SkipControl(HIDDEN);
                     while (playerState != PAPER)
                     {
                         Console.WriteLine("playerstate : " + playerState);
@@ -500,7 +485,8 @@ namespace SungJik_SungHwa
                 else if (gamestate == 4) // 인트로 Song 시작
                 {
                     gamestate = 401;    // 프로세스 난입 방지
-                    SkipControl(SKIPHIDDEN);
+                    SkipControl(HIDDEN);
+
                     guide(7, baseDirectory);
                     Thread.Sleep(2000);
                     guide(8, baseDirectory);
@@ -509,8 +495,11 @@ namespace SungJik_SungHwa
 
                     Console.WriteLine(baseDirectory + "startsong.wav");
                     Console.WriteLine("gamestate : " + gamestate);
+                    BgControl(VISIBLE, baseDirectory); //화면 세팅
                     System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "startsong.wav");
                     sp.PlaySync();
+                    
+                    ScoreControl(VISIBLE, baseDirectory, null); 
                     SoongOut(SOONGMAIN, baseDirectory);
 
                     gamestate = 5;
@@ -520,7 +509,6 @@ namespace SungJik_SungHwa
                     gamestate = 501;
                     //Console.WriteLine("Begin : " + System.DateTime.Now.ToString("mm:ss"));
                     sp1.PlaySync(); // 플레이가 끝날때까지 대기함.
-                    Console.WriteLine("Finish : " + System.DateTime.Now.ToString("mm:ss"));
                     Console.WriteLine("gamestate : " + gamestate);
 
                     monkeySate = random.Next(0, 100);   // 원숭이 랜덤 출력
@@ -545,13 +533,14 @@ namespace SungJik_SungHwa
                     Thread.Sleep(1000); // 한판 이김, 짐 숭익이 보여주기
                     gamestate = 9;  // 가위바위보 준비 초기화 혹은 게임 끝
                 }
-                else if (gamestate == 10)    // 전체 끝
+                else if (gamestate == 10)
                 {
+                    gamestate = 1001;
                     Thread.Sleep(3000);
-                    gamestate = 11;  // 가위바위보 준비 초기화 혹은 게임 끝
+                    gamestate= 11;
                 }
-
-                Thread.Sleep(300);
+                else
+                    Thread.Sleep(300);
             }
         }
 
@@ -605,7 +594,15 @@ namespace SungJik_SungHwa
         {
             Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
             {
-
+                switch (i)
+                {
+                    case HIDDEN:
+                        bg.Visibility = System.Windows.Visibility.Hidden;
+                        break;
+                    case VISIBLE:
+                        bg.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                }
             }));
         }
 
@@ -615,51 +612,10 @@ namespace SungJik_SungHwa
             {
                 if (monkeySate == playerState)
                 {
-                    Console.WriteLine("Count up 1");
+                    WinLoseCount(LOSE);
                 }
-                else if (playerState == SCISSOR)
-                {
-                    if (monkeySate == ROCK)
-                    {
-                        Console.WriteLine("Count up 2");
-                        WinLoseCount(LOSE);
-                    }
-                    else if (monkeySate == PAPER)
-                    {
-                        Console.WriteLine("Count up 3");
-                        WinLoseCount(WIN);
-                    }
-                }
-                else if (playerState == ROCK)
-                {
-                    if (monkeySate == SCISSOR)
-                    {
-                        Console.WriteLine("Count up 4");
-                        WinLoseCount(WIN);
-                    }
-                    else if (monkeySate == PAPER)
-                    {
-                        Console.WriteLine("Count up 5");
-                        WinLoseCount(LOSE);
-                    }
-                }
-                else if (playerState == PAPER)
-                {
-                    if (monkeySate == SCISSOR)
-                    {
-                        Console.WriteLine("Count up 6");
-                        WinLoseCount(LOSE);
-                    }
-                    else if (monkeySate == ROCK)
-                    {
-                        Console.WriteLine("Count up 7");
-                        WinLoseCount(WIN);
-                    }
-                }
-
-                score.Text = WinCount + " : " + LoseCount;
-                score.Visibility = System.Windows.Visibility.Visible;
-
+                else
+                    WinLoseCount(WIN);
                 Console.WriteLine("Game = " + WinCount);
             }));
         }
@@ -744,6 +700,62 @@ namespace SungJik_SungHwa
             }));
         }
 
+        private void ScoreControl(int i, string ImagePath, Image image)
+        {
+            Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
+            {
+                switch (i)
+                {
+                    case 0:
+                        ImagePath += "nc0.png";
+                        image.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
+                        image.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                    case 1:
+                        ImagePath += "nc1.png";
+                        image.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
+                        image.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                    case 2:
+                        ImagePath += "nc2.png";
+                        image.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
+                        image.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                    case 3:
+                        ImagePath += "nc3.png";
+                        image.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
+                        image.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                    case 4:
+                        ImagePath += "nc4.png";
+                        image.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
+                        image.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                    case 5:
+                        ImagePath += "nc5.png";
+                        image.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
+                        image.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                    case 6:
+                        ImagePath += "colon.png";
+                        image.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
+                        image.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                    case HIDDEN:
+                        score1.Visibility = System.Windows.Visibility.Hidden;
+                        colon.Visibility = System.Windows.Visibility.Hidden;
+                        score2.Visibility = System.Windows.Visibility.Hidden;
+                        break;
+                    case VISIBLE:
+                        score1.Visibility = System.Windows.Visibility.Visible;
+                        colon.Visibility = System.Windows.Visibility.Visible;
+                        score2.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                }
+            }));
+
+        }
+
         private void SkipControl(int num)  // skip 버튼 컨트롤 하기
         {
             Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
@@ -753,10 +765,10 @@ namespace SungJik_SungHwa
                     case GAMESTATEVISIBLE:
                         skip.Visibility = System.Windows.Visibility.Visible;
                         break;
-                    case SKIPHIDDEN:
+                    case HIDDEN:
                         skip.Visibility = System.Windows.Visibility.Hidden;
                         break;
-                    case SKIPVISIBLE:
+                    case VISIBLE:
                         skip.Visibility = System.Windows.Visibility.Visible;
                         break;
                 }
@@ -817,8 +829,6 @@ namespace SungJik_SungHwa
             }));
         }
 
-        
-
         private void WinLoseCount(int i)
         {
             switch (i)
@@ -826,10 +836,14 @@ namespace SungJik_SungHwa
                 case LOSE:
                     monkey.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "sung_win.png") as ImageSource;
                     LoseCount++;
+                    GameCount++;
+                    ScoreControl(LoseCount, baseDirectory, score2);
                     break;
                 case WIN:
                     monkey.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "sung_fail2.png") as ImageSource;
                     WinCount++;
+                    GameCount++;
+                    ScoreControl(WinCount, baseDirectory, score1);
                     break;
             }
         }
