@@ -175,7 +175,7 @@ namespace EatingFruit
 
                     image.BeginInit();
                     image.UriSource = new Uri(baseDirectory + "ready.gif");
-                    ImageBehavior.SetRepeatBehavior(Ready, new RepeatBehavior(1));
+                    ImageBehavior.SetRepeatBehavior(Ready, new RepeatBehavior(3));
                     image.EndInit();
                     ImageBehavior.SetAnimatedSource(Ready, image);
 
@@ -193,7 +193,7 @@ namespace EatingFruit
                     ReadyDoubleAnimation.From = 0.0;
                     ReadyDoubleAnimation.To = 0.0;
                     ReadyDoubleAnimation.AccelerationRatio = 0.0;
-                    ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(2));
+                    ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(1));
                     ReadyDoubleAnimation.FillBehavior = FillBehavior.HoldEnd;
                     ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed;
 
@@ -209,7 +209,7 @@ namespace EatingFruit
                     ReadyDoubleAnimation.From = 0.0;
                     ReadyDoubleAnimation.To = 0.0;
                     ReadyDoubleAnimation.AccelerationRatio = 0.0;
-                    ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(60)); //게임시간 약 30초 
+                    ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(58)); //게임시간 약 30초 
                     ReadyDoubleAnimation.FillBehavior = FillBehavior.Stop;
                     ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed;
                     gameState = playing;
