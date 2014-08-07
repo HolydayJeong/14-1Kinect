@@ -313,7 +313,7 @@ namespace SungJik_SungHwa
                             SoongOut(FINALWIN, baseDirectory);
                             Alert(FINALWIN, baseDirectory);
                             System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "win.wav");
-                            sp.PlaySync();
+                            sp.Play();
                             
                         }
                         else if (LoseCount == 3)
@@ -322,7 +322,7 @@ namespace SungJik_SungHwa
                             SoongOut(FINALLOSE, baseDirectory);
                             Alert(FINALLOSE, baseDirectory);
                             System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "loose.wav");
-                            sp.PlaySync();                            
+                            sp.Play();                            
                         }
                         gamestate = 10;
                     }
@@ -516,7 +516,7 @@ namespace SungJik_SungHwa
 
                     //Console.WriteLine("Image Change " + monkeySate);
                     SoongOut(monkeySate, baseDirectory);
-                    
+                    Thread.Sleep(500);
                     gamestate = 6;  // 판별 
                 }
                 else if(gamestate == 7)
@@ -610,11 +610,10 @@ namespace SungJik_SungHwa
         {
             Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
             {
+                
                 if (monkeySate == playerState)
-                {
                     WinLoseCount(LOSE);
-                }
-                else
+                else if(playerState >6)
                     WinLoseCount(WIN);
                 Console.WriteLine("Game = " + WinCount);
             }));

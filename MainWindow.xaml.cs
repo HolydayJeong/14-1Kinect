@@ -172,7 +172,7 @@ namespace SungJik_SungHwa
                     targetTopLeft.Y /= 2;
                     box.Text = "TopLeft X : " + targetTopLeft.X + "Width : " + Jump.ActualWidth + " TopLeft Y : " + targetTopLeft.Y + " Height : " + Jump.ActualHeight + "Body X: " + bodyDepthPoint.X + "Body Y: " + bodyDepthPoint.Y;
                     //if (bodyDepthPoint.X > targetTopLeft.X && bodyDepthPoint.X < targetTopLeft.X + Jump.ActualWidth/2 && bodyDepthPoint.Y > targetTopLeft.Y && bodyDepthPoint.Y < targetTopLeft.Y + Jump.ActualHeight)
-                    if (bodyDepthPoint.X > 310 && bodyDepthPoint.X < 350 && bodyDepthPoint.Y > 240 && bodyDepthPoint.Y < 280)
+                    if (bodyDepthPoint.X > 310 && bodyDepthPoint.X < 350 && bodyDepthPoint.Y > 230 && bodyDepthPoint.Y < 280)
                     {
                         gamestate = 2;
                     }
