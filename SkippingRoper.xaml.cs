@@ -47,6 +47,11 @@ namespace SungJik_SungHwa
         const int END = 2;
         //14/07/24 : 스킵버튼을 위한 제어
         const int BEGINNING = 4;
+        //14/08/08
+        const int RIGHT = 1;
+        const int LEFT = 0;
+
+        int PressingHand = RIGHT;
 
         int frameNum = 0;
 
@@ -528,17 +533,23 @@ namespace SungJik_SungHwa
                 DepthImagePoint HandLeftDepthImagePoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
                 ColorImagePoint HandLeftColorImagePoint = coorMap.MapDepthPointToColorPoint(depth.Format, HandLeftDepthImagePoint, ColorImageFormat.RawBayerResolution1280x960Fps12);
                 //손위치 (내 오른쪽 손에 연결한다)
-                if (HandRightDepthImagePoint.Depth <= HandLeftDepthImagePoint.Depth)
+                if ((PressingHand == RIGHT && Pressing.isPressed() == true) || (HandRightDepthImagePoint.Depth <= HandLeftDepthImagePoint.Depth))
                 {
-                    Canvas.SetLeft(Hand, HandRightColorImagePoint.X - Hand.Width / 2);
-                    Canvas.SetTop(Hand, HandRightColorImagePoint.Y - Hand.Height / 2);
-                    handdepth = HandRightDepthImagePoint.Depth;
+                    if (PressingHand == LEFT && Pressing.isPressed() == true) { }
+                    else
+                    {
+                        Canvas.SetLeft(Hand, HandRightColorImagePoint.X - Hand.Width / 2);
+                        Canvas.SetTop(Hand, HandRightColorImagePoint.Y - Hand.Height / 2);
+                        handdepth = HandRightDepthImagePoint.Depth;
+                        PressingHand = RIGHT;
+                    }
                 }
-                else
+                if ((PressingHand == LEFT && Pressing.isPressed() == true) || (HandRightDepthImagePoint.Depth > HandLeftDepthImagePoint.Depth))
                 {
                     Canvas.SetLeft(Hand, HandLeftColorImagePoint.X - Hand.Width / 2);
                     Canvas.SetTop(Hand, HandLeftColorImagePoint.Y - Hand.Height / 2);
                     handdepth = HandLeftDepthImagePoint.Depth;
+                    PressingHand = LEFT;
                 }
                 if (gameState == SELECTING)
                 {
@@ -909,16 +920,22 @@ namespace SungJik_SungHwa
                 DepthImagePoint HandLeftDepthImagePoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
                 ColorImagePoint HandLeftColorImagePoint = coorMap.MapDepthPointToColorPoint(depth.Format, HandLeftDepthImagePoint, ColorImageFormat.RawBayerResolution1280x960Fps12);
                 //손위치 (내 양손에 연결한다)
-                if (HandRightDepthImagePoint.Depth <= HandLeftDepthImagePoint.Depth)
+                if ((PressingHand == RIGHT && Pressing.isPressed() == true) || HandRightDepthImagePoint.Depth <= HandLeftDepthImagePoint.Depth)
                 {
-                    Canvas.SetLeft(Hand, HandRightColorImagePoint.X - Hand.Width / 2);
-                    Canvas.SetTop(Hand, HandRightColorImagePoint.Y - Hand.Height / 2);
-                    handdepth = HandRightDepthImagePoint.Depth;
+                    if (PressingHand == LEFT && Pressing.isPressed() == true) { }
+                    else
+                    {
+                        Canvas.SetLeft(Hand, HandRightColorImagePoint.X - Hand.Width / 2);
+                        Canvas.SetTop(Hand, HandRightColorImagePoint.Y - Hand.Height / 2);
+                        handdepth = HandRightDepthImagePoint.Depth;
+                        PressingHand = RIGHT;
+                    }
                 }
-                else
+                if ((PressingHand == LEFT && Pressing.isPressed() == true) || (HandRightDepthImagePoint.Depth > HandLeftDepthImagePoint.Depth))
                 {
                     Canvas.SetLeft(Hand, HandLeftColorImagePoint.X - Hand.Width / 2);
                     Canvas.SetTop(Hand, HandLeftColorImagePoint.Y - Hand.Height / 2);
+                    PressingHand = LEFT;
                 }
                 if (gameState == END)
                 {

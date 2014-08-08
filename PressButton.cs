@@ -13,8 +13,8 @@ namespace SungJik_SungHwa
     {
         private string hand = null;
         private string pressHand = null;
-        private const int PRESS_CONFIRM = 13;
-        private const int PULL_CONFIRM = 7;
+        private const int PRESS_CONFIRM = 15;
+        private const int PULL_CONFIRM = 15;
         private int Press = 0;
         private int Pull = 0;
         private int originalDepth = 0;
@@ -58,8 +58,6 @@ namespace SungJik_SungHwa
 
                 if (Press == PRESS_CONFIRM)
                 {
-                    Console.WriteLine(Press);
-
                     hand.Source = new ImageSourceConverter().ConvertFromString(pressHand) as ImageSource;
 
                     nearest = true;

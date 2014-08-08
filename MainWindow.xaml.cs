@@ -31,6 +31,11 @@ namespace SungJik_SungHwa
         const int FRUITPRESSED = 3;
         const int ALL = 4;
 
+        const int LEFT = 0;
+        const int RIGHT = 1;
+
+        int pressingHand = RIGHT;
+
         //kinect sensor를 선언함 
         KinectSensor sensor;
         // 항상 6여야 한다. 
@@ -46,7 +51,7 @@ namespace SungJik_SungHwa
         Boolean locker = false;
         PressButton Press;
 
-        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "Main\\";
+        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "/Main/";
 
         public MainWindow()
         {
@@ -62,6 +67,13 @@ namespace SungJik_SungHwa
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Hand.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "mouse.png") as ImageSource;
+
+            //창 가운데로 배치
+            var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
+            this.Left = (desktopWorkingArea.Right - this.Width) / 2;
+            this.Top = (desktopWorkingArea.Bottom - this.Height) / 2;
+
             //키넥트가 연결되어 있는지 확인한다. 만일 연결되어 있으면 선언한 sensor와 연결된 kinect 정보를 준다. 
 
             if (KinectSensor.KinectSensors.Count > 0)
@@ -161,17 +173,23 @@ namespace SungJik_SungHwa
                 ColorImagePoint handRightColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, handRightDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
                 ColorImagePoint handLeftColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, handLeftDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
 
-                if (handRightDepthPoint.Depth <= handLeftDepthPoint.Depth)
+                if ((Press.isPressed() == true && pressingHand == RIGHT) || (handRightDepthPoint.Depth <= handLeftDepthPoint.Depth))
                 {
-                    Canvas.SetLeft(Hand, handRightColorPoint.X - Hand.Width / 2);
-                    Canvas.SetTop(Hand, handRightColorPoint.Y - Hand.Height / 2);
-                    handDepth = handRightDepthPoint.Depth;
+                    if (Press.isPressed() == true && pressingHand == LEFT) { }
+                    else
+                    {
+                        Canvas.SetLeft(Hand, handRightColorPoint.X - Hand.Width / 2);
+                        Canvas.SetTop(Hand, handRightColorPoint.Y - Hand.Height / 2);
+                        handDepth = handRightDepthPoint.Depth;
+                        pressingHand = RIGHT;
+                    }
                 }
-                else
+                if ((Press.isPressed() == true && pressingHand == LEFT) || (handRightDepthPoint.Depth > handLeftDepthPoint.Depth))
                 {
                     Canvas.SetLeft(Hand, handLeftColorPoint.X - Hand.Width / 2);
                     Canvas.SetTop(Hand, handLeftColorPoint.Y - Hand.Height / 2);
                     handDepth = handLeftDepthPoint.Depth;
+                    pressingHand = LEFT;
                 }
 
 
@@ -201,21 +219,23 @@ namespace SungJik_SungHwa
                     Menu(ALL, baseDirectory);
 
                     int i = 0;
+                    int clicked = 0;
                     foreach (Image target in images)
                     {
                         Point targetTopLeft = new Point(Canvas.GetLeft(target), Canvas.GetTop(target));
-                        targetTopLeft.X /= 2;
-                        targetTopLeft.Y /= 2;
+                        //targetTopLeft.X /= 2;
+                        //targetTopLeft.Y /= 2;
 
-                        box.Text = "TopLeft X : " + targetTopLeft.X + " TopLeft Y : " + targetTopLeft.Y + " Hand X : " + Canvas.GetLeft(Hand) * 2 + " Hand Y : " + Canvas.GetTop(Hand) * 2 + "Body X: " + bodyDepthPoint.X * 2 + "Body Y: " + bodyDepthPoint.Y * 2 + "gamestate : " + gamestate;
+                        box.Text = "Target Name " + target.Name + "TopLeft X : " + targetTopLeft.X + " TopLeft Y : " + targetTopLeft.Y + " Hand X : " + (Canvas.GetLeft(Hand) + Hand.Width / 2) + " Hand Y : " + (Canvas.GetTop(Hand) + Hand.Width / 2) + "Body X: " + bodyDepthPoint.X * 2 + "Body Y: " + bodyDepthPoint.Y * 2 + "gamestate : " + gamestate + " I : " + i + "locker : " + locker;
                         if (locker == false)
                         {
                             if (Canvas.GetLeft(Hand) + Hand.Width / 2 > targetTopLeft.X &&
-                                   Canvas.GetLeft(Hand) + Hand.Width / 2 < targetTopLeft.X + target.ActualWidth / 2 &&
+                                   Canvas.GetLeft(Hand) + Hand.Width / 2 < targetTopLeft.X + target.ActualWidth &&
                                    Canvas.GetTop(Hand) + Hand.Height / 2 > targetTopLeft.Y &&
-                                   Canvas.GetTop(Hand) + Hand.Height / 2 < targetTopLeft.Y + target.ActualHeight / 2)
-
+                                   Canvas.GetTop(Hand) + Hand.Height / 2 < targetTopLeft.Y + target.ActualHeight)
                             {
+                                clicked = 1;
+                                Console.WriteLine("in");
                                 box.Text = "Pressing";
                                 if (target.Name == "Dibi")
                                     i = DIBIPRESSED;
@@ -224,11 +244,13 @@ namespace SungJik_SungHwa
                                 else if (target.Name == "Fruit")
                                     i = FRUITPRESSED;
                                 else
+                                {
                                     i = NONE;
-                                box.Text += " I : " + i;
+                                }
+
                                 Menu(i, baseDirectory);
 
-                                Press.detectPressure(handDepth,ref Hand);
+                                Press.detectPressure(handDepth, ref Hand);
                                 if (Press.isConfirmed() == true)
                                 {
                                     locker = true;
@@ -237,6 +259,9 @@ namespace SungJik_SungHwa
                             }
                         }
                     }
+                    if (clicked == 0)
+                        Press.reset(ref Hand);
+
                 }
             }
         }
