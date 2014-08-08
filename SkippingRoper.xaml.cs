@@ -93,11 +93,10 @@ namespace SungJik_SungHwa
                 this.miss = miss;
             }
         }
-        System.Windows.Media.MediaPlayer sound = new MediaPlayer();
-        //System.Windows.Media.MediaPlayer backGround = new MediaPlayer();
+        MediaPlayer sound = new MediaPlayer();
 
-        System.Media.SoundPlayer gameover = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/줄넘기/" + "gameOver.wav");
-        System.Media.SoundPlayer backGround = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/줄넘기/" + "background.wav");
+        MediaPlayer gameover = new MediaPlayer();
+        MediaPlayer backGround = new MediaPlayer();
         System.Media.SoundPlayer win = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/줄넘기/" + "monkey.wav");
 
 
@@ -115,7 +114,6 @@ namespace SungJik_SungHwa
         {
             Pressing = new PressButton(baseDirectory + "mouse.png", baseDirectory + "mouse_pull.png");
 
-            sound.Open(new Uri(baseDirectory + "jump.wav"));
             //backGround.Open(new Uri(baseDirectory + "background.wav"));
 
             InitializeComponent();
@@ -175,6 +173,10 @@ namespace SungJik_SungHwa
 
         private void InitUI()
         {
+            sound.Open(new Uri(baseDirectory + "jump.wav"));
+            gameover.Open(new Uri(baseDirectory + "gameOver.mp3"));
+            backGround.Open(new Uri(baseDirectory + "background.mp3"));
+
             Canvas.SetZIndex(Me, 1);
             Canvas.SetZIndex(SkippingRope, 0);
 

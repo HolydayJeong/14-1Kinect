@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +13,7 @@ namespace SungJik_SungHwa
     {
         private string hand = null;
         private string pressHand = null;
-        private const int PRESS_CONFIRM = 7;
+        private const int PRESS_CONFIRM = 13;
         private const int PULL_CONFIRM = 7;
         private int Press = 0;
         private int Pull = 0;
