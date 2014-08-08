@@ -10,7 +10,7 @@
             <Image Name="Dibi" Source="Images/bt1_db.png" Canvas.Left="120" Canvas.Top="404" Height="166"  Width="326" Visibility="Visible"/>
             <Image Name="Begin" Height="960" Width="1270" Canvas.Left="10"/>
             <TextBox Name="box" Height="165" Canvas.Left="83" TextWrapping="Wrap" Text="TextBox" Canvas.Top="721" FontSize="30" Width="1120"/>
-            <Image Canvas.Left="890" Canvas.Top="606" Height="72" x:Name="Hand" Stretch="Fill" Width="73" Source="Images/Hand.png" />
+            <Image Canvas.Left="890" Canvas.Top="606" Height="45" x:Name="Hand" Stretch="Fill" Width="45" Source="Images/Hand.png" />
         </Canvas>
     </Grid>
 </Window>
