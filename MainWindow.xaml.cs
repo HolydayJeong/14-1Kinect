@@ -44,12 +44,13 @@ namespace SungJik_SungHwa
         //private Window1 ReadyWindow;
 
         Boolean locker = false;
-        PressButton Press = new PressButton();
+        PressButton Press;
 
         string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "Main\\";
 
         public MainWindow()
         {
+            Press = new PressButton(baseDirectory + "mouse.png", baseDirectory + "mouse_pull.png");
             InitializeComponent();
             InitializeButtons();
         }
@@ -145,6 +146,7 @@ namespace SungJik_SungHwa
 
             }
         }
+        private int handDepth;
         private void GetCameraPoint(Skeleton me, AllFramesReadyEventArgs e)
         {
             using (DepthImageFrame depth = e.OpenDepthImageFrame())
@@ -152,14 +154,26 @@ namespace SungJik_SungHwa
                 if (depth == null || sensor == null)
                     return;
                 CoordinateMapper coorMap = new CoordinateMapper(sensor);
-                DepthImagePoint handDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
+                DepthImagePoint handRightDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandRight].Position, depth.Format);
+                DepthImagePoint handLeftDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
                 DepthImagePoint bodyDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.Spine].Position, depth.Format);
 
-                ColorImagePoint handColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, handDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
+                ColorImagePoint handRightColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, handRightDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
+                ColorImagePoint handLeftColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, handLeftDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
 
+                if (handRightDepthPoint.Depth <= handLeftDepthPoint.Depth)
+                {
+                    Canvas.SetLeft(Hand, handRightColorPoint.X - Hand.Width / 2);
+                    Canvas.SetTop(Hand, handRightColorPoint.Y - Hand.Height / 2);
+                    handDepth = handRightDepthPoint.Depth;
+                }
+                else
+                {
+                    Canvas.SetLeft(Hand, handLeftColorPoint.X - Hand.Width / 2);
+                    Canvas.SetTop(Hand, handLeftColorPoint.Y - Hand.Height / 2);
+                    handDepth = handLeftDepthPoint.Depth;
+                }
 
-                Canvas.SetLeft(Hand, handColorPoint.X - Hand.Width / 2);
-                Canvas.SetTop(Hand, handColorPoint.Y - Hand.Height / 2);
 
                 // 14/07/25 lock을 걸어서 창이 복수생산이 되지 않도록한다
 
@@ -193,13 +207,14 @@ namespace SungJik_SungHwa
                         targetTopLeft.X /= 2;
                         targetTopLeft.Y /= 2;
 
-                        box.Text = "TopLeft X : " + targetTopLeft.X + " TopLeft Y : " + targetTopLeft.Y + " Hand X : " + handDepthPoint.X * 2 + " Hand Y : " + handDepthPoint.Y * 2 + "Body X: " + bodyDepthPoint.X * 2 + "Body Y: " + bodyDepthPoint.Y * 2 + "gamestate : " + gamestate;
+                        box.Text = "TopLeft X : " + targetTopLeft.X + " TopLeft Y : " + targetTopLeft.Y + " Hand X : " + Canvas.GetLeft(Hand) * 2 + " Hand Y : " + Canvas.GetTop(Hand) * 2 + "Body X: " + bodyDepthPoint.X * 2 + "Body Y: " + bodyDepthPoint.Y * 2 + "gamestate : " + gamestate;
                         if (locker == false)
                         {
-                            if (handDepthPoint.X > targetTopLeft.X &&
-                                   handDepthPoint.X < targetTopLeft.X + target.ActualWidth / 2 &&
-                                   handDepthPoint.Y > targetTopLeft.Y &&
-                                   handDepthPoint.Y < targetTopLeft.Y + target.ActualHeight / 2)
+                            if (Canvas.GetLeft(Hand) + Hand.Width / 2 > targetTopLeft.X &&
+                                   Canvas.GetLeft(Hand) + Hand.Width / 2 < targetTopLeft.X + target.ActualWidth / 2 &&
+                                   Canvas.GetTop(Hand) + Hand.Height / 2 > targetTopLeft.Y &&
+                                   Canvas.GetTop(Hand) + Hand.Height / 2 < targetTopLeft.Y + target.ActualHeight / 2)
+
                             {
                                 box.Text = "Pressing";
                                 if (target.Name == "Dibi")
@@ -213,8 +228,8 @@ namespace SungJik_SungHwa
                                 box.Text += " I : " + i;
                                 Menu(i, baseDirectory);
 
-                                Press.detectPressure(handDepthPoint.Depth);
-                                if (Press.isPressed() == true)
+                                Press.detectPressure(handDepth,ref Hand);
+                                if (Press.isConfirmed() == true)
                                 {
                                     locker = true;
                                     Menu_Click(i);
