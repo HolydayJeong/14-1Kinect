@@ -235,7 +235,6 @@ namespace SungJik_SungHwa
                                    Canvas.GetTop(Hand) + Hand.Height / 2 < targetTopLeft.Y + target.ActualHeight)
                             {
                                 clicked = 1;
-                                Console.WriteLine("in");
                                 box.Text = "Pressing";
                                 if (target.Name == "Dibi")
                                     i = DIBIPRESSED;

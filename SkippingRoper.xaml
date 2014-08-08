@@ -11,7 +11,6 @@
             <Image x:Name="Screen" HorizontalAlignment="Left" Height="960" VerticalAlignment="Top" Width="1280"/>
             <Image x:Name="Me" HorizontalAlignment="Left" Height="496" VerticalAlignment="Top" Width="448" Canvas.Left="314" Canvas.Top="410" Visibility="Hidden"/>
             <Image x:Name="Opponent" HorizontalAlignment="Left" Height="496" VerticalAlignment="Top" Width="448" Canvas.Left="603" Canvas.Top="410" Visibility="Hidden"/>
-            <Image x:Name="SkippingRope" Height="960" Canvas.Left="0" Canvas.Top="-10" Width="1280" Visibility="Hidden"/>
             <Image x:Name="GuideText" Canvas.Left="370" HorizontalAlignment="Center" Canvas.Top = "200"  Visibility="Hidden"/>
             <Image x:Name ="SungJik" Height="400" Canvas.Left="220" Canvas.Top="200" Width="400" Visibility="Hidden"/>
             <Image x:Name ="Pig" Height="400" Canvas.Left="445" Canvas.Top="200" Width="400"  Visibility="Hidden"/>

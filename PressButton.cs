@@ -13,8 +13,8 @@ namespace SungJik_SungHwa
     {
         private string hand = null;
         private string pressHand = null;
-        private const int PRESS_CONFIRM = 15;
-        private const int PULL_CONFIRM = 15;
+        private const int PRESS_CONFIRM = 10;
+        private const int PULL_CONFIRM = 10;
         private int Press = 0;
         private int Pull = 0;
         private int originalDepth = 0;

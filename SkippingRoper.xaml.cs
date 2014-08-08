@@ -75,9 +75,10 @@ namespace SungJik_SungHwa
         Boolean initial = false;
         Skeleton[] allSkeletons = new Skeleton[SKELOTON_COUNT];
 
-        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "/줄넘기/";
+        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "줄넘기\\";
 
         Canvas titleCanvas = new Canvas();
+        Canvas ropeCanvas = new Canvas();
         //14/07/24 : 스킵버튼을 만듬
         Image introText = new Image();
         Image go = new Image();
@@ -85,6 +86,8 @@ namespace SungJik_SungHwa
         Image WinLose = new Image();
         Image skipButton = new Image();
         Image Hand = new Image();
+        Image[] rope = new Image[FRAME_MAX];
+
         struct Character
         {
             public String wait;
@@ -102,6 +105,7 @@ namespace SungJik_SungHwa
 
         MediaPlayer gameover = new MediaPlayer();
         MediaPlayer backGround = new MediaPlayer();
+        MediaPlayer[] cheers = new MediaPlayer[7];
         System.Media.SoundPlayer win = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/줄넘기/" + "monkey.wav");
 
 
@@ -113,6 +117,8 @@ namespace SungJik_SungHwa
         string[] addresses = new string[FRAME_MAX];
 
         PressButton Pressing;
+
+
 
         //메w인 화면
         public SkippingRoper()
@@ -178,18 +184,23 @@ namespace SungJik_SungHwa
 
         private void InitUI()
         {
+            for (int j = 0; j < 7; j++)
+            {
+                cheers[j] = new MediaPlayer();
+                cheers[j].Open(new Uri(baseDirectory + "cheer\\cheer_" + (j + 1).ToString() + ".wav"));
+            }
+
             sound.Open(new Uri(baseDirectory + "jump.wav"));
             gameover.Open(new Uri(baseDirectory + "gameOver.mp3"));
             backGround.Open(new Uri(baseDirectory + "background.mp3"));
 
-            Canvas.SetZIndex(Me, 1);
-            Canvas.SetZIndex(SkippingRope, 0);
 
             for (int i = 0; i < FRAME_MAX; i++)
             {
-                addresses[i] = "rope/rope_" + (i).ToString() + ".png";
+                rope[i] = new Image();
+                rope[i].Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "rope\\rope_" + (i).ToString() + ".png") as ImageSource;
+                addresses[i] = "rope\\rope_" + (i).ToString() + ".png";
             }
-            SkippingRope.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + addresses[0]) as ImageSource;
             SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].wait) as ImageSource;
             Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].wait) as ImageSource;
             Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].wait) as ImageSource;
@@ -220,20 +231,15 @@ namespace SungJik_SungHwa
 
             titleCanvas.Width = 1300;
             titleCanvas.Height = 1000;
+            ropeCanvas.Width = 1300;
+            ropeCanvas.Height = 1000;
 
             //14/07/24 : skip 버튼의 크기 및 정하기
-            skipButton.Height = 100;
-            skipButton.Width = 200;
             skipButton.Visibility = System.Windows.Visibility.Visible;
             skipButton.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "skip.png") as ImageSource;
             Canvas.SetTop(skipButton, 500);
             Canvas.SetLeft(skipButton, 800);
 
-
-            introText.Width = titleCanvas.Width / 2;
-            introText.Height = titleCanvas.Height / 3;
-            Canvas.SetTop(introText, (titleCanvas.Height / 3) - 100);
-            Canvas.SetLeft(introText, (titleCanvas.Width / 4));
             Canvas.SetTop(GuideText, (titleCanvas.Height / 3) - 100);
             Canvas.SetLeft(GuideText, (titleCanvas.Width / 3));
 
@@ -242,11 +248,19 @@ namespace SungJik_SungHwa
             titleCanvas.Children.Add(introText);
             titleCanvas.Children.Add(skipButton);
 
+            foreach (Image ropef in rope)
+            {
+                ropeCanvas.Children.Add(ropef);
+                ropef.Visibility = System.Windows.Visibility.Hidden;
+            }
+
             mainCanvas.Children.Add(titleCanvas);
+            mainCanvas.Children.Add(ropeCanvas);
             mainCanvas.Children.Add(go);
             mainCanvas.Children.Add(ready);
             mainCanvas.Children.Add(WinLose);
             mainCanvas.Children.Add(Hand);
+
             if (initial == false)
             {
                 backGround.Play();
@@ -278,7 +292,10 @@ namespace SungJik_SungHwa
         {
             prepareKinect();
             introText.Visibility = System.Windows.Visibility.Visible;
+            Canvas.SetTop(introText, (this.Height / 2) - 137);
+            Canvas.SetLeft(introText, (this.Width / 2) - 226);
             introText.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide_1.png") as ImageSource;
+
 
             DoubleAnimation animation = new DoubleAnimation();
             animation.From = 0.0;
@@ -332,6 +349,8 @@ namespace SungJik_SungHwa
                 case 0:
                     counter++;
                     introText.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide_2.png") as ImageSource;
+                    Canvas.SetTop(introText, (titleCanvas.Height / 2) - 111);
+                    Canvas.SetLeft(introText, (titleCanvas.Width / 2) - 230);
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
@@ -343,6 +362,8 @@ namespace SungJik_SungHwa
                 case 1:
                     counter++;
                     introText.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide_3.png") as ImageSource;
+                    Canvas.SetTop(introText, (titleCanvas.Height / 2) - 111);
+                    Canvas.SetLeft(introText, (titleCanvas.Width / 2) - 349);
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
@@ -354,6 +375,8 @@ namespace SungJik_SungHwa
                 case 2:
                     counter++;
                     introText.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide_4.png") as ImageSource;
+                    Canvas.SetTop(introText, (titleCanvas.Height / 2) - 112);
+                    Canvas.SetLeft(introText, (titleCanvas.Width / 2) - 240);
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
@@ -362,13 +385,25 @@ namespace SungJik_SungHwa
                     animation.Completed += animation_Completed;
                     titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
                     break;
-
                 case 3:
+                    counter++;
+                    introText.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide_5.png") as ImageSource;
+                    Canvas.SetTop(introText, (titleCanvas.Height / 2) - 111);
+                    Canvas.SetLeft(introText, (titleCanvas.Width / 2) - 161);
+                    animation.From = 0.0;
+                    animation.To = 0.0;
+                    animation.AccelerationRatio = 0.0;
+                    animation.Duration = new Duration(TimeSpan.FromSeconds(3));
+                    animation.FillBehavior = FillBehavior.Stop;
+                    animation.Completed += animation_Completed;
+                    titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
+                    break;
+                case 4:
                     counter++;
                     titleCanvas.Visibility = System.Windows.Visibility.Hidden;
                     gameState = SELECTING;
                     break;
-                case 4:
+                case 5:
                     counter++;
                     ready.Visibility = System.Windows.Visibility.Hidden;
                     go.Visibility = System.Windows.Visibility.Visible;
@@ -380,8 +415,8 @@ namespace SungJik_SungHwa
                     animation.Completed += animation_Completed;
                     mainCanvas.BeginAnimation(Canvas.TopProperty, animation);
                     break;
-                case 5:
-                    counter = 4;
+                case 6:
+                    counter = 5;
                     start = true;
                     stop = false;
                     go.Visibility = System.Windows.Visibility.Hidden;
@@ -423,10 +458,10 @@ namespace SungJik_SungHwa
                     Canvas.SetTop(Hand, HandLeftColorImagePoint.Y - Hand.Height / 2);
                     handdepth = HandLeftDepthImagePoint.Depth;
                 }
-                if ((Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(skipButton)) && (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(skipButton) + skipButton.Width) && (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(skipButton)) && (Canvas.GetTop(Hand) + Hand.Height / 2 < Canvas.GetTop(skipButton) + skipButton.Height))
+                if ((Canvas.GetLeft(Hand) + Hand.Width / 2 > 800) && (Canvas.GetLeft(Hand) + Hand.Width / 2 < 880) && (Canvas.GetTop(Hand) + Hand.Height / 2 > 500) && (Canvas.GetTop(Hand) + Hand.Height / 2 < 645))
                 {
                     skipButton.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "skip_on.png") as ImageSource;
-                    counter = 3;
+                    counter = 4;
                 }
             }
         }
@@ -645,7 +680,7 @@ namespace SungJik_SungHwa
                         } while (oppChar == selectedChar);
                         Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].wait) as ImageSource;
                         Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].wait) as ImageSource;
-                        SkippingRope.Visibility = System.Windows.Visibility.Visible;
+                        rope[0].Visibility = System.Windows.Visibility.Visible;
                         Me.Visibility = System.Windows.Visibility.Visible;
                         Opponent.Visibility = System.Windows.Visibility.Visible;
                         SungJik.Visibility = System.Windows.Visibility.Hidden;
@@ -683,20 +718,21 @@ namespace SungJik_SungHwa
         //발좌표 추적
         private void StartGame(Skeleton me, AllFramesReadyEventArgs e)
         {
+            Random random = new Random();
             if (me == null || e == null) return;
             using (DepthImageFrame depth = e.OpenDepthImageFrame())
             {
                 if (depth == null) return;
-                if (frameNum < addresses.Length / 2)
+                if (frameNum < rope.Length / 2)
                 {
                     Canvas.SetZIndex(Opponent, 2);
                     Canvas.SetZIndex(Me, 1);
-                    Canvas.SetZIndex(SkippingRope, 0);
+                    Canvas.SetZIndex(rope[frameNum], 0);
                 }
                 else
                 {
                     Canvas.SetZIndex(Opponent, 1);
-                    Canvas.SetZIndex(SkippingRope, 2);
+                    Canvas.SetZIndex(rope[frameNum], 2);
                     Canvas.SetZIndex(Me, 0);
                 }
                 if (me == null || depth == null || sensor == null)
@@ -743,7 +779,7 @@ namespace SungJik_SungHwa
                     }
                     else
                     {
-
+                        
                         Canvas.SetTop(Me, 410);
                         Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].wait) as ImageSource;
                         Canvas.SetTop(Opponent, 410);
@@ -753,6 +789,10 @@ namespace SungJik_SungHwa
 
                 if (frameNum == 1)
                 {
+                    if (scoring == true && stop == false && time % 2 == 0)
+                    {
+                        cheers[random.Next(7)].Play();
+                    }
                     scoring = false;
                 }
 
@@ -787,7 +827,7 @@ namespace SungJik_SungHwa
         }
         int originalRFoot = 0;
         int originalLFoot = 0;
-
+        int originalHead = 0;
         private void isJumped2(AllFramesReadyEventArgs e, Skeleton me)
         {
             if (e == null || me == null)
@@ -804,14 +844,17 @@ namespace SungJik_SungHwa
                 ColorImagePoint footR = coorMap.MapDepthPointToColorPoint(depth.Format, footRDepth, ColorImageFormat.RawBayerResolution1280x960Fps12);
                 DepthImagePoint footLDepth = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.FootLeft].Position, depth.Format);
                 ColorImagePoint footL = coorMap.MapDepthPointToColorPoint(depth.Format, footLDepth, ColorImageFormat.RawBayerResolution1280x960Fps12);
+                DepthImagePoint headDepth = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.Head].Position, depth.Format);
+                ColorImagePoint head = coorMap.MapDepthPointToColorPoint(depth.Format, headDepth, ColorImageFormat.RawBayerResolution1280x960Fps12);
                 if (frameNum == FRAME_MAX - 4)
                 {
                     originalRFoot = footR.Y;
                     originalLFoot = footL.Y;
+                    originalHead = head.Y;
                 }
                 else if (frameNum == 0 && begin == true)
                 {
-                    if (Math.Abs(footR.Y - originalRFoot) >= 10 || Math.Abs(footL.Y - originalLFoot) >= 10)
+                    if ((Math.Abs(footR.Y - originalRFoot) >= 10 || Math.Abs(footL.Y - originalLFoot) >= 10) && (Math.Abs(head.Y - originalHead) >= 10))
                     {
                         time++;
                         jump = true;
@@ -854,8 +897,15 @@ namespace SungJik_SungHwa
                 Dispatcher.BeginInvoke(new VoidIntDelegate(skippingRopeConvert), new object[] { frameNum });
                 return;
             }
-
-            SkippingRope.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + addresses[frameNum]) as ImageSource;
+            if (frameNum == 0)
+            {
+                rope[FRAME_MAX - 1].Visibility = System.Windows.Visibility.Hidden;
+            }
+            else
+            {
+                rope[frameNum - 1].Visibility = System.Windows.Visibility.Hidden;
+            } 
+            rope[frameNum].Visibility = System.Windows.Visibility.Visible;
             this.frameNum = frameNum;
             if (begin == false && frameNum == FRAME_MAX - 2)
             {
@@ -1014,13 +1064,14 @@ namespace SungJik_SungHwa
             Home.Visibility = System.Windows.Visibility.Hidden;
             Me.Visibility = System.Windows.Visibility.Hidden;
             Opponent.Visibility = System.Windows.Visibility.Hidden;
-            SkippingRope.Visibility = System.Windows.Visibility.Hidden;
+            rope[1].Visibility = System.Windows.Visibility.Hidden;
+            rope[2].Visibility = System.Windows.Visibility.Hidden;
             WinLose.Visibility = System.Windows.Visibility.Hidden;
 
             SungJik.Visibility = System.Windows.Visibility.Visible;
             Pig.Visibility = System.Windows.Visibility.Visible;
             Mice.Visibility = System.Windows.Visibility.Visible;
-            counter = 4;
+            counter = 5;
 
         }
 
