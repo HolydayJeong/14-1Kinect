@@ -36,6 +36,7 @@ namespace SungJik_SungHwa
         const int NONE = 0;
         const int GAMESTATEYELLOW = 1;
         const int GAMESTATEVISIBLE = 2;
+        const int UFO = 3;
         //const int SKIPHIDDEN = 3;
         //const int SKIPVISIBLE = 4;
         const int LOSE = 5;
@@ -73,6 +74,9 @@ namespace SungJik_SungHwa
         //10 : 대기, 0 : 인트로시작, 1 : 자세인식, 2 : intro, 3 : 디비디비딥 출력, 4 : 자세인식, 5 : 승패 판결후 게임 종료, 6 : 처음으로, 다시하기, 5초대기
         // 01이 뒤에 붙으면 중간단계
 
+        bool guideOn = false;
+        int guideNo = 0; // 가이드 번호 프레임에서 제어해야 렌더링 크기를 알수 있기 때문에 그 제어를 위해서 변수 추가.
+
         int monkeySate = 0; // 원숭이가 낸거 0 : 대기, 1 : 가위, 2 : 주먹, 3 : 보
         int playerState = 0;// 사람이 낸거 0 : 대기, 1 : 가위, 2 : 주먹, 3 : 보
 
@@ -86,7 +90,10 @@ namespace SungJik_SungHwa
 
         System.Media.SoundPlayer sp1 = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "dibi\\dibidibi.wav");
 
-
+        public Image[] guideArray = new Image[9];
+        public List<Image> guideList = new List<Image>();
+        
+        
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (KinectSensor.KinectSensors.Count > 0)
@@ -106,6 +113,11 @@ namespace SungJik_SungHwa
                 sensor.AllFramesReady += sensor_AllFramesReady;
                 sensor.Start();
             }
+            
+            for(int i = 1; i < 9 ; i++){
+                guideList.Add(new Image() {Source = new BitmapImage(new Uri(baseDirectory+"guide_"+i+".png"))});
+            }
+             
         }
 
 
@@ -120,10 +132,7 @@ namespace SungJik_SungHwa
                 colorFrame.CopyPixelDataTo(pixels);
 
                 int stride = colorFrame.Width * 4; //b g r 빈칸 순으로 화면에 배치될꺼 기때문에 4칸이 더 필요????
-
-                //Stream imageStreamSource = new FileStream("movesoong.gif", FileMode.Create);
-                //GifBitmapEncoder encoder = new GifBitmapEncoder();
-
+                
                 kinect1.Source = BitmapSource.Create(colorFrame.Width, colorFrame.Height, 96, 96, PixelFormats.Bgr32, null, pixels, stride);
             }
             Skeleton me = null;
@@ -131,6 +140,7 @@ namespace SungJik_SungHwa
 
             if (me == null)
                 return;
+            
             GetCameraPoint(me, e);
         }
 
@@ -156,7 +166,6 @@ namespace SungJik_SungHwa
                     return;
                 }
                     
-
                 // 각 부위 스켈레톤 측정 시작
                 CoordinateMapper coorMap = new CoordinateMapper(sensor);
                 DepthImagePoint headDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.Head].Position, depth.Format);
@@ -174,7 +183,6 @@ namespace SungJik_SungHwa
                 DepthImagePoint LElbowDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.ElbowLeft].Position, depth.Format);
                 DepthImagePoint RElbowDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.ElbowRight].Position, depth.Format);
                 
-
                 // 각 부위 측정 끝
 
                 ColorImagePoint headColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, headDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
@@ -185,15 +193,16 @@ namespace SungJik_SungHwa
                 int HandLength = Math.Abs(RElbowDepthPoint.Y - RWristDepthPoint.Y) * 2;
                 int ElboDistance = RElbowDepthPoint.X - LElbowDepthPoint.X;
 
-
-
-                //Position.Text = RHandDepthPoint.X + " " + RHandDepthPoint.Y;
+                if (guideOn) // 가이드 출력용
+                {
+                    guide(guideNo-1, baseDirectory);
+                }
                 if (gamestate == 0)
                 {
                     gamestate = 101;
                     skip.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "skip.png") as ImageSource;
                     SkipControl(HIDDEN);
-                    bg.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "bg2.png") as ImageSource;
+                    bg.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "bg3.png") as ImageSource;
                     BgControl(HIDDEN, baseDirectory);
 
                     colon.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "colon.png") as ImageSource;
@@ -342,7 +351,10 @@ namespace SungJik_SungHwa
                     SoongOut(NONE, baseDirectory);
                     Menu(1, baseDirectory);
                     ScoreControl(HIDDEN, null, null);
+                    ScoreControl(0, baseDirectory, score1);
+                    ScoreControl(0, baseDirectory, score2);
 
+                    GameCount = 0;
                     WinCount = 0;
                     LoseCount = 0;
                     playerState = 0;
@@ -412,18 +424,32 @@ namespace SungJik_SungHwa
             {
                 if (gamestate == 1) // 가이드 시작
                 {
-                    guide(1, baseDirectory);
+                    gamestate = 101; // 프로세스 난입 방지.
+                    System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "No Spam Polka-wav.wav");
+                    sp.Play();  
+                    guideNo = 1;
+                    guideOn = true;
+                    Thread.Sleep(300);
+                    guide(VISIBLE, null);
                     Thread.Sleep(2000);
                     gamestate = 2;
 
                     SkipControl(VISIBLE);
 
-                    guide(2, baseDirectory);
+                    guide(HIDDEN, null);
+                    guideNo = 2;
+                    Thread.Sleep(100);
+                    guide(VISIBLE, null);
+
                     Thread.Sleep(2500);
-                    if (gamestate == 4) /// 바꿔줘 아래 위 전부다 
+                    if (gamestate == 4) /// 인트로 확정 다 넘기자
                         continue;
 
-                    guide(3, baseDirectory);
+                    guide(HIDDEN, null);
+                    guideNo = 3;
+                    Thread.Sleep(100);
+                    guide(VISIBLE, null);
+
                     SoongOut(SCISSOR, baseDirectory);
                     gamestate = 3;
                     SkipControl(HIDDEN);
@@ -439,11 +465,20 @@ namespace SungJik_SungHwa
                     SoongOut(0, baseDirectory);
                     SkipControl(VISIBLE);
 
-                    guide(4, baseDirectory);
+                    guide(HIDDEN, null);
+                    guideNo = 4;
+                    Thread.Sleep(100);
+                    guide(VISIBLE, null);
+
                     Thread.Sleep(2000);
                     if (gamestate == 4)
                         continue;
-                    guide(5, baseDirectory);
+
+                    guide(HIDDEN, null);
+                    guideNo = 5;
+                    Thread.Sleep(100);
+                    guide(VISIBLE, null);
+
                     SoongOut(ROCK, baseDirectory);
                     gamestate = 3;
                     SkipControl(HIDDEN);
@@ -459,11 +494,20 @@ namespace SungJik_SungHwa
                     SoongOut(0, baseDirectory);
                     SkipControl(VISIBLE);
 
-                    guide(4, baseDirectory);
+                    guide(HIDDEN, null);
+                    guideNo = 4;
+                    Thread.Sleep(100);
+                    guide(VISIBLE, null);
+
                     Thread.Sleep(2000);
                     if (gamestate == 4)
                         continue;
-                    guide(6, baseDirectory);
+
+                    guide(HIDDEN, null);
+                    guideNo = 6;
+                    Thread.Sleep(100);
+                    guide(VISIBLE, null);
+
                     SoongOut(PAPER, baseDirectory);
                     gamestate = 3;
                     SkipControl(HIDDEN);
@@ -477,9 +521,14 @@ namespace SungJik_SungHwa
                     }
                     SoongOut(0, baseDirectory);
 
-                    guide(4, baseDirectory);
+                    guide(HIDDEN, null);
+                    guideNo = 4;
+                    Thread.Sleep(100);
+                    guide(VISIBLE, null);
+
                     Thread.Sleep(2000);
 
+                    sp.Stop();
                     gamestate = 4;
                 }
                 else if (gamestate == 4) // 인트로 Song 시작
@@ -487,18 +536,32 @@ namespace SungJik_SungHwa
                     gamestate = 401;    // 프로세스 난입 방지
                     SkipControl(HIDDEN);
 
-                    guide(7, baseDirectory);
+                    guide(HIDDEN, null);
+                    guideNo = 7;
+                    Thread.Sleep(100);
+                    guide(VISIBLE, null);
                     Thread.Sleep(2000);
-                    guide(8, baseDirectory);
+
+                    guide(HIDDEN, null);
+                    guideNo = 8;
+                    Thread.Sleep(100);
+                    guide(VISIBLE, null);
                     Thread.Sleep(2000);
-                    guide(0, baseDirectory);
+
+                    guideOn = false;
+                    guide(HIDDEN, null);
 
                     Console.WriteLine(baseDirectory + "startsong.wav");
                     Console.WriteLine("gamestate : " + gamestate);
                     BgControl(VISIBLE, baseDirectory); //화면 세팅
                     System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "startsong.wav");
-                    sp.PlaySync();
-                    
+                    sp.Play();
+
+                    BgControl(UFO, baseDirectory);
+
+                    Thread.Sleep(8000);
+
+
                     ScoreControl(VISIBLE, baseDirectory, null); 
                     SoongOut(SOONGMAIN, baseDirectory);
 
@@ -516,7 +579,7 @@ namespace SungJik_SungHwa
 
                     //Console.WriteLine("Image Change " + monkeySate);
                     SoongOut(monkeySate, baseDirectory);
-                    Thread.Sleep(500);
+                    
                     gamestate = 6;  // 판별 
                 }
                 else if(gamestate == 7)
@@ -602,6 +665,15 @@ namespace SungJik_SungHwa
                     case VISIBLE:
                         bg.Visibility = System.Windows.Visibility.Visible;
                         break;
+                    case UFO:
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.UriSource = new Uri(baseDirectory + "ufo.gif");
+                        ImageBehavior.SetRepeatBehavior(ufo, new RepeatBehavior(3));
+                        image.EndInit();
+                        ufo.Visibility = System.Windows.Visibility.Visible;
+                        ImageBehavior.SetAnimatedSource(ufo, image); // 이미지 띄우기
+                        break;
                 }
             }));
         }
@@ -610,65 +682,70 @@ namespace SungJik_SungHwa
         {
             Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
             {
-                
                 if (monkeySate == playerState)
+                {
                     WinLoseCount(LOSE);
-                else if(playerState >6)
+                }
+                else if(playerState > 6)
                     WinLoseCount(WIN);
-                Console.WriteLine("Game = " + WinCount);
+                
             }));
         }
 
         private void guide(int i, string ImagePath)
         {
-            Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
-            {
+            Dispatcher.Invoke(DispatcherPriority.Loaded, new Action(delegate
+            {             
+                /*
                 switch (i)
                 {
                     case 0:
                         notice.Visibility = System.Windows.Visibility.Hidden;
-                        break;
+                        return;
                     case 1:
+                        Console.WriteLine("test1");
                         ImagePath += "guide_1.png";
                         notice.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
-                        notice.Visibility = System.Windows.Visibility.Visible;
                         break;
                     case 2:
+                        Console.WriteLine("test2");
                         ImagePath += "guide_2.png";
                         notice.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
-                        notice.Visibility = System.Windows.Visibility.Visible;
                         break;
                     case 3:
                         ImagePath += "guide_3.png";
                         notice.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
-                        notice.Visibility = System.Windows.Visibility.Visible;
                         break;
                     case 4:
                         ImagePath += "guide_4.png";
                         notice.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
-                        notice.Visibility = System.Windows.Visibility.Visible;
                         break;
                     case 5:
                         ImagePath += "guide_5.png";
                         notice.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
-                        notice.Visibility = System.Windows.Visibility.Visible;
                         break;
                     case 6:
                         ImagePath += "guide_6.png";
                         notice.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
-                        notice.Visibility = System.Windows.Visibility.Visible;
                         break;
                     case 7:
                         ImagePath += "guide_7.png";
                         notice.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
-                        notice.Visibility = System.Windows.Visibility.Visible;
                         break;
                     case 8:
                         ImagePath += "guide_8.png";
                         notice.Source = new ImageSourceConverter().ConvertFromString(ImagePath) as ImageSource;
-                        notice.Visibility = System.Windows.Visibility.Visible;
                         break;
-                }
+                }*/
+                if (i == HIDDEN)
+                    notice.Visibility = System.Windows.Visibility.Hidden;
+                else if (i == VISIBLE)
+                    notice.Visibility = System.Windows.Visibility.Visible;
+                else
+                    notice.Source = guideList[i].Source;
+
+                noticePosition();
+                //notice.Visibility = System.Windows.Visibility.Visible;
             }));
         }
         private void Menu(int i, string ImagePath)
@@ -697,6 +774,22 @@ namespace SungJik_SungHwa
                         break;
                 }
             }));
+        }
+
+        private void noticePosition()
+        {
+            
+            Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
+           {
+               if (notice.ActualWidth == 0)
+               {
+                   Canvas.SetLeft(notice, kinect1.ActualWidth / 2 - 200);
+               }
+               
+               Canvas.SetLeft(notice, kinect1.ActualWidth /2 - notice.ActualWidth /2);
+               Canvas.SetTop(notice, Canvas.GetTop(kinect1)+30);
+               Console.WriteLine("total width : " + kinect1.ActualWidth / 2 + " notice Width : "+ notice.ActualWidth);
+           }));
         }
 
         private void ScoreControl(int i, string ImagePath, Image image)

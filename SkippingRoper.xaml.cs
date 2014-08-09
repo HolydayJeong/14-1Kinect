@@ -779,7 +779,7 @@ namespace SungJik_SungHwa
                     }
                     else
                     {
-                        
+
                         Canvas.SetTop(Me, 410);
                         Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].wait) as ImageSource;
                         Canvas.SetTop(Opponent, 410);
@@ -904,7 +904,7 @@ namespace SungJik_SungHwa
             else
             {
                 rope[frameNum - 1].Visibility = System.Windows.Visibility.Hidden;
-            } 
+            }
             rope[frameNum].Visibility = System.Windows.Visibility.Visible;
             this.frameNum = frameNum;
             if (begin == false && frameNum == FRAME_MAX - 2)
