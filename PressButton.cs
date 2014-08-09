@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -67,13 +67,13 @@ namespace SungJik_SungHwa
             {
                 Pull++;
             }
-            /*
-        else
-        {
-            reset(ref hand);
-            Console.WriteLine(Press + " " + Pull);
-        }
-             * */
+                /*
+            else
+            {
+                reset(ref hand);
+                Console.WriteLine(Press + " " + Pull);
+            }
+                 * */
             originalDepth = currentDepth;
         }
 
