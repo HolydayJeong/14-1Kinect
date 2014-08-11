@@ -34,9 +34,10 @@ namespace SungJik_SungHwa
     public partial class Dibi : Window
     {
         const int NONE = 0;
-        const int GAMESTATEYELLOW = 1;
+        const int SkipSource = 1;
         const int GAMESTATEVISIBLE = 2;
         const int UFO = 3;
+        const int HANDHIDDEN = 4;
         //const int SKIPHIDDEN = 3;
         //const int SKIPVISIBLE = 4;
         const int LOSE = 5;
@@ -54,8 +55,9 @@ namespace SungJik_SungHwa
         const int NOTRECOGNIZED = 17;
         const int HIDDEN = 18;
         const int VISIBLE = 19;
+        const int NOBODY = 120;
 
-        SungJik_SungHwa.PressButton Press = new SungJik_SungHwa.PressButton();
+        SungJik_SungHwa.PressButton Press = new SungJik_SungHwa.PressButton(AppDomain.CurrentDomain.BaseDirectory + "Main\\mouse.png", AppDomain.CurrentDomain.BaseDirectory + "Main\\mouse_pull.png");
 
         public Dibi()
         {
@@ -85,10 +87,15 @@ namespace SungJik_SungHwa
 
         int Form = 0;
 
+        int Nobody = 0;
+
+        DepthImagePoint UserHand;
+
         Random random = new Random();
 
         System.Media.SoundPlayer sp1 = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "dibi\\dibidibi.wav");
 
+        // 각 이미지 리스트 선언 //
         public List<Image> guideList = new List<Image>();
         public List<Image> backgroundList = new List<Image>();
         public List<Image> scoreList = new List<Image>();
@@ -131,6 +138,8 @@ namespace SungJik_SungHwa
 
             bg.Source = backgroundList[2].Source;
             colon.Source = backgroundList[3].Source;
+            hand.Source = new ImageSourceConverter().ConvertFromString(AppDomain.CurrentDomain.BaseDirectory + "Main\\mouse.png") as ImageSource;
+
             /////   이미지 세팅 끝    /////
 
             if (KinectSensor.KinectSensors.Count > 0)
@@ -173,8 +182,21 @@ namespace SungJik_SungHwa
             Skeleton me = null;
             GetSkeleton(e, ref me);
 
-            if (me == null)
+            if (Nobody == NOBODY)
+            {
+                Nobody = 121;
+                Console.WriteLine("Nobody 121");
+                goHome();
                 return;
+            }
+
+            if (me == null)
+            {
+                Nobody++;
+                return;
+            }
+            else
+                Nobody = 0;
 
             GetCameraPoint(me, e);
         }
@@ -385,8 +407,6 @@ namespace SungJik_SungHwa
                     SoongOut(NONE, baseDirectory);
                     Menu(1, baseDirectory);
                     ScoreControl(HIDDEN, null, null);
-                    ScoreControl(0, baseDirectory, score1);
-                    ScoreControl(0, baseDirectory, score2);
 
                     GameCount = 0;
                     WinCount = 0;
@@ -397,9 +417,9 @@ namespace SungJik_SungHwa
                 }
                 else if (gamestate == 12)
                 {
+                    hand.Visibility = System.Windows.Visibility.Visible;
                     Point replayTopLeft = new Point(Canvas.GetLeft(replay), Canvas.GetTop(replay));
                     Point homeTopLeft = new Point(Canvas.GetLeft(home), Canvas.GetTop(home));
-
 
                     //해상도 확장으로 인한 변수 값 조정 
                     //(해상도 줄이면 이곳을 주석처리하고 이미지 크기에 /2 지우면 됨)
@@ -409,40 +429,60 @@ namespace SungJik_SungHwa
                     homeTopLeft.Y = homeTopLeft.Y / 2;
                     // 변수값 조정 끝
 
+                    if (RHandDepthPoint.Depth <= LHandDepthPoint.Depth) // 유저의 손이 오른손일 경우
+                        UserHand = RHandDepthPoint;
+                    else
+                        UserHand = LHandDepthPoint;
+
+                    Canvas.SetLeft(hand, UserHand.X * 2 - hand.Width / 2);  // *2 는 해상도 확장으로 인한 변수 값 조정
+                    Canvas.SetTop(hand, UserHand.Y * 2 - hand.Width / 2);   // *2 는 해상도 확장으로 인한 변수 값 조정
+
+                    if (Nobody > NOBODY)
+                    {
+                        goHome();
+                        return;
+                    }
                     // 리플레이
-                    if (RHandDepthPoint.X > replayTopLeft.X && RHandDepthPoint.X < replayTopLeft.X + skip.ActualWidth / 2 && RHandDepthPoint.Y > replayTopLeft.Y && RHandDepthPoint.Y < replayTopLeft.Y + skip.ActualHeight / 2)
-                    //if (RHandDepthPoint.X > 400 && RHandDepthPoint.X < 471 && RHandDepthPoint.Y > 100 && RHandDepthPoint.Y < 140)
+                    else if (UserHand.X > replayTopLeft.X && UserHand.X < replayTopLeft.X + replay.ActualWidth / 2 && UserHand.Y > replayTopLeft.Y && UserHand.Y < replayTopLeft.Y + replay.ActualHeight / 2)
                     {
                         Menu(REPLAYPRESSED, baseDirectory);
-
-                        Press.detectPressure(RHandDepthPoint.Depth);
-                        if (Press.isPressed() == true)
+                        Press.detectPressure(UserHand.Depth, ref hand);
+                        if (Press.isConfirmed() == true)
                         {
                             gamestate = 1201;
-                            Press.reset();
+                            hand.Visibility = System.Windows.Visibility.Hidden;
+                            Press.reset(ref hand);
                             Menu(0, baseDirectory);
 
                             gamestate = 1;      // 다시 초기화
                         }
                     }
                     // 홈으로 가기
-                    else if (RHandDepthPoint.X > homeTopLeft.X && RHandDepthPoint.X < homeTopLeft.X + home.ActualWidth / 2 && RHandDepthPoint.Y > homeTopLeft.Y && RHandDepthPoint.Y < homeTopLeft.Y + home.ActualHeight / 2)
+                    else if (UserHand.X > homeTopLeft.X && UserHand.X < homeTopLeft.X + home.ActualWidth / 2 && UserHand.Y > homeTopLeft.Y && UserHand.Y < homeTopLeft.Y + home.ActualHeight / 2)
                     {
                         Menu(HOMEPRESSED, baseDirectory);
-                        Press.detectPressure(RHandDepthPoint.Depth);
-                        if (Press.isPressed() == true)
+                        Press.detectPressure(UserHand.Depth, ref hand);
+                        if (Press.isConfirmed() == true)
                         {
                             gamestate = 1201;   // 프로세스 난입 방지
-                            Press.reset();
-                            MainWindow main = new MainWindow();
-                            App.Current.MainWindow = main;
-                            this.Close();
-                            main.Show();
+                            hand.Visibility = System.Windows.Visibility.Hidden;
+                            Press.reset(ref hand);
+                            goHome();
                             return;
                         }
                     }
                     else
+                    {
+                        Press.reset(ref hand);
                         Menu(1, baseDirectory);
+                    }
+
+                }
+                else if (gamestate == 13)
+                {
+                    goHome();
+                    this.Close();
+                    return;
                 }
             }
         }
@@ -451,16 +491,20 @@ namespace SungJik_SungHwa
         {
             while (gamestate > -1)
             {
+                if (Nobody > NOBODY)
+                    gamestate=13;
+                Console.WriteLine("gamestate in gamestate : " + gamestate);
                 if (gamestate == 1) // 가이드 시작
                 {
                     gamestate = 101; // 프로세스 난입 방지.
-                    System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "No Spam Polka-wav.wav");
+                    BgControl(HANDHIDDEN, null);        // 손 감추기
+                    System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "No Spam Polka-wav.wav");    // bgm 틀기
                     sp.Play();
                     guideControl(1, 300);
                     Thread.Sleep(2000);
                     gamestate = 2;
 
-                    skip.Source = backgroundList[0].Source;
+                    SkipControl(SkipSource);
                     SkipControl(VISIBLE);
 
                     guideControl(2, 100);
@@ -474,12 +518,16 @@ namespace SungJik_SungHwa
                     SkipControl(HIDDEN);
                     while (playerState != SCISSOR)
                     {
+                        if (Nobody > NOBODY)
+                            break;
                         Console.WriteLine("playerstate : " + playerState);
                         Alert(Form, baseDirectory);
                         Thread.Sleep(800);
                         Alert(NONE, baseDirectory);
                         gamestate = 3;
                     }
+                    if (Nobody > NOBODY)
+                        continue;
                     gamestate = 2;
                     SoongOut(0, baseDirectory);
                     SkipControl(VISIBLE);
@@ -495,6 +543,8 @@ namespace SungJik_SungHwa
                     SkipControl(HIDDEN);
                     while (playerState != ROCK)
                     {
+                        if (Nobody > NOBODY)
+                            break;
                         Console.WriteLine("playerstate : " + playerState);
                         Alert(Form, baseDirectory);
                         Thread.Sleep(800);
@@ -516,6 +566,8 @@ namespace SungJik_SungHwa
                     SkipControl(HIDDEN);
                     while (playerState != PAPER)
                     {
+                        if (Nobody > NOBODY)
+                            break;
                         Console.WriteLine("playerstate : " + playerState);
                         Alert(Form, baseDirectory);
                         Thread.Sleep(800);
@@ -649,6 +701,9 @@ namespace SungJik_SungHwa
             {
                 switch (i)
                 {
+                    case HANDHIDDEN:
+                        hand.Visibility = System.Windows.Visibility.Hidden;
+                        break;
                     case HIDDEN:
                         bg.Visibility = System.Windows.Visibility.Hidden;
                         break;
@@ -659,7 +714,7 @@ namespace SungJik_SungHwa
                         var image = new BitmapImage();
                         image.BeginInit();
                         image.UriSource = new Uri(baseDirectory + "ufo.gif");
-                        ImageBehavior.SetRepeatBehavior(ufo, new RepeatBehavior(3));
+                        ImageBehavior.SetRepeatBehavior(ufo, new RepeatBehavior(1));
                         image.EndInit();
                         ufo.Visibility = System.Windows.Visibility.Visible;
                         ImageBehavior.SetAnimatedSource(ufo, image); // 이미지 띄우기
@@ -680,6 +735,16 @@ namespace SungJik_SungHwa
                     WinLoseCount(WIN);
 
             }));
+        }
+        private void goHome()
+        {
+            MainWindow main = new MainWindow();
+            App.Current.MainWindow = main;
+            Console.WriteLine("this : " + this);
+            this.Close();
+            main.Show();
+            
+            return;
         }
 
         private void guide(int i, string ImagePath)
@@ -810,8 +875,8 @@ namespace SungJik_SungHwa
             {
                 switch (num)
                 {
-                    case GAMESTATEVISIBLE:
-                        skip.Visibility = System.Windows.Visibility.Visible;
+                    case SkipSource:
+                        skip.Source = backgroundList[0].Source;
                         break;
                     case HIDDEN:
                         skip.Visibility = System.Windows.Visibility.Hidden;

@@ -9,6 +9,8 @@ using System.Windows.Media;
 //2014/07/25 Press Button class 버튼 누르는것을 detect 한다
 namespace SungJik_SungHwa
 {
+
+    // Pressing = new PressButton(baseDirectory + "mouse.png", baseDirectory + "mouse_pull.png"); 를 각자 코드 Constructor 에 추가
     class PressButton
     {
         private string hand = null;
