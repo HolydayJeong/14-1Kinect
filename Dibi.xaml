@@ -8,7 +8,7 @@
         <Canvas HorizontalAlignment="Left" Height="920" Margin="0,10,-8,0" VerticalAlignment="Top" Width="1280" Grid.ColumnSpan="3">
             <Image HorizontalAlignment="Left" x:Name="kinect1" Height="920" Width="1280" Stretch="Fill"  VerticalAlignment="Top" Canvas.Top="20"/>
             <Image HorizontalAlignment="Left" x:Name="bg" Height="920" Width="1280" Stretch="Fill"  VerticalAlignment="Top" Canvas.Top="20"/>
-            <Image HorizontalAlignment="Left" x:Name="ufo" Height="920" Width="1280" Stretch="Fill"  VerticalAlignment="Top" Canvas.Top="20"/>
+            <Image HorizontalAlignment="Left" x:Name="ufo" Height="920" Width="1280" Stretch="Fill"  VerticalAlignment="Top" Canvas.Top="-47"/>
             <Image HorizontalAlignment="Left" x:Name="Soong" Height="158" VerticalAlignment="Top" Width="136" RenderTransformOrigin="0.5,0.5"  Canvas.Left="592" Canvas.Top="356"/>
             <Image Height="600" Name="monkey" Canvas.Left="780" Canvas.Top="320" Width="490" RenderTransformOrigin="0.5,0.5"/>
             <Image Name="skip" Height="87" Width="143" Canvas.Left="759" Canvas.Top="283"/>
@@ -19,6 +19,7 @@
             <Image Name="notice" Canvas.Left="170" Canvas.Top="10" />
             <Image Name="home" Height="124" Canvas.Left="440" Canvas.Top="310" Width="124"/>
             <Image Name="replay" Height="124" Canvas.Left="728" Canvas.Top="310" Width="124"/>
+            <Image Name="hand" Height="45" Canvas.Left="1083" Canvas.Top="440" Width="45"/>
         </Canvas>
         <!--        <MediaElement Name="video" HorizontalAlignment="Left" Height="287" VerticalAlignment="Top"  Width="507"  Grid.Column="2" Margin="217,563,0,0" LoadedBehavior="Manual" /> -->
 

@@ -58,10 +58,13 @@ namespace SungJik_SungHwa
         const int NOBODY = 120;
 
         SungJik_SungHwa.PressButton Press = new SungJik_SungHwa.PressButton(AppDomain.CurrentDomain.BaseDirectory + "Main\\mouse.png", AppDomain.CurrentDomain.BaseDirectory + "Main\\mouse_pull.png");
+        
+        public MainWindow Main;
 
-        public Dibi()
+        public Dibi(MainWindow Main)
         {
             InitializeComponent();
+            this.Main = Main;
         }
 
         KinectSensor sensor;
@@ -94,14 +97,13 @@ namespace SungJik_SungHwa
         Random random = new Random();
 
         System.Media.SoundPlayer sp1 = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "dibi\\dibidibi.wav");
-
+        System.Media.SoundPlayer bgm1 = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "dibi\\No Spam Polka-wav.wav");    // bgm 틀기
         // 각 이미지 리스트 선언 //
         public List<Image> guideList = new List<Image>();
         public List<Image> backgroundList = new List<Image>();
         public List<Image> scoreList = new List<Image>();
         public List<Image> menuList = new List<Image>();
         public List<Image> soongList = new List<Image>();
-
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -216,273 +218,270 @@ namespace SungJik_SungHwa
 
         private void GetCameraPoint(Skeleton me, AllFramesReadyEventArgs e)
         {
-            using (DepthImageFrame depth = e.OpenDepthImageFrame())
+            if (SungJik_SungHwa.GLOBAL.SelectedGame == 1)
             {
-                if (depth == null || sensor == null)
+                using (DepthImageFrame depth = e.OpenDepthImageFrame())
                 {
-                    return;
-                }
-
-                // 각 부위 스켈레톤 측정 시작
-                CoordinateMapper coorMap = new CoordinateMapper(sensor);
-                DepthImagePoint headDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.Head].Position, depth.Format);
-                DepthImagePoint neckDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.ShoulderCenter].Position, depth.Format);
-                DepthImagePoint bodyDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.Spine].Position, depth.Format);
-                DepthImagePoint hipDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HipCenter].Position, depth.Format);
-
-                DepthImagePoint LShoulderDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.ShoulderLeft].Position, depth.Format);
-                DepthImagePoint RShoulderDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.ShoulderRight].Position, depth.Format);
-
-                DepthImagePoint LHandDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
-                DepthImagePoint RHandDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandRight].Position, depth.Format);
-                DepthImagePoint LWristDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.WristLeft].Position, depth.Format);
-                DepthImagePoint RWristDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.WristRight].Position, depth.Format);
-                DepthImagePoint LElbowDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.ElbowLeft].Position, depth.Format);
-                DepthImagePoint RElbowDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.ElbowRight].Position, depth.Format);
-
-                // 각 부위 측정 끝
-
-                ColorImagePoint headColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, headDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
-
-                Canvas.SetLeft(Soong, headColorPoint.X - Soong.Width / 2);
-                Canvas.SetTop(Soong, headColorPoint.Y - Soong.Width / 2);
-
-                int HandLength = Math.Abs(RElbowDepthPoint.Y - RWristDepthPoint.Y) * 2;
-                int ElboDistance = RElbowDepthPoint.X - LElbowDepthPoint.X;
-
-                if (guideOn) // 가이드 출력용
-                {
-                    guide(guideNo - 1, baseDirectory);
-                }
-                if (gamestate == 0)
-                {
-                    gamestate = 101;
-
-                    SkipControl(HIDDEN);
-                    BgControl(HIDDEN, baseDirectory);
-
-                    ScoreControl(0, baseDirectory, score1);
-                    ScoreControl(0, baseDirectory, score2);
-                    ScoreControl(HIDDEN, baseDirectory, null);
-
-                    ThreadStart threadStart = new ThreadStart(GameState);
-                    Thread newThread = new Thread(threadStart);
-                    newThread.Start();
-                    gamestate = 1;
-                }
-                else if (gamestate == 2)    //스킵용
-                {
-                    Point targetTopLeft = new Point(Canvas.GetLeft(skip), Canvas.GetTop(skip));
-                    targetTopLeft.X = targetTopLeft.X / 2;
-                    targetTopLeft.Y = targetTopLeft.Y / 2;
-
-                    if (RHandDepthPoint.X > targetTopLeft.X && RHandDepthPoint.X < targetTopLeft.X + skip.ActualWidth / 2 && RHandDepthPoint.Y > targetTopLeft.Y && RHandDepthPoint.Y < targetTopLeft.Y + skip.ActualHeight / 2)
+                    if (depth == null || sensor == null)
                     {
-                        Press.reset();
-                        skip.Source = backgroundList[1].Source;
-                        gamestate = 4;  // 인트로 스킵
-                        Console.WriteLine("gamestate : " + gamestate);
-                    }
-                }
-                else if (gamestate == 3 || gamestate == 6)
-                {
-                    if (gamestate == 3)
-                        gamestate = 301;  // 다른 프로세스 들어옴 방지.
-                    else if (gamestate == 6)
-                        gamestate = 601;    // 프로세스 난입 방지
-
-
-                    if (LHandDepthPoint.X <= LShoulderDepthPoint.X && RHandDepthPoint.X >= RShoulderDepthPoint.X)  // 양쪽손 > 양쪽어깨 비교(벌릴때 / 보)
-                    {
-                        //case 보자기
-                        if (bodyDepthPoint.Y > LHandDepthPoint.Y && bodyDepthPoint.Y > RHandDepthPoint.Y)   // 몸 < 양손 비교하기
-                        {
-                            playerState = PAPER;
-                        }
-                        else
-                        {
-                            Form = HANDSUP;
-                            Alert(HANDSUP, baseDirectory);
-                            playerState = 1;
-                        }
-                    }
-                    else if (LHandDepthPoint.X > LShoulderDepthPoint.X && RHandDepthPoint.X < RShoulderDepthPoint.X && LElbowDepthPoint.X < LShoulderDepthPoint.X && RElbowDepthPoint.X > RShoulderDepthPoint.X)
-                    // 양쪽손 in 양쪽어깨 양쪽 팔꿈치 out 어깨  비교 (모을때 / 묵)
-                    {
-                        // case 묵
-                        if (headDepthPoint.Y < LHandDepthPoint.Y && headDepthPoint.Y < RHandDepthPoint.Y)   // 머리 > 양손 비교하기
-                            if (bodyDepthPoint.Y > LHandDepthPoint.Y && bodyDepthPoint.Y > RHandDepthPoint.Y)   // 몸 < 양손 비교하기
-                            {
-                                playerState = ROCK;
-                            }
-                            else
-                            {
-                                Form = HANDSUP;
-                                Alert(HANDSUP, baseDirectory);
-                                playerState = 2;
-                            }
-                        else
-                        {
-                            Form = HANDSDOWN;
-                            Alert(HANDSDOWN, baseDirectory);
-                            playerState = 3;
-                        }
-                    }
-
-                    else if (RHandDepthPoint.X >= bodyDepthPoint.X && LWristDepthPoint.X > LShoulderDepthPoint.X)  // 왼쪽어깨 < 왼손 , 머리 < 오른손
-                    {
-                        //case 가위
-                        if (headDepthPoint.Y < LHandDepthPoint.Y && headDepthPoint.Y < RHandDepthPoint.Y)   // 머리 > 양손 비교하기
-                            if (hipDepthPoint.Y > LHandDepthPoint.Y && hipDepthPoint.Y > RHandDepthPoint.Y)   // 엉덩이 < 양손 비교하기Form = "가위";
-                            {
-                                playerState = SCISSOR;
-                            }
-                            else
-                            {
-                                Form = HANDSUP;
-                                Alert(HANDSUP, baseDirectory);
-                                playerState = 4;
-                            }
-                        else
-                        {
-                            Form = HANDSDOWN;
-                            Alert(HANDSDOWN, baseDirectory);
-                            playerState = 5;
-                        }
-                    }
-                    else
-                    {
-                        Form = NOTRECOGNIZED;
-                        playerState = 6;
-                    }
-
-                    if (gamestate == 601)     // 게임 중이므로 판별로 넘어가야함
-                    {
-                        gamestate = 7;       // 대기 및 판별인 7로 넘어감
-                    }
-                }
-                else if (gamestate == 9)
-                {
-                    gamestate = 901;    // 프로세스 난입 방지
-
-                    Alert(NONE, baseDirectory);
-
-                    Console.WriteLine("Game Over  : " + WinCount + " : " + LoseCount);
-
-                    if (GameCount == 5)
-                    {
-                        if (WinCount == 3)
-                        {
-                            //doNotice("승리!!");
-                            SoongOut(FINALWIN, baseDirectory);
-                            Alert(FINALWIN, baseDirectory);
-                            System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "win.wav");
-                            sp.Play();
-
-                        }
-                        else if (LoseCount == 3)
-                        {
-                            //doNotice("패배!!");
-                            SoongOut(FINALLOSE, baseDirectory);
-                            Alert(FINALLOSE, baseDirectory);
-                            System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "loose.wav");
-                            sp.Play();
-                        }
-                        gamestate = 10;
-                    }
-                    else
-                    {
-                        SoongOut(SOONGMAIN, baseDirectory);
-                        gamestate = 5;  // 디비디비딥 출력
-                    }
-                }
-                else if (gamestate == 11)   // 끝 정리.
-                {
-                    gamestate = 1101;
-                    ImageBehavior.SetAnimatedSource(monkey, null);  // 이미지 없애기
-                    ImageBehavior.SetAnimatedSource(Alertimg, null);  // 이미지 없애기
-                    ImageBehavior.SetAnimatedSource(ufo, null);  // 이미지 없애기
-                    Alert(NONE, baseDirectory);
-                    BgControl(HIDDEN, baseDirectory);
-                    SoongOut(NONE, baseDirectory);
-                    Menu(1, baseDirectory);
-                    ScoreControl(HIDDEN, null, null);
-
-                    GameCount = 0;
-                    WinCount = 0;
-                    LoseCount = 0;
-                    playerState = 0;
-                    monkeySate = 0;
-                    gamestate = 12;
-                }
-                else if (gamestate == 12)
-                {
-                    hand.Visibility = System.Windows.Visibility.Visible;
-                    Point replayTopLeft = new Point(Canvas.GetLeft(replay), Canvas.GetTop(replay));
-                    Point homeTopLeft = new Point(Canvas.GetLeft(home), Canvas.GetTop(home));
-
-                    //해상도 확장으로 인한 변수 값 조정 
-                    //(해상도 줄이면 이곳을 주석처리하고 이미지 크기에 /2 지우면 됨)
-                    replayTopLeft.X = replayTopLeft.X / 2;
-                    replayTopLeft.Y = replayTopLeft.Y / 2;
-                    homeTopLeft.X = homeTopLeft.X / 2;
-                    homeTopLeft.Y = homeTopLeft.Y / 2;
-                    // 변수값 조정 끝
-
-                    if (RHandDepthPoint.Depth <= LHandDepthPoint.Depth) // 유저의 손이 오른손일 경우
-                        UserHand = RHandDepthPoint;
-                    else
-                        UserHand = LHandDepthPoint;
-
-                    Canvas.SetLeft(hand, UserHand.X * 2 - hand.Width / 2);  // *2 는 해상도 확장으로 인한 변수 값 조정
-                    Canvas.SetTop(hand, UserHand.Y * 2 - hand.Width / 2);   // *2 는 해상도 확장으로 인한 변수 값 조정
-
-                    if (Nobody > NOBODY)
-                    {
-                        goHome();
                         return;
                     }
-                    // 리플레이
-                    else if (UserHand.X > replayTopLeft.X && UserHand.X < replayTopLeft.X + replay.ActualWidth / 2 && UserHand.Y > replayTopLeft.Y && UserHand.Y < replayTopLeft.Y + replay.ActualHeight / 2)
-                    {
-                        Menu(REPLAYPRESSED, baseDirectory);
-                        Press.detectPressure(UserHand.Depth, ref hand);
-                        if (Press.isConfirmed() == true)
-                        {
-                            gamestate = 1201;
-                            hand.Visibility = System.Windows.Visibility.Hidden;
-                            Press.reset(ref hand);
-                            Menu(0, baseDirectory);
 
-                            gamestate = 1;      // 다시 초기화
+                    // 각 부위 스켈레톤 측정 시작
+                    CoordinateMapper coorMap = new CoordinateMapper(sensor);
+                    DepthImagePoint headDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.Head].Position, depth.Format);
+                    DepthImagePoint neckDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.ShoulderCenter].Position, depth.Format);
+                    DepthImagePoint bodyDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.Spine].Position, depth.Format);
+                    DepthImagePoint hipDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HipCenter].Position, depth.Format);
+
+                    DepthImagePoint LShoulderDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.ShoulderLeft].Position, depth.Format);
+                    DepthImagePoint RShoulderDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.ShoulderRight].Position, depth.Format);
+
+                    DepthImagePoint LHandDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
+                    DepthImagePoint RHandDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandRight].Position, depth.Format);
+                    DepthImagePoint LWristDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.WristLeft].Position, depth.Format);
+                    DepthImagePoint RWristDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.WristRight].Position, depth.Format);
+                    DepthImagePoint LElbowDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.ElbowLeft].Position, depth.Format);
+                    DepthImagePoint RElbowDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.ElbowRight].Position, depth.Format);
+
+                    // 각 부위 측정 끝
+
+                    ColorImagePoint headColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, headDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
+
+                    Canvas.SetLeft(Soong, headColorPoint.X - Soong.Width / 2);
+                    Canvas.SetTop(Soong, headColorPoint.Y - Soong.Width / 2);
+
+                    int HandLength = Math.Abs(RElbowDepthPoint.Y - RWristDepthPoint.Y) * 2;
+                    int ElboDistance = RElbowDepthPoint.X - LElbowDepthPoint.X;
+
+                    if (guideOn) // 가이드 출력용
+                    {
+                        guide(guideNo - 1, baseDirectory);
+                    }
+                    if (gamestate == 0)
+                    {
+                        gamestate = 101;
+
+                        SkipControl(HIDDEN);
+                        BgControl(HIDDEN, baseDirectory);
+
+                        ScoreControl(0, baseDirectory, score1);
+                        ScoreControl(0, baseDirectory, score2);
+                        ScoreControl(HIDDEN, baseDirectory, null);
+
+                        ThreadStart threadStart = new ThreadStart(GameState);
+                        Thread newThread = new Thread(threadStart);
+                        newThread.Start();
+                        gamestate = 1;
+                    }
+                    else if (gamestate == 2)    //스킵용
+                    {
+                        Point targetTopLeft = new Point(Canvas.GetLeft(skip), Canvas.GetTop(skip));
+                        targetTopLeft.X = targetTopLeft.X / 2;
+                        targetTopLeft.Y = targetTopLeft.Y / 2;
+
+                        if (RHandDepthPoint.X > targetTopLeft.X && RHandDepthPoint.X < targetTopLeft.X + skip.ActualWidth / 2 && RHandDepthPoint.Y > targetTopLeft.Y && RHandDepthPoint.Y < targetTopLeft.Y + skip.ActualHeight / 2)
+                        {
+                            Press.reset();
+                            skip.Source = backgroundList[1].Source;
+                            gamestate = 4;  // 인트로 스킵
+                            Console.WriteLine("gamestate : " + gamestate);
                         }
                     }
-                    // 홈으로 가기
-                    else if (UserHand.X > homeTopLeft.X && UserHand.X < homeTopLeft.X + home.ActualWidth / 2 && UserHand.Y > homeTopLeft.Y && UserHand.Y < homeTopLeft.Y + home.ActualHeight / 2)
+                    else if (gamestate == 3 || gamestate == 6)
                     {
-                        Menu(HOMEPRESSED, baseDirectory);
-                        Press.detectPressure(UserHand.Depth, ref hand);
-                        if (Press.isConfirmed() == true)
+                        if (gamestate == 3)
+                            gamestate = 301;  // 다른 프로세스 들어옴 방지.
+                        else if (gamestate == 6)
+                            gamestate = 601;    // 프로세스 난입 방지
+
+
+                        if (LHandDepthPoint.X <= LShoulderDepthPoint.X && RHandDepthPoint.X >= RShoulderDepthPoint.X)  // 양쪽손 > 양쪽어깨 비교(벌릴때 / 보)
                         {
-                            gamestate = 1201;   // 프로세스 난입 방지
-                            hand.Visibility = System.Windows.Visibility.Hidden;
-                            Press.reset(ref hand);
+                            //case 보자기
+                            if (bodyDepthPoint.Y > LHandDepthPoint.Y && bodyDepthPoint.Y > RHandDepthPoint.Y)   // 몸 < 양손 비교하기
+                            {
+                                playerState = PAPER;
+                            }
+                            else
+                            {
+                                Form = HANDSUP;
+                                Alert(HANDSUP, baseDirectory);
+                                playerState = 1;
+                            }
+                        }
+                        else if (LHandDepthPoint.X > LShoulderDepthPoint.X && RHandDepthPoint.X < RShoulderDepthPoint.X && LElbowDepthPoint.X < LShoulderDepthPoint.X && RElbowDepthPoint.X > RShoulderDepthPoint.X)
+                        // 양쪽손 in 양쪽어깨 양쪽 팔꿈치 out 어깨  비교 (모을때 / 묵)
+                        {
+                            // case 묵
+                            if (headDepthPoint.Y < LHandDepthPoint.Y && headDepthPoint.Y < RHandDepthPoint.Y)   // 머리 > 양손 비교하기
+                                if (bodyDepthPoint.Y > LHandDepthPoint.Y && bodyDepthPoint.Y > RHandDepthPoint.Y)   // 몸 < 양손 비교하기
+                                {
+                                    playerState = ROCK;
+                                }
+                                else
+                                {
+                                    Form = HANDSUP;
+                                    Alert(HANDSUP, baseDirectory);
+                                    playerState = 2;
+                                }
+                            else
+                            {
+                                Form = HANDSDOWN;
+                                Alert(HANDSDOWN, baseDirectory);
+                                playerState = 3;
+                            }
+                        }
+
+                        else if (RHandDepthPoint.X >= bodyDepthPoint.X && LWristDepthPoint.X > LShoulderDepthPoint.X)  // 왼쪽어깨 < 왼손 , 머리 < 오른손
+                        {
+                            //case 가위
+                            if (headDepthPoint.Y < LHandDepthPoint.Y && headDepthPoint.Y < RHandDepthPoint.Y)   // 머리 > 양손 비교하기
+                                if (hipDepthPoint.Y > LHandDepthPoint.Y && hipDepthPoint.Y > RHandDepthPoint.Y)   // 엉덩이 < 양손 비교하기Form = "가위";
+                                {
+                                    playerState = SCISSOR;
+                                }
+                                else
+                                {
+                                    Form = HANDSUP;
+                                    Alert(HANDSUP, baseDirectory);
+                                    playerState = 4;
+                                }
+                            else
+                            {
+                                Form = HANDSDOWN;
+                                Alert(HANDSDOWN, baseDirectory);
+                                playerState = 5;
+                            }
+                        }
+                        else
+                        {
+                            Form = NOTRECOGNIZED;
+                            playerState = 6;
+                        }
+
+                        if (gamestate == 601)     // 게임 중이므로 판별로 넘어가야함
+                        {
+                            gamestate = 7;       // 대기 및 판별인 7로 넘어감
+                        }
+                    }
+                    else if (gamestate == 9)
+                    {
+                        gamestate = 901;    // 프로세스 난입 방지
+
+                        Alert(NONE, baseDirectory);
+
+                        Console.WriteLine("Game Over  : " + WinCount + " : " + LoseCount);
+
+                        if (GameCount == 5)
+                        {
+                            if (WinCount == 3)
+                            {
+                                //doNotice("승리!!");
+                                SoongOut(FINALWIN, baseDirectory);
+                                Alert(FINALWIN, baseDirectory);
+                                System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "win.wav");
+                                sp.Play();
+
+                            }
+                            else if (LoseCount == 3)
+                            {
+                                //doNotice("패배!!");
+                                SoongOut(FINALLOSE, baseDirectory);
+                                Alert(FINALLOSE, baseDirectory);
+                                System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "loose.wav");
+                                sp.Play();
+                            }
+                            gamestate = 10;
+                        }
+                        else
+                        {
+                            SoongOut(SOONGMAIN, baseDirectory);
+                            gamestate = 5;  // 디비디비딥 출력
+                        }
+                    }
+                    else if (gamestate == 11)   // 끝 정리.
+                    {
+                        gamestate = 1101;
+                        ImageBehavior.SetAnimatedSource(monkey, null);  // 이미지 없애기
+                        ImageBehavior.SetAnimatedSource(Alertimg, null);  // 이미지 없애기
+                        ImageBehavior.SetAnimatedSource(ufo, null);  // 이미지 없애기
+                        Alert(NONE, baseDirectory);
+                        BgControl(HIDDEN, baseDirectory);
+                        SoongOut(NONE, baseDirectory);
+                        Menu(1, baseDirectory);
+                        ScoreControl(HIDDEN, null, null);
+
+                        GameCount = 0;
+                        WinCount = 0;
+                        LoseCount = 0;
+                        playerState = 0;
+                        monkeySate = 0;
+                        gamestate = 12;
+                    }
+                    else if (gamestate == 12)
+                    {
+                        hand.Visibility = System.Windows.Visibility.Visible;
+                        Point replayTopLeft = new Point(Canvas.GetLeft(replay), Canvas.GetTop(replay));
+                        Point homeTopLeft = new Point(Canvas.GetLeft(home), Canvas.GetTop(home));
+
+                        //해상도 확장으로 인한 변수 값 조정 
+                        //(해상도 줄이면 이곳을 주석처리하고 이미지 크기에 /2 지우면 됨)
+                        replayTopLeft.X = replayTopLeft.X / 2;
+                        replayTopLeft.Y = replayTopLeft.Y / 2;
+                        homeTopLeft.X = homeTopLeft.X / 2;
+                        homeTopLeft.Y = homeTopLeft.Y / 2;
+                        // 변수값 조정 끝
+
+                        if (RHandDepthPoint.Depth <= LHandDepthPoint.Depth) // 유저의 손이 오른손일 경우
+                            UserHand = RHandDepthPoint;
+                        else
+                            UserHand = LHandDepthPoint;
+
+                        Canvas.SetLeft(hand, UserHand.X * 2 - hand.Width / 2);  // *2 는 해상도 확장으로 인한 변수 값 조정
+                        Canvas.SetTop(hand, UserHand.Y * 2 - hand.Width / 2);   // *2 는 해상도 확장으로 인한 변수 값 조정
+
+                        if (Nobody > NOBODY)
+                        {
                             goHome();
                             return;
                         }
-                    }
-                    else
-                    {
-                        Press.reset(ref hand);
-                        Menu(1, baseDirectory);
-                    }
+                        // 리플레이
+                        else if (UserHand.X > replayTopLeft.X && UserHand.X < replayTopLeft.X + replay.ActualWidth / 2 && UserHand.Y > replayTopLeft.Y && UserHand.Y < replayTopLeft.Y + replay.ActualHeight / 2)
+                        {
+                            Menu(REPLAYPRESSED, baseDirectory);
+                            Press.detectPressure(UserHand.Depth, ref hand);
+                            if (Press.isConfirmed() == true)
+                            {
+                                gamestate = 1201;
+                                hand.Visibility = System.Windows.Visibility.Hidden;
+                                Press.reset(ref hand);
+                                Menu(0, baseDirectory);
 
-                }
-                else if (gamestate == 13)
-                {
-                    goHome();
-                    this.Close();
-                    return;
+                                gamestate = 1;      // 다시 초기화
+                            }
+                        }
+                        // 홈으로 가기
+                        else if (UserHand.X > homeTopLeft.X && UserHand.X < homeTopLeft.X + home.ActualWidth / 2 && UserHand.Y > homeTopLeft.Y && UserHand.Y < homeTopLeft.Y + home.ActualHeight / 2)
+                        {
+                            Menu(HOMEPRESSED, baseDirectory);
+                            Press.detectPressure(UserHand.Depth, ref hand);
+                            if (Press.isConfirmed() == true)
+                            {
+                                gamestate = 1201;   // 프로세스 난입 방지
+                                hand.Visibility = System.Windows.Visibility.Hidden;
+                                Press.reset(ref hand);
+                                goHome();
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            Press.reset(ref hand);
+                            Menu(1, baseDirectory);
+                        }
+
+                    }
                 }
             }
         }
@@ -492,14 +491,18 @@ namespace SungJik_SungHwa
             while (gamestate > -1)
             {
                 if (Nobody > NOBODY)
-                    gamestate=13;
+                {
+                    bgm1.Stop();
+                    goHome();
+                }
+                else if (SungJik_SungHwa.GLOBAL.SelectedGame != 1)
+                    break;
                 Console.WriteLine("gamestate in gamestate : " + gamestate);
                 if (gamestate == 1) // 가이드 시작
                 {
                     gamestate = 101; // 프로세스 난입 방지.
                     BgControl(HANDHIDDEN, null);        // 손 감추기
-                    System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "No Spam Polka-wav.wav");    // bgm 틀기
-                    sp.Play();
+                    bgm1.Play();
                     guideControl(1, 300);
                     Thread.Sleep(2000);
                     gamestate = 2;
@@ -578,7 +581,7 @@ namespace SungJik_SungHwa
 
                     guideControl(4, 100);
                     Thread.Sleep(2000);
-                    sp.Stop();
+                    bgm1.Stop();
                     gamestate = 4;
                 }
                 else if (gamestate == 4) // 인트로 Song 시작
@@ -605,7 +608,6 @@ namespace SungJik_SungHwa
                     BgControl(UFO, baseDirectory);
 
                     Thread.Sleep(8000);
-
 
                     ScoreControl(VISIBLE, baseDirectory, null);
                     SoongOut(SOONGMAIN, baseDirectory);
@@ -738,13 +740,15 @@ namespace SungJik_SungHwa
         }
         private void goHome()
         {
-            MainWindow main = new MainWindow();
-            App.Current.MainWindow = main;
-            Console.WriteLine("this : " + this);
-            this.Close();
-            main.Show();
-            
-            return;
+            Dispatcher.Invoke(DispatcherPriority.Loaded, new Action(delegate
+           {
+               gamestate = 1201;
+               Main.Show();
+               SungJik_SungHwa.GLOBAL.SelectedGame = 0;
+               this.Hide();
+               gamestate = 0;
+               return;
+           }));
         }
 
         private void guide(int i, string ImagePath)
