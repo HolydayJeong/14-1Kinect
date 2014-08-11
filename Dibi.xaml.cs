@@ -119,6 +119,7 @@ namespace SungJik_SungHwa
 
             //  배경 이미지 리스트 (skip, 배경, :) //
             backgroundList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "skip.png")) });
+            backgroundList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "skip_on.png")) });
             backgroundList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "bg3.png")) });
             backgroundList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "colon.png")) });
 
@@ -128,9 +129,8 @@ namespace SungJik_SungHwa
             menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "re_db.png")) });
             menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "re_db_on.png")) });
 
-            skip.Source = backgroundList[0].Source;
-            bg.Source = backgroundList[1].Source;
-            colon.Source = backgroundList[2].Source;
+            bg.Source = backgroundList[2].Source;
+            colon.Source = backgroundList[3].Source;
             /////   이미지 세팅 끝    /////
 
             if (KinectSensor.KinectSensors.Count > 0)
@@ -150,7 +150,6 @@ namespace SungJik_SungHwa
                 sensor.AllFramesReady += sensor_AllFramesReady;
                 sensor.Start();
             }
-
         }
 
 
@@ -258,6 +257,7 @@ namespace SungJik_SungHwa
                     if (RHandDepthPoint.X > targetTopLeft.X && RHandDepthPoint.X < targetTopLeft.X + skip.ActualWidth / 2 && RHandDepthPoint.Y > targetTopLeft.Y && RHandDepthPoint.Y < targetTopLeft.Y + skip.ActualHeight / 2)
                     {
                         Press.reset();
+                        skip.Source = backgroundList[1].Source;
                         gamestate = 4;  // 인트로 스킵
                         Console.WriteLine("gamestate : " + gamestate);
                     }
@@ -457,35 +457,18 @@ namespace SungJik_SungHwa
                     System.Media.SoundPlayer sp = new System.Media.SoundPlayer(baseDirectory + "No Spam Polka-wav.wav");
                     sp.Play();
                     guideControl(1, 300);
-                    /*
-                    guideNo = 1;
-                    guideOn = true;
-                    Thread.Sleep(300);
-                    guide(VISIBLE, null);
-                     */ 
                     Thread.Sleep(2000);
                     gamestate = 2;
 
+                    skip.Source = backgroundList[0].Source;
                     SkipControl(VISIBLE);
 
                     guideControl(2, 100);
-                    /*
-                    guide(HIDDEN, null);
-                    guideNo = 2;
-                    Thread.Sleep(100);
-                    guide(VISIBLE, null);
-                    */
                     Thread.Sleep(2500);
                     if (gamestate == 4) /// 인트로 확정 다 넘기자
                         continue;
 
                     guideControl(3, 100);
-                    /*
-                    guide(HIDDEN, null);
-                    guideNo = 3;
-                    Thread.Sleep(100);
-                    guide(VISIBLE, null);
-                    */
                     SoongOut(SCISSOR, baseDirectory);
                     gamestate = 3;
                     SkipControl(HIDDEN);
@@ -502,23 +485,11 @@ namespace SungJik_SungHwa
                     SkipControl(VISIBLE);
 
                     guideControl(4, 100);
-                    /*
-                    guide(HIDDEN, null);
-                    guideNo = 4;
-                    Thread.Sleep(100);
-                    guide(VISIBLE, null);
-                    */
                     Thread.Sleep(2000);
                     if (gamestate == 4)
                         continue;
 
                     guideControl(5, 100);
-                    /*
-                    guide(HIDDEN, null);
-                    guideNo = 5;
-                    Thread.Sleep(100);
-                    guide(VISIBLE, null);
-                    */
                     SoongOut(ROCK, baseDirectory);
                     gamestate = 3;
                     SkipControl(HIDDEN);
@@ -535,23 +506,11 @@ namespace SungJik_SungHwa
                     SkipControl(VISIBLE);
 
                     guideControl(4, 100);
-                    /*
-                    guide(HIDDEN, null);
-                    guideNo = 4;
-                    Thread.Sleep(100);
-                    guide(VISIBLE, null);
-                    */
                     Thread.Sleep(2000);
                     if (gamestate == 4)
                         continue;
 
                     guideControl(6, 100);
-                    /*
-                    guide(HIDDEN, null);
-                    guideNo = 6;
-                    Thread.Sleep(100);
-                    guide(VISIBLE, null);
-                    */
                     SoongOut(PAPER, baseDirectory);
                     gamestate = 3;
                     SkipControl(HIDDEN);
@@ -566,12 +525,6 @@ namespace SungJik_SungHwa
                     SoongOut(0, baseDirectory);
 
                     guideControl(4, 100);
-                    /*
-                    guide(HIDDEN, null);
-                    guideNo = 4;
-                    Thread.Sleep(100);
-                    guide(VISIBLE, null);
-                    */
                     Thread.Sleep(2000);
                     sp.Stop();
                     gamestate = 4;
@@ -582,21 +535,9 @@ namespace SungJik_SungHwa
                     SkipControl(HIDDEN);
 
                     guideControl(7, 100);
-                    /*
-                    guide(HIDDEN, null);
-                    guideNo = 7;
-                    Thread.Sleep(100);
-                    guide(VISIBLE, null);
-                     * */
                     Thread.Sleep(2000);
 
                     guideControl(8, 100);
-                    /*
-                    guide(HIDDEN, null);
-                    guideNo = 8;
-                    Thread.Sleep(100);
-                    guide(VISIBLE, null);
-                     * */
                     Thread.Sleep(2000);
 
                     guideOn = false;
