@@ -582,7 +582,7 @@ namespace SungJik_SungHwa
 
                     //Console.WriteLine("Image Change " + monkeySate);
                     SoongOut(monkeySate, baseDirectory);
-                    
+                    Thread.Sleep(500);
                     gamestate = 6;  // 판별 
                 }
                 else if(gamestate == 7)
@@ -685,11 +685,12 @@ namespace SungJik_SungHwa
         {
             Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
             {
-                if (monkeySate == playerState)
-                {
+                
+                if (monkeySate == playerState){
                     WinLoseCount(LOSE);
+
                 }
-                else if(playerState > 6)
+                else if(playerState >6)
                     WinLoseCount(WIN);
                 
             }));
