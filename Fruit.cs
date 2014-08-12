@@ -40,8 +40,8 @@ namespace EatingFruit
         Canvas GuideCanvas = new Canvas();
         Canvas MouCanvas = new Canvas();
 
-        List<Image> Color = new List<Image>();
-
+        List<Image> ColorDigit = new List<Image>();
+        List<Image> BlackDigit = new List<Image>();
         int counter1 = 0;
         int SungScore = 0;
         int MouScore = 0;
@@ -89,6 +89,18 @@ namespace EatingFruit
             Replay.Visibility = Visibility.Hidden;
             Home.Visibility = Visibility.Hidden;
             //  hand.Visibility = Visibility.Hidden;
+
+            int i;
+
+            for (i = 0; i < 10; i++)
+                ColorDigit.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "nc" + i + ".png")) });
+            ColorDigit.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "nc-.png")) });
+
+            for (i = 0; i < 10; i++)
+                BlackDigit.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "n" + i + ".png")) });
+            BlackDigit.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "n-.png")) });
+    
+
 
         }
 
@@ -408,7 +420,6 @@ namespace EatingFruit
 
         }
 
-        //1이면 Mou 2이면 Sung 
         void Score(int Score, int check)
         {
             Image img1, img10, img100, img1000, img10000;
@@ -441,84 +452,79 @@ namespace EatingFruit
 
             //  Console.WriteLine(SungScorre / 1000);
             if (Score < 0)
-                img10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n-.png") as ImageSource;
+                img10000.Source = BlackDigit[10].Source;
             else
             {
-                if (NScore / 10000 == 0) img10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n0.png") as ImageSource;
-                else if (NScore / 10000 == 1) img10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n1.png") as ImageSource;
-                else if (NScore / 10000 == 2) img10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n2.png") as ImageSource;
-                else if (NScore / 10000 == 3) img10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n3.png") as ImageSource;
-                else if (NScore / 10000 == 4) img10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n4.png") as ImageSource;
-                else if (NScore / 10000 == 5) img10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n5.png") as ImageSource;
-                else if (NScore / 10000 == 6) img10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n6.png") as ImageSource;
-                else if (NScore / 10000 == 7) img10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n7.png") as ImageSource;
-                else if (NScore / 10000 == 8) img10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n8.png") as ImageSource;
-                else if (NScore / 10000 == 9) img10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n9.png") as ImageSource;
+                if (NScore / 10000 == 0) img10000.Source = BlackDigit[0].Source;
+                else if (NScore / 10000 == 1) img10000.Source = BlackDigit[1].Source;
+                else if (NScore / 10000 == 2) img10000.Source = BlackDigit[2].Source;
+                else if (NScore / 10000 == 3) img10000.Source = BlackDigit[3].Source;
+                else if (NScore / 10000 == 4) img10000.Source = BlackDigit[4].Source;
+                else if (NScore / 10000 == 5) img10000.Source = BlackDigit[5].Source;
+                else if (NScore / 10000 == 6) img10000.Source = BlackDigit[6].Source;
+                else if (NScore / 10000 == 7) img10000.Source = BlackDigit[7].Source;
+                else if (NScore / 10000 == 8) img10000.Source = BlackDigit[8].Source;
+                else if (NScore / 10000 == 9) img10000.Source = BlackDigit[9].Source;
                 else return;
             }
             img10000.Visibility = Visibility.Visible;
 
             NScore = NScore % 10000;
-            if (NScore / 1000 == 0) img1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n0.png") as ImageSource;
-            else if (NScore / 1000 == 1) img1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n1.png") as ImageSource;
-            else if (NScore / 1000 == 2) img1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n2.png") as ImageSource;
-            else if (NScore / 1000 == 3) img1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n3.png") as ImageSource;
-            else if (NScore / 1000 == 4) img1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n4.png") as ImageSource;
-            else if (NScore / 1000 == 5) img1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n5.png") as ImageSource;
-            else if (NScore / 1000 == 6) img1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n6.png") as ImageSource;
-            else if (NScore / 1000 == 7) img1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n7.png") as ImageSource;
-            else if (NScore / 1000 == 8) img1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n8.png") as ImageSource;
-            else if (NScore / 1000 == 9) img1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n9.png") as ImageSource;
-            else return;
+            if (NScore / 1000 == 0) img1000.Source = BlackDigit[0].Source;
+            else if (NScore / 1000 == 1) img1000.Source = BlackDigit[1].Source;
+            else if (NScore / 1000 == 2) img1000.Source = BlackDigit[2].Source;
+            else if (NScore / 1000 == 3) img1000.Source = BlackDigit[3].Source;
+            else if (NScore / 1000 == 4) img1000.Source = BlackDigit[4].Source;
+            else if (NScore / 1000 == 5) img1000.Source = BlackDigit[5].Source;
+            else if (NScore / 1000 == 6) img1000.Source = BlackDigit[6].Source;
+            else if (NScore / 1000 == 7) img1000.Source = BlackDigit[7].Source;
+            else if (NScore / 1000 == 8) img1000.Source = BlackDigit[8].Source;
+            else if (NScore / 1000 == 9) img1000.Source = BlackDigit[9].Source;
 
             img1000.Visibility = Visibility.Visible;
 
             NScore = NScore % 1000;
             //  Console.WriteLine(NScore/100);
-            if (NScore / 100 == 0) img100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n0.png") as ImageSource;
-            else if (NScore / 100 == 1) img100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n1.png") as ImageSource;
-            else if (NScore / 100 == 2) img100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n2.png") as ImageSource;
-            else if (NScore / 100 == 3) img100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n3.png") as ImageSource;
-            else if (NScore / 100 == 4) img100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n4.png") as ImageSource;
-            else if (NScore / 100 == 5) img100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n5.png") as ImageSource;
-            else if (NScore / 100 == 6) img100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n6.png") as ImageSource;
-            else if (NScore / 100 == 7) img100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n7.png") as ImageSource;
-            else if (NScore / 100 == 8) img100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n8.png") as ImageSource;
-            else if (NScore / 100 == 9) img100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n9.png") as ImageSource;
-            else return;
+            if (NScore / 100 == 0) img100.Source = BlackDigit[0].Source;
+            else if (NScore / 100 == 1) img100.Source = BlackDigit[1].Source;
+            else if (NScore / 100 == 2) img100.Source = BlackDigit[2].Source;
+            else if (NScore / 100 == 3) img100.Source = BlackDigit[3].Source;
+            else if (NScore / 100 == 4) img100.Source = BlackDigit[4].Source;
+            else if (NScore / 100 == 5) img100.Source = BlackDigit[5].Source;
+            else if (NScore / 100 == 6) img100.Source = BlackDigit[6].Source;
+            else if (NScore / 100 == 7) img100.Source = BlackDigit[7].Source;
+            else if (NScore / 100 == 8) img100.Source = BlackDigit[8].Source;
+            else if (NScore / 100 == 9) img100.Source = BlackDigit[9].Source;
             img100.Visibility = Visibility.Visible;
 
             NScore = NScore % 100;
             //   Console.WriteLine(NScore/10);
-            if (NScore / 10 == 0) img10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n0.png") as ImageSource;
-            else if (NScore / 10 == 1) img10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n1.png") as ImageSource;
-            else if (NScore / 10 == 2) img10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n2.png") as ImageSource;
-            else if (NScore / 10 == 3) img10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n3.png") as ImageSource;
-            else if (NScore / 10 == 4) img10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n4.png") as ImageSource;
-            else if (NScore / 10 == 5) img10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n5.png") as ImageSource;
-            else if (NScore / 10 == 6) img10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n6.png") as ImageSource;
-            else if (NScore / 10 == 7) img10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n7.png") as ImageSource;
-            else if (NScore / 10 == 8) img10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n8.png") as ImageSource;
-            else if (NScore / 10 == 9) img10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n9.png") as ImageSource;
-            else return;
+            if (NScore / 10 == 0) img10.Source = BlackDigit[0].Source;
+            else if (NScore / 10 == 1) img10.Source = BlackDigit[1].Source;
+            else if (NScore / 10 == 2) img10.Source = BlackDigit[2].Source;
+            else if (NScore / 10 == 3) img10.Source = BlackDigit[3].Source;
+            else if (NScore / 10 == 4) img10.Source = BlackDigit[4].Source;
+            else if (NScore / 10 == 5) img10.Source = BlackDigit[5].Source;
+            else if (NScore / 10 == 6) img10.Source = BlackDigit[6].Source;
+            else if (NScore / 10 == 7) img10.Source = BlackDigit[7].Source;
+            else if (NScore / 10 == 8) img10.Source = BlackDigit[8].Source;
+            else if (NScore / 10 == 9) img10.Source = BlackDigit[9].Source;
             img10.Visibility = Visibility.Visible;
 
             //  Console.WriteLine(NScore%10);
-            if (NScore % 10 == 0) img1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n0.png") as ImageSource;
-            else if (NScore % 10 == 1) img1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n1.png") as ImageSource;
-            else if (NScore % 10 == 2) img1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n2.png") as ImageSource;
-            else if (NScore % 10 == 3) img1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n3.png") as ImageSource;
-            else if (NScore % 10 == 4) img1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n4.png") as ImageSource;
-            else if (NScore % 10 == 5) img1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n5.png") as ImageSource;
-            else if (NScore % 10 == 6) img1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n6.png") as ImageSource;
-            else if (NScore % 10 == 7) img1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n7.png") as ImageSource;
-            else if (NScore % 10 == 8) img1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n8.png") as ImageSource;
-            else if (NScore % 10 == 9) img1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "n9.png") as ImageSource;
-            else return;
+            if (NScore % 10 == 0) img1.Source = BlackDigit[0].Source;
+            else if (NScore % 10 == 1) img1.Source = BlackDigit[1].Source;
+            else if (NScore % 10 == 2) img1.Source = BlackDigit[2].Source;
+            else if (NScore % 10 == 3) img1.Source = BlackDigit[3].Source;
+            else if (NScore % 10 == 4) img1.Source = BlackDigit[4].Source;
+            else if (NScore % 10 == 5) img1.Source = BlackDigit[5].Source;
+            else if (NScore % 10 == 6) img1.Source = BlackDigit[6].Source;
+            else if (NScore % 10 == 7) img1.Source = BlackDigit[7].Source;
+            else if (NScore % 10 == 8) img1.Source = BlackDigit[8].Source;
+            else if (NScore % 10 == 9) img1.Source = BlackDigit[9].Source;
             img1.Visibility = Visibility.Visible;
 
         }
-
         void LastScore(int NScore)
         {
             if (NScore < 0)
@@ -526,79 +532,79 @@ namespace EatingFruit
 
             //  Console.WriteLine(SungScore / 1000);
             if (NScore < 0)
-                _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc-.png") as ImageSource;
+                _10000.Source = ColorDigit[10].Source;
             else
             {
-                if (NScore / 10000 == 0) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc0.png") as ImageSource;
-                else if (NScore / 10000 == 1) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc1.png") as ImageSource;
-                else if (NScore / 10000 == 2) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc2.png") as ImageSource;
-                else if (NScore / 10000 == 3) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc3.png") as ImageSource;
-                else if (NScore / 10000 == 4) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc4.png") as ImageSource;
-                else if (NScore / 10000 == 5) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc5.png") as ImageSource;
-                else if (NScore / 10000 == 6) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc6.png") as ImageSource;
-                else if (NScore / 10000 == 7) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc7.png") as ImageSource;
-                else if (NScore / 10000 == 8) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc8.png") as ImageSource;
-                else if (NScore / 10000 == 9) _10000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc9.png") as ImageSource;
+                if (NScore / 10000 == 0) _10000.Source = ColorDigit[0].Source;
+                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[1].Source;
+                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[2].Source;
+                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[3].Source;
+                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[4].Source;
+                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[5].Source;
+                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[6].Source;
+                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[7].Source;
+                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[8].Source;
+                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[9].Source;
                 else return;
             }
             _10000.Visibility = Visibility.Visible;
 
 
             NScore = NScore % 10000;
-            if (NScore / 1000 == 0) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc0.png") as ImageSource;
-            else if (NScore / 1000 == 1) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc1.png") as ImageSource;
-            else if (NScore / 1000 == 2) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc2.png") as ImageSource;
-            else if (NScore / 1000 == 3) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc3.png") as ImageSource;
-            else if (NScore / 1000 == 4) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc4.png") as ImageSource;
-            else if (NScore / 1000 == 5) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc5.png") as ImageSource;
-            else if (NScore / 1000 == 6) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc6.png") as ImageSource;
-            else if (NScore / 1000 == 7) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc7.png") as ImageSource;
-            else if (NScore / 1000 == 8) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc8.png") as ImageSource;
-            else if (NScore / 1000 == 9) _1000.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc9.png") as ImageSource;
+            if (NScore / 1000 == 0) _10000.Source = ColorDigit[0].Source;
+            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[1].Source;
+            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[2].Source;
+            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[3].Source;
+            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[4].Source;
+            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[5].Source;
+            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[6].Source;
+            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[7].Source;
+            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[8].Source;
+            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[9].Source;
             else return;
 
             _1000.Visibility = Visibility.Visible;
             NScore = NScore % 1000;
             //  Console.WriteLine(NScore/100);
-            if (NScore / 100 == 0) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc0.png") as ImageSource;
-            else if (NScore / 100 == 1) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc1.png") as ImageSource;
-            else if (NScore / 100 == 2) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc2.png") as ImageSource;
-            else if (NScore / 100 == 3) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc3.png") as ImageSource;
-            else if (NScore / 100 == 4) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc4.png") as ImageSource;
-            else if (NScore / 100 == 5) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc5.png") as ImageSource;
-            else if (NScore / 100 == 6) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc6.png") as ImageSource;
-            else if (NScore / 100 == 7) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc7.png") as ImageSource;
-            else if (NScore / 100 == 8) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc8.png") as ImageSource;
-            else if (NScore / 100 == 9) _100.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc9.png") as ImageSource;
+            if (NScore / 100 == 0) _100.Source = ColorDigit[0].Source;
+            else if (NScore / 100 == 1) _100.Source = ColorDigit[1].Source;
+            else if (NScore / 100 == 1) _100.Source = ColorDigit[2].Source;
+            else if (NScore / 100 == 1) _100.Source = ColorDigit[3].Source;
+            else if (NScore / 100 == 1) _100.Source = ColorDigit[4].Source;
+            else if (NScore / 100 == 1) _100.Source = ColorDigit[5].Source;
+            else if (NScore / 100 == 1) _100.Source = ColorDigit[6].Source;
+            else if (NScore / 100 == 1) _100.Source = ColorDigit[7].Source;
+            else if (NScore / 100 == 1) _100.Source = ColorDigit[8].Source;
+            else if (NScore / 100 == 1) _100.Source = ColorDigit[9].Source;
             else return;
             _100.Visibility = Visibility.Visible;
 
             NScore = NScore % 100;
             //   Console.WriteLine(NScore/10);
-            if (NScore / 10 == 0) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc0.png") as ImageSource;
-            else if (NScore / 10 == 1) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc1.png") as ImageSource;
-            else if (NScore / 10 == 2) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc2.png") as ImageSource;
-            else if (NScore / 10 == 3) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc3.png") as ImageSource;
-            else if (NScore / 10 == 4) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc4.png") as ImageSource;
-            else if (NScore / 10 == 5) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc5.png") as ImageSource;
-            else if (NScore / 10 == 6) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc6.png") as ImageSource;
-            else if (NScore / 10 == 7) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc7.png") as ImageSource;
-            else if (NScore / 10 == 8) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc8.png") as ImageSource;
-            else if (NScore / 10 == 9) _10.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc9.png") as ImageSource;
+            if (NScore / 10 == 0) _10000.Source = ColorDigit[0].Source;
+            else if (NScore / 10 == 1) _10.Source = ColorDigit[1].Source;
+            else if (NScore / 10 == 1) _10.Source = ColorDigit[2].Source;
+            else if (NScore / 10 == 1) _10.Source = ColorDigit[3].Source;
+            else if (NScore / 10 == 1) _10.Source = ColorDigit[4].Source;
+            else if (NScore / 10 == 1) _10.Source = ColorDigit[5].Source;
+            else if (NScore / 10 == 1) _10.Source = ColorDigit[6].Source;
+            else if (NScore / 10 == 1) _10.Source = ColorDigit[7].Source;
+            else if (NScore / 10 == 1) _10.Source = ColorDigit[8].Source;
+            else if (NScore / 10 == 1) _10.Source = ColorDigit[9].Source;
             else return;
             _10.Visibility = Visibility.Visible;
 
             //  Console.WriteLine(NScore%10);
-            if (NScore % 10 == 0) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc0.png") as ImageSource;
-            else if (NScore % 10 == 1) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc1.png") as ImageSource;
-            else if (NScore % 10 == 2) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc2.png") as ImageSource;
-            else if (NScore % 10 == 3) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc3.png") as ImageSource;
-            else if (NScore % 10 == 4) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc4.png") as ImageSource;
-            else if (NScore % 10 == 5) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc5.png") as ImageSource;
-            else if (NScore % 10 == 6) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc6.png") as ImageSource;
-            else if (NScore % 10 == 7) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc7.png") as ImageSource;
-            else if (NScore % 10 == 8) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc8.png") as ImageSource;
-            else if (NScore % 10 == 9) _1.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "nc9.png") as ImageSource;
+            if (NScore % 10 == 0) _1.Source = ColorDigit[0].Source;
+            else if (NScore % 10 == 1) _1.Source = ColorDigit[1].Source;
+            else if (NScore % 10 == 1) _1.Source = ColorDigit[2].Source;
+            else if (NScore % 10 == 1) _1.Source = ColorDigit[3].Source;
+            else if (NScore % 10 == 1) _1.Source = ColorDigit[4].Source;
+            else if (NScore % 10 == 1) _1.Source = ColorDigit[5].Source;
+            else if (NScore % 10 == 1) _1.Source = ColorDigit[6].Source;
+            else if (NScore % 10 == 1) _1.Source = ColorDigit[7].Source;
+            else if (NScore % 10 == 1) _1.Source = ColorDigit[8].Source;
+            else if (NScore % 10 == 1) _1.Source = ColorDigit[9].Source;
             else return;
             _1.Visibility = Visibility.Visible;
 
