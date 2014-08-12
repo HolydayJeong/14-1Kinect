@@ -471,7 +471,7 @@ namespace SungJik_SungHwa
         {
 
             Skeleton me = null;
-
+            Console.WriteLine("Hello");
             GetSkeleton(e, ref me);
             if (me == null)
                 return;
@@ -1081,7 +1081,6 @@ namespace SungJik_SungHwa
             MainWindow main = new MainWindow();
             App.Current.MainWindow = main;
             gameover.Stop();
-            this.Close();
             main.Show();
             return;
         }
