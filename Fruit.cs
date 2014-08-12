@@ -27,7 +27,7 @@ namespace EatingFruit
     /// </summary>
     public partial class Fruit : Window
     {
-        PressButton Press = new PressButton();
+        PressButton Press = new PressButton(AppDomain.CurrentDomain.BaseDirectory + "/과일/mouse.png", AppDomain.CurrentDomain.BaseDirectory + "/과일/mouse_pull.png");
 
         //kinect sensor를 선언함 
         KinectSensor sensor;
@@ -61,6 +61,7 @@ namespace EatingFruit
         System.Media.SoundPlayer bgm2 = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/과일/" + "Pixel Peeker Polka - faster-wav.wav");
         System.Media.SoundPlayer gameover = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/과일/" + "Run Amok-wav.wav");
 
+        DepthImagePoint UserHand;
         
         public Fruit()
         {
@@ -80,11 +81,14 @@ namespace EatingFruit
             Background2.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "bg_cloud.png") as ImageSource;
             SungHwa.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "sung_basket.png") as ImageSource;
             Mou.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "mou_basket.png") as ImageSource;
-            Hand.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "Hand.png") as ImageSource;
+            hand.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "mouse.png") as ImageSource;
+            hand.Width=45;
+            hand.Height=45;
+
 
             Replay.Visibility = Visibility.Hidden;
             Home.Visibility = Visibility.Hidden;
-            //  Hand.Visibility = Visibility.Hidden;
+            //  hand.Visibility = Visibility.Hidden;
 
         }
 
@@ -221,7 +225,7 @@ namespace EatingFruit
                     counter++;
                     Ready.Visibility = Visibility.Hidden;
                     Go.Visibility = Visibility.Hidden;
-                    Hand.Visibility = Visibility.Hidden;
+                    hand.Visibility = Visibility.Hidden;
                     SungHwa.Visibility = Visibility.Visible;
                     Mou.Visibility = Visibility.Visible;
 
@@ -303,7 +307,7 @@ namespace EatingFruit
                     Thread.Sleep(1);
                     Home.Visibility = Visibility.Visible;
                     Replay.Visibility = Visibility.Visible;
-                    Hand.Visibility = Visibility.Visible;
+                    hand.Visibility = Visibility.Visible;
                     SungHwa.Visibility = Visibility.Hidden;
                     Mou.Visibility = Visibility.Hidden;
 
@@ -600,12 +604,14 @@ namespace EatingFruit
 
         }
 
-        int handdepth = 0;
+     //   int handdepth = 0;
         //게임을 startButton을 누르고 시작한다. 
         private void StartGame(Skeleton me, AllFramesReadyEventArgs e)
         {
             using (DepthImageFrame depth = e.OpenDepthImageFrame())
             {
+                Point HomeTopLeft = new Point(Canvas.GetLeft(Home), Canvas.GetTop(Home));
+                Point ReplayTopLeft = new Point(Canvas.GetLeft(Replay), Canvas.GetTop(Replay));
                 if (depth == null || sensor == null)
                     return;
 
@@ -632,30 +638,35 @@ namespace EatingFruit
 
                     if (HandRightDepthPoint.Depth <= HandLeftDepthPoint.Depth)
                     {
-                        Canvas.SetLeft(Hand, HandRightColorPoint.X - Hand.Width / 2);
-                        Canvas.SetTop(Hand, HandRightColorPoint.Y - Hand.Height / 2);
-                        handdepth = HandRightDepthPoint.Depth;
+                        //Canvas.SetLeft(Hand, HandRightColorPoint.X - hand.Width / 2);
+                        //Canvas.SetTop(Hand, HandRightColorPoint.Y - hand.Height / 2);
+                        //handdepth = HandRightDepthPoint.Depth;    
+                        UserHand = HandRightDepthPoint;
                     }
                     else
                     {
-                        Canvas.SetLeft(Hand, HandLeftColorPoint.X - Hand.Width / 2);
-                        Canvas.SetTop(Hand, HandLeftColorPoint.Y - Hand.Height / 2);
-                        handdepth = HandLeftDepthPoint.Depth;
+                        //Canvas.SetLeft(Hand, HandLeftColorPoint.X - hand.Width / 2);
+                        //Canvas.SetTop(Hand, HandLeftColorPoint.Y - hand.Height / 2);
+                        //handdepth = HandLeftDepthPoint.Depth;
+                        UserHand = HandLeftDepthPoint;
                     }
 
+                    Canvas.SetLeft(hand, UserHand.X * 2 - hand.Width / 2);
+                    Canvas.SetTop(hand, UserHand.Y - hand.Width / 2);
+
                     //home button 클릭시 
-                    if ((Canvas.GetLeft(Hand) + Hand.Width / 2) > Canvas.GetLeft(Home) &&
-                          (Canvas.GetLeft(Hand) + Hand.Width / 2) < Canvas.GetLeft(Home) + Home.ActualWidth &&
-                          (Canvas.GetTop(Hand) + Hand.Height / 2) > Canvas.GetTop(Home) &&
-                          (Canvas.GetTop(Hand) + Hand.Height / 2) < Canvas.GetTop(Home) + Home.ActualHeight)
+                    if ((Canvas.GetLeft(hand) + hand.Width / 2) > Canvas.GetLeft(Home) &&
+                          (Canvas.GetLeft(hand) + hand.Width / 2) < Canvas.GetLeft(Home) + Home.ActualWidth &&
+                          (Canvas.GetTop(hand) + hand.Height / 2) > Canvas.GetTop(Home) &&
+                          (Canvas.GetTop(hand) + hand.Height / 2) < Canvas.GetTop(Home) + Home.ActualHeight)
                     {
                         Home.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "home_fruit_on.png") as ImageSource;
                         Replay.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "re_fruit.png") as ImageSource;
 
-                        Press.detectPressure(handdepth, ref Hand);
+                        Press.detectPressure(UserHand.Depth, ref hand);
                         if (Press.isConfirmed() == true)
                         {
-                            Press.reset(ref Hand);
+                            Press.reset(ref hand);
                             gameover.Stop();
                             MainWindow next = new MainWindow();
                             App.Current.MainWindow = next;
@@ -666,18 +677,18 @@ namespace EatingFruit
                     }
 
                     //Replay Button 클릭시 
-                    else if ((Canvas.GetLeft(Hand) + Hand.Width) > Canvas.GetLeft(Replay) &&
-                          (Canvas.GetLeft(Hand) + Hand.Width / 2) < Canvas.GetLeft(Replay) + Replay.ActualWidth &&
-                          (Canvas.GetTop(Hand) + Hand.Height / 2) > Canvas.GetTop(Replay) &&
-                          (Canvas.GetTop(Hand) + Hand.Height / 2) < Canvas.GetTop(Replay) + Replay.ActualHeight)
+                    else if ((Canvas.GetLeft(hand) + hand.Width / 2) > Canvas.GetLeft(Replay) &&
+                          (Canvas.GetLeft(hand) + hand.Width / 2) < Canvas.GetLeft(Replay) + Replay.ActualWidth &&
+                          (Canvas.GetTop(hand) + hand.Height / 2) > Canvas.GetTop(Replay) &&
+                          (Canvas.GetTop(hand) + hand.Height / 2) < Canvas.GetTop(Replay) + Replay.ActualHeight)
                     {
                         Home.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "home_fruit.png") as ImageSource;
                         Replay.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "re_fruit_on.png") as ImageSource;
 
-                        Press.detectPressure(handdepth, ref Hand);
+                        Press.detectPressure(UserHand.Depth, ref hand);
                         if (Press.isConfirmed() == true)
                         {
-                            Press.reset(ref Hand);
+                            Press.reset(ref hand);
                             gameover.Stop();
                             RestartGame();
                         }
@@ -688,7 +699,7 @@ namespace EatingFruit
                     {
                         Home.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "home_fruit.png") as ImageSource;
                         Replay.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "re_fruit.png") as ImageSource;
-                        Press.reset(ref Hand);
+                        Press.reset(ref hand);
                     }
                 }
 
@@ -699,7 +710,7 @@ namespace EatingFruit
         {
             Replay.Visibility = Visibility.Hidden;
             Home.Visibility = Visibility.Hidden;
-            Hand.Visibility = Visibility.Hidden;
+            hand.Visibility = Visibility.Hidden;
 
             _1.Visibility = Visibility.Hidden;
             _10.Visibility = Visibility.Hidden;
@@ -836,7 +847,7 @@ namespace EatingFruit
             Canvas.SetZIndex(m1000, 5);
             Canvas.SetZIndex(m10000, 5);
 
-            Canvas.SetZIndex(Hand, 5);
+            Canvas.SetZIndex(hand, 5);
 
             Canvas.SetLeft(shape, Xpos);  // 바나나 X좌표 위치 
 
