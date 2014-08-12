@@ -20,6 +20,10 @@ using System.Windows.Threading;
 
 namespace SungJik_SungHwa
 {
+    class GLOBAL
+    {
+        public static int SelectedGame = 0;
+    }
     /// <summary>
     /// MainWindow.xaml에 대한 상호 작용 논리
     /// </summary>
@@ -50,6 +54,9 @@ namespace SungJik_SungHwa
 
         Boolean locker = false;
         PressButton Press;
+       
+        Dibi DIBI;
+        SkippingRoper JUMP;
 
         string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "/Main/";
 
@@ -117,6 +124,10 @@ namespace SungJik_SungHwa
                 //User_ViewGrid.Visibility = Visibility.Collapsed; // 화면 감춤 
 
             }
+            DIBI = new Dibi(this);
+            Console.WriteLine("Main 1");
+            JUMP = new SkippingRoper(this);
+            Console.WriteLine("Main 2");
         }
         //준비가 되었을 때, 이벤트 
         void sensor_AllFramesReady(object sender, AllFramesReadyEventArgs e)
@@ -161,106 +172,112 @@ namespace SungJik_SungHwa
         private int handDepth;
         private void GetCameraPoint(Skeleton me, AllFramesReadyEventArgs e)
         {
-            using (DepthImageFrame depth = e.OpenDepthImageFrame())
+            if (SungJik_SungHwa.GLOBAL.SelectedGame == 0)
             {
-                if (depth == null || sensor == null)
-                    return;
-                CoordinateMapper coorMap = new CoordinateMapper(sensor);
-                DepthImagePoint handRightDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandRight].Position, depth.Format);
-                DepthImagePoint handLeftDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
-                DepthImagePoint bodyDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.Spine].Position, depth.Format);
 
-                ColorImagePoint handRightColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, handRightDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
-                ColorImagePoint handLeftColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, handLeftDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
-
-                if ((Press.isPressed() == true && pressingHand == RIGHT) || (handRightDepthPoint.Depth <= handLeftDepthPoint.Depth))
+                using (DepthImageFrame depth = e.OpenDepthImageFrame())
                 {
-                    if (Press.isPressed() == true && pressingHand == LEFT) { }
-                    else
+                    if (depth == null || sensor == null)
+                        return;
+                    CoordinateMapper coorMap = new CoordinateMapper(sensor);
+                    DepthImagePoint handRightDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandRight].Position, depth.Format);
+                    DepthImagePoint handLeftDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
+                    DepthImagePoint bodyDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.Spine].Position, depth.Format);
+
+                    ColorImagePoint handRightColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, handRightDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
+                    ColorImagePoint handLeftColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, handLeftDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
+
+                    if ((Press.isPressed() == true && pressingHand == RIGHT) || (handRightDepthPoint.Depth <= handLeftDepthPoint.Depth))
                     {
-                        Canvas.SetLeft(Hand, handRightColorPoint.X - Hand.Width / 2);
-                        Canvas.SetTop(Hand, handRightColorPoint.Y - Hand.Height / 2);
-                        handDepth = handRightDepthPoint.Depth;
-                        pressingHand = RIGHT;
-                    }
-                }
-                if ((Press.isPressed() == true && pressingHand == LEFT) || (handRightDepthPoint.Depth > handLeftDepthPoint.Depth))
-                {
-                    Canvas.SetLeft(Hand, handLeftColorPoint.X - Hand.Width / 2);
-                    Canvas.SetTop(Hand, handLeftColorPoint.Y - Hand.Height / 2);
-                    handDepth = handLeftDepthPoint.Depth;
-                    pressingHand = LEFT;
-                }
-
-
-                // 14/07/25 lock을 걸어서 창이 복수생산이 되지 않도록한다
-
-                if (gamestate == 0)
-                {
-                    gamestate = 1;  // lock 역할
-
-                    Point targetTopLeft = new Point(Canvas.GetLeft(Jump), Canvas.GetTop(Jump));
-                    targetTopLeft.X /= 2;
-                    targetTopLeft.Y /= 2;
-                    box.Text = "TopLeft X : " + targetTopLeft.X + "Width : " + Jump.ActualWidth + " TopLeft Y : " + targetTopLeft.Y + " Height : " + Jump.ActualHeight + "Body X: " + bodyDepthPoint.X + "Body Y: " + bodyDepthPoint.Y;
-                    //if (bodyDepthPoint.X > targetTopLeft.X && bodyDepthPoint.X < targetTopLeft.X + Jump.ActualWidth/2 && bodyDepthPoint.Y > targetTopLeft.Y && bodyDepthPoint.Y < targetTopLeft.Y + Jump.ActualHeight)
-                    if (bodyDepthPoint.X > 310 && bodyDepthPoint.X < 350 && bodyDepthPoint.Y > 230 && bodyDepthPoint.Y < 280)
-                    {
-                        gamestate = 2;
-                    }
-                    else
-                        gamestate = 0;
-                }
-
-                else if (gamestate == 2)
-                {
-                    Begin.Visibility = System.Windows.Visibility.Hidden;
-
-                    Menu(ALL, baseDirectory);
-
-                    int i = 0;
-                    int clicked = 0;
-                    foreach (Image target in images)
-                    {
-                        Point targetTopLeft = new Point(Canvas.GetLeft(target), Canvas.GetTop(target));
-                        //targetTopLeft.X /= 2;
-                        //targetTopLeft.Y /= 2;
-
-                        box.Text = "Target Name " + target.Name + "TopLeft X : " + targetTopLeft.X + " TopLeft Y : " + targetTopLeft.Y + " Hand X : " + (Canvas.GetLeft(Hand) + Hand.Width / 2) + " Hand Y : " + (Canvas.GetTop(Hand) + Hand.Width / 2) + "Body X: " + bodyDepthPoint.X * 2 + "Body Y: " + bodyDepthPoint.Y * 2 + "gamestate : " + gamestate + " I : " + i + "locker : " + locker;
-                        if (locker == false)
+                        if (Press.isPressed() == true && pressingHand == LEFT) { }
+                        else
                         {
-                            if (Canvas.GetLeft(Hand) + Hand.Width / 2 > targetTopLeft.X &&
-                                   Canvas.GetLeft(Hand) + Hand.Width / 2 < targetTopLeft.X + target.ActualWidth &&
-                                   Canvas.GetTop(Hand) + Hand.Height / 2 > targetTopLeft.Y &&
-                                   Canvas.GetTop(Hand) + Hand.Height / 2 < targetTopLeft.Y + target.ActualHeight)
+                            Canvas.SetLeft(Hand, handRightColorPoint.X - Hand.Width / 2);
+                            Canvas.SetTop(Hand, handRightColorPoint.Y - Hand.Height / 2);
+                            handDepth = handRightDepthPoint.Depth;
+                            pressingHand = RIGHT;
+                        }
+                    }
+                    if ((Press.isPressed() == true && pressingHand == LEFT) || (handRightDepthPoint.Depth > handLeftDepthPoint.Depth))
+                    {
+                        Canvas.SetLeft(Hand, handLeftColorPoint.X - Hand.Width / 2);
+                        Canvas.SetTop(Hand, handLeftColorPoint.Y - Hand.Height / 2);
+                        handDepth = handLeftDepthPoint.Depth;
+                        pressingHand = LEFT;
+                    }
+
+
+                    // 14/07/25 lock을 걸어서 창이 복수생산이 되지 않도록한다
+
+                    if (gamestate == 0)
+                    {
+                        gamestate = 1;  // lock 역할
+
+                        Point targetTopLeft = new Point(Canvas.GetLeft(Jump), Canvas.GetTop(Jump));
+                        targetTopLeft.X /= 2;
+                        targetTopLeft.Y /= 2;
+                        box.Text = "TopLeft X : " + targetTopLeft.X + "Width : " + Jump.ActualWidth + " TopLeft Y : " + targetTopLeft.Y + " Height : " + Jump.ActualHeight + "Body X: " + bodyDepthPoint.X + "Body Y: " + bodyDepthPoint.Y;
+                        //if (bodyDepthPoint.X > targetTopLeft.X && bodyDepthPoint.X < targetTopLeft.X + Jump.ActualWidth/2 && bodyDepthPoint.Y > targetTopLeft.Y && bodyDepthPoint.Y < targetTopLeft.Y + Jump.ActualHeight)
+                        if (bodyDepthPoint.X > 310 && bodyDepthPoint.X < 350 && bodyDepthPoint.Y > 230 && bodyDepthPoint.Y < 280)
+                        {
+                            gamestate = 2;
+                        }
+                        else
+                            gamestate = 0;
+                    }
+
+                    else if (gamestate == 2)
+                    {
+                        Begin.Visibility = System.Windows.Visibility.Hidden;
+
+                        Menu(ALL, baseDirectory);
+
+                        int i = 0;
+                        int clicked = 0;
+                        foreach (Image target in images)
+                        {
+                            Point targetTopLeft = new Point(Canvas.GetLeft(target), Canvas.GetTop(target));
+                            //targetTopLeft.X /= 2;
+                            //targetTopLeft.Y /= 2;
+
+                            box.Text = "Target Name " + target.Name + "TopLeft X : " + targetTopLeft.X + " TopLeft Y : " + targetTopLeft.Y + " Hand X : " + (Canvas.GetLeft(Hand) + Hand.Width / 2) + " Hand Y : " + (Canvas.GetTop(Hand) + Hand.Width / 2) + "Body X: " + bodyDepthPoint.X * 2 + "Body Y: " + bodyDepthPoint.Y * 2 + "gamestate : " + gamestate + " I : " + i + "locker : " + locker;
+                            if (locker == false)
                             {
-                                clicked = 1;
-                                box.Text = "Pressing";
-                                if (target.Name == "Dibi")
-                                    i = DIBIPRESSED;
-                                else if (target.Name == "Jump")
-                                    i = JUMPPRESSED;
-                                else if (target.Name == "Fruit")
-                                    i = FRUITPRESSED;
-                                else
+                                if (Canvas.GetLeft(Hand) + Hand.Width / 2 > targetTopLeft.X &&
+                                       Canvas.GetLeft(Hand) + Hand.Width / 2 < targetTopLeft.X + target.ActualWidth &&
+                                       Canvas.GetTop(Hand) + Hand.Height / 2 > targetTopLeft.Y &&
+                                       Canvas.GetTop(Hand) + Hand.Height / 2 < targetTopLeft.Y + target.ActualHeight)
                                 {
-                                    i = NONE;
-                                }
+                                    clicked = 1;
+                                    box.Text = "Pressing";
+                                    if (target.Name == "Dibi")
+                                        i = DIBIPRESSED;
+                                    else if (target.Name == "Jump")
+                                        i = JUMPPRESSED;
+                                    else if (target.Name == "Fruit")
+                                        i = FRUITPRESSED;
+                                    else
+                                    {
+                                        i = NONE;
+                                    }
 
-                                Menu(i, baseDirectory);
+                                    Menu(i, baseDirectory);
 
-                                Press.detectPressure(handDepth, ref Hand);
-                                if (Press.isConfirmed() == true)
-                                {
-                                    locker = true;
-                                    Menu_Click(i);
+                                    Press.detectPressure(handDepth, ref Hand);
+                                    if (Press.isConfirmed() == true)
+                                    {
+                                        locker = true;
+                                        Press.reset(ref Hand);
+                                        Menu_Click(i);
+                                        locker = false;
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (clicked == 0)
-                        Press.reset(ref Hand);
+                        if (clicked == 0)
+                            Press.reset(ref Hand);
 
+                    }
                 }
             }
         }
@@ -270,17 +287,15 @@ namespace SungJik_SungHwa
             switch (i)
             {
                 case DIBIPRESSED:
-                    Dibi Dibi = new Dibi();
-                    App.Current.MainWindow = Dibi;
-                    this.Close();
-                    Dibi.Show();
+                    DIBI.Show();
+                    SungJik_SungHwa.GLOBAL.SelectedGame = 1;
+                    this.Hide();
                     return;
                 case JUMPPRESSED:
-                    SkippingRoper skippingRope = new SkippingRoper();
-                    App.Current.MainWindow = skippingRope;
-                    this.Close();
-                    skippingRope.Show();
-                    return;
+                    JUMP.Show();
+                    SungJik_SungHwa.GLOBAL.SelectedGame = 2;
+                    this.Hide();
+                    return;                  
                 case FRUITPRESSED:
                     Fruit fruit = new Fruit();
                     App.Current.MainWindow = fruit;
