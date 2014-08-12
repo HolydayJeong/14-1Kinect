@@ -19,6 +19,7 @@
             <Image Name="notice" Canvas.Left="170" Canvas.Top="10" />
             <Image Name="home" Height="124" Canvas.Left="440" Canvas.Top="310" Width="124"/>
             <Image Name="replay" Height="124" Canvas.Left="728" Canvas.Top="310" Width="124"/>
+            <Image Name="hand" Height="45" Canvas.Left="1067" Canvas.Top="413" Width="45"/>
         </Canvas>
         <!--        <MediaElement Name="video" HorizontalAlignment="Left" Height="287" VerticalAlignment="Top"  Width="507"  Grid.Column="2" Margin="217,563,0,0" LoadedBehavior="Manual" /> -->
 
