@@ -42,6 +42,7 @@ namespace EatingFruit
 
         List<Image> ColorDigit = new List<Image>();
         List<Image> BlackDigit = new List<Image>();
+       
         int counter1 = 0;
         int SungScore = 0;
         int MouScore = 0;
@@ -57,8 +58,7 @@ namespace EatingFruit
         string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "/과일/";
 
         //음악 
-        System.Media.SoundPlayer bgm1 = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/과일/" + "fruitbgm-wav.wav");
-        System.Media.SoundPlayer bgm2 = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/과일/" + "Pixel Peeker Polka - faster-wav.wav");
+        System.Media.SoundPlayer bgm = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/과일/" + "Pixel Peeker Polka - faster-wav.wav");
         System.Media.SoundPlayer gameover = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/과일/" + "Run Amok-wav.wav");
 
         DepthImagePoint UserHand;
@@ -85,13 +85,13 @@ namespace EatingFruit
             hand.Width=45;
             hand.Height=45;
 
-
             Replay.Visibility = Visibility.Hidden;
             Home.Visibility = Visibility.Hidden;
-            //  hand.Visibility = Visibility.Hidden;
+            hand.Visibility = Visibility.Hidden;
 
             int i;
 
+            //숫자이미지 셋팅 
             for (i = 0; i < 10; i++)
                 ColorDigit.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "nc" + i + ".png")) });
             ColorDigit.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "nc-.png")) });
@@ -100,8 +100,6 @@ namespace EatingFruit
                 BlackDigit.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "n" + i + ".png")) });
             BlackDigit.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "n-.png")) });
     
-
-
         }
 
         void ReadyGame()
@@ -112,28 +110,22 @@ namespace EatingFruit
             var Guide = new System.Windows.Controls.Image();
             Guide.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide.png") as ImageSource;
 
-            ///  var Mou = new System.Windows.Controls.Image();
-
             //Top, Left, 프로퍼티로 애니메이션을 주기 위해 일부러 캔버스에 담았다.
             FruitScoreCanvas.Children.Add(FruitScore);
             GuideCanvas.Children.Add(Guide);
-            //  MouCanvas.Children.Add(Mou);
 
             //원을 품고 있는 캔버스를 다시 자식으로 
             canvas1.Children.Add(FruitScoreCanvas);
             canvas1.Children.Add(GuideCanvas);
-            //  canvas1.Children.Add(MouCanvas);
-
             DoubleAnimation_Ready();
         }
 
         //애니메이션을 제어하기 위한 변수 
         int counter = 0;
-
         public void DoubleAnimation_Ready()
         {
             FruitScoreCanvas.Visibility = Visibility.Hidden;
-            bgm2.Play();
+            bgm.Play();
             DoubleAnimation ReadyDoubleAnimation = new DoubleAnimation();
             ReadyDoubleAnimation.From = 0;
             ReadyDoubleAnimation.To = 0;
@@ -150,9 +142,10 @@ namespace EatingFruit
        void ReadyDoubleAnimation_Completed(object sender, EventArgs e)
         {
             DoubleAnimation ReadyDoubleAnimation = new DoubleAnimation();
-            DoubleAnimation MouAnimation = new DoubleAnimation();
+            DoubleAnimation MouAnimation = new DoubleAnimation();               //Mou가 랜덤하게 움직인다. 
             switch (counter)
             {
+                //과일 점수판 떨어뜨린다.
                 case 0:
                     counter++;
                     GuideCanvas.Visibility = Visibility.Hidden;
@@ -160,9 +153,9 @@ namespace EatingFruit
                     ReadyDoubleAnimation.From =-900;
                     ReadyDoubleAnimation.To = 0;
                     ReadyDoubleAnimation.AccelerationRatio = 0;
-                    ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(2)); //3초간 보여준다
+                    ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(2)); 
                     ReadyDoubleAnimation.FillBehavior = FillBehavior.Stop;
-                    ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed; //이벤트 핸들러
+                    ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed; 
                     FruitScoreCanvas.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);
                     break;
               
@@ -175,12 +168,11 @@ namespace EatingFruit
                     ReadyDoubleAnimation.AccelerationRatio = 0;
                     ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(3));
                     ReadyDoubleAnimation.FillBehavior = FillBehavior.Stop;
-                    ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed;
-                    
+                    ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed; 
                     FruitScoreCanvas.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);
                     break;
 
-            // 과일점수판 끝까지 떨어뜨림 
+               //과일점수판 끝까지 떨어뜨림 
                 case 2:
                     counter++;
                     Ready.Visibility = Visibility.Hidden;
@@ -190,11 +182,10 @@ namespace EatingFruit
                     ReadyDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(2));
                     ReadyDoubleAnimation.FillBehavior = FillBehavior.HoldEnd;
                     ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed;
-                  
                     FruitScoreCanvas.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);
                     break;
 
-           // Ready Go 애니메이션을 보여준다. 
+               //Ready Go 애니메이션을 보여준다. 
                 case 3:
                     counter++;
                     FruitScoreCanvas.Visibility = Visibility.Hidden;
@@ -212,13 +203,10 @@ namespace EatingFruit
                     ImageBehavior.SetRepeatBehavior(Ready, new RepeatBehavior(3));
                     image.EndInit();
                     ImageBehavior.SetAnimatedSource(Ready, image);
-                  
                     canvas1.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);    
                     break;
 
-           
                 // Ready Go 애니메이션을 숨기고 게임 시작 
-
                 case 4:
                     counter++;
                     Ready.Visibility = Visibility.Hidden;
@@ -244,7 +232,7 @@ namespace EatingFruit
                     ReadyDoubleAnimation.From = 0.0;
                     ReadyDoubleAnimation.To = 0.0;
                     ReadyDoubleAnimation.AccelerationRatio=0.0;
-                    ReadyDoubleAnimation.Duration= new Duration(TimeSpan.FromSeconds(57)); //게임시간 약 30초 
+                    ReadyDoubleAnimation.Duration= new Duration(TimeSpan.FromSeconds(57)); //게임시간  
                     ReadyDoubleAnimation.FillBehavior=FillBehavior.Stop;
                     ReadyDoubleAnimation.Completed += ReadyDoubleAnimation_Completed;
                     gameState = playing;
@@ -262,7 +250,6 @@ namespace EatingFruit
                     Score(MouScore, 1);
                     Score(SungScore, 2);
 
-                   
                     canvas1.BeginAnimation(Canvas.TopProperty, ReadyDoubleAnimation);    
                     break;
 
@@ -272,7 +259,10 @@ namespace EatingFruit
                     var LastSung = new BitmapImage();
                     var LastMou = new BitmapImage();
                     counter++;
-                    bgm2.Stop();
+                    bgm.Stop();
+                    gameover.Play();
+                    Thread.Sleep(1);
+
                     Console.WriteLine("MouScore" + MouScore);
                     Console.WriteLine("SungScore" + SungScore);
                     
@@ -314,9 +304,6 @@ namespace EatingFruit
                         SungGIF.Visibility = Visibility.Visible;
                     }
                     
-                
-                    gameover.Play();
-                    Thread.Sleep(1);
                     Home.Visibility = Visibility.Visible;
                     Replay.Visibility = Visibility.Visible;
                     hand.Visibility = Visibility.Visible;
@@ -335,8 +322,6 @@ namespace EatingFruit
                     m1000.Visibility = Visibility.Hidden;
                     m10000.Visibility = Visibility.Hidden;
 
-
-                   
                     LastScore(winScore); //최종 점수 출력 
 
                     gameState = option; // Home replay, 선택할 수 있도록 상태 변경
@@ -537,30 +522,30 @@ namespace EatingFruit
             {
                 if (NScore / 10000 == 0) _10000.Source = ColorDigit[0].Source;
                 else if (NScore / 10000 == 1) _10000.Source = ColorDigit[1].Source;
-                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[2].Source;
-                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[3].Source;
-                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[4].Source;
-                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[5].Source;
-                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[6].Source;
-                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[7].Source;
-                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[8].Source;
-                else if (NScore / 10000 == 1) _10000.Source = ColorDigit[9].Source;
+                else if (NScore / 10000 == 2) _10000.Source = ColorDigit[2].Source;
+                else if (NScore / 10000 == 3) _10000.Source = ColorDigit[3].Source;
+                else if (NScore / 10000 == 4) _10000.Source = ColorDigit[4].Source;
+                else if (NScore / 10000 == 5) _10000.Source = ColorDigit[5].Source;
+                else if (NScore / 10000 == 6) _10000.Source = ColorDigit[6].Source;
+                else if (NScore / 10000 == 7) _10000.Source = ColorDigit[7].Source;
+                else if (NScore / 10000 == 8) _10000.Source = ColorDigit[8].Source;
+                else if (NScore / 10000 == 9) _10000.Source = ColorDigit[9].Source;
                 else return;
             }
             _10000.Visibility = Visibility.Visible;
 
 
             NScore = NScore % 10000;
-            if (NScore / 1000 == 0) _10000.Source = ColorDigit[0].Source;
+            if (NScore / 1000 == 0) _1000.Source = ColorDigit[0].Source;
             else if (NScore / 1000 == 1) _1000.Source = ColorDigit[1].Source;
-            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[2].Source;
-            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[3].Source;
-            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[4].Source;
-            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[5].Source;
-            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[6].Source;
-            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[7].Source;
-            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[8].Source;
-            else if (NScore / 1000 == 1) _1000.Source = ColorDigit[9].Source;
+            else if (NScore / 1000 == 2) _1000.Source = ColorDigit[2].Source;
+            else if (NScore / 1000 == 3) _1000.Source = ColorDigit[3].Source;
+            else if (NScore / 1000 == 4) _1000.Source = ColorDigit[4].Source;
+            else if (NScore / 1000 == 5) _1000.Source = ColorDigit[5].Source;
+            else if (NScore / 1000 == 6) _1000.Source = ColorDigit[6].Source;
+            else if (NScore / 1000 == 7) _1000.Source = ColorDigit[7].Source;
+            else if (NScore / 1000 == 8) _1000.Source = ColorDigit[8].Source;
+            else if (NScore / 1000 == 9) _1000.Source = ColorDigit[9].Source;
             else return;
 
             _1000.Visibility = Visibility.Visible;
@@ -568,43 +553,43 @@ namespace EatingFruit
             //  Console.WriteLine(NScore/100);
             if (NScore / 100 == 0) _100.Source = ColorDigit[0].Source;
             else if (NScore / 100 == 1) _100.Source = ColorDigit[1].Source;
-            else if (NScore / 100 == 1) _100.Source = ColorDigit[2].Source;
-            else if (NScore / 100 == 1) _100.Source = ColorDigit[3].Source;
-            else if (NScore / 100 == 1) _100.Source = ColorDigit[4].Source;
-            else if (NScore / 100 == 1) _100.Source = ColorDigit[5].Source;
-            else if (NScore / 100 == 1) _100.Source = ColorDigit[6].Source;
-            else if (NScore / 100 == 1) _100.Source = ColorDigit[7].Source;
-            else if (NScore / 100 == 1) _100.Source = ColorDigit[8].Source;
-            else if (NScore / 100 == 1) _100.Source = ColorDigit[9].Source;
+            else if (NScore / 100 == 2) _100.Source = ColorDigit[2].Source;
+            else if (NScore / 100 == 3) _100.Source = ColorDigit[3].Source;
+            else if (NScore / 100 == 4) _100.Source = ColorDigit[4].Source;
+            else if (NScore / 100 == 5) _100.Source = ColorDigit[5].Source;
+            else if (NScore / 100 == 6) _100.Source = ColorDigit[6].Source;
+            else if (NScore / 100 == 7) _100.Source = ColorDigit[7].Source;
+            else if (NScore / 100 == 8) _100.Source = ColorDigit[8].Source;
+            else if (NScore / 100 == 9) _100.Source = ColorDigit[9].Source;
             else return;
             _100.Visibility = Visibility.Visible;
 
             NScore = NScore % 100;
             //   Console.WriteLine(NScore/10);
-            if (NScore / 10 == 0) _10000.Source = ColorDigit[0].Source;
+            if (NScore / 10 == 0) _10.Source = ColorDigit[0].Source;
             else if (NScore / 10 == 1) _10.Source = ColorDigit[1].Source;
-            else if (NScore / 10 == 1) _10.Source = ColorDigit[2].Source;
-            else if (NScore / 10 == 1) _10.Source = ColorDigit[3].Source;
-            else if (NScore / 10 == 1) _10.Source = ColorDigit[4].Source;
-            else if (NScore / 10 == 1) _10.Source = ColorDigit[5].Source;
-            else if (NScore / 10 == 1) _10.Source = ColorDigit[6].Source;
-            else if (NScore / 10 == 1) _10.Source = ColorDigit[7].Source;
-            else if (NScore / 10 == 1) _10.Source = ColorDigit[8].Source;
-            else if (NScore / 10 == 1) _10.Source = ColorDigit[9].Source;
+            else if (NScore / 10 == 2) _10.Source = ColorDigit[2].Source;
+            else if (NScore / 10 == 3) _10.Source = ColorDigit[3].Source;
+            else if (NScore / 10 == 4) _10.Source = ColorDigit[4].Source;
+            else if (NScore / 10 == 5) _10.Source = ColorDigit[5].Source;
+            else if (NScore / 10 == 6) _10.Source = ColorDigit[6].Source;
+            else if (NScore / 10 == 7) _10.Source = ColorDigit[7].Source;
+            else if (NScore / 10 == 8) _10.Source = ColorDigit[8].Source;
+            else if (NScore / 10 == 9) _10.Source = ColorDigit[9].Source;
             else return;
             _10.Visibility = Visibility.Visible;
 
             //  Console.WriteLine(NScore%10);
             if (NScore % 10 == 0) _1.Source = ColorDigit[0].Source;
             else if (NScore % 10 == 1) _1.Source = ColorDigit[1].Source;
-            else if (NScore % 10 == 1) _1.Source = ColorDigit[2].Source;
-            else if (NScore % 10 == 1) _1.Source = ColorDigit[3].Source;
-            else if (NScore % 10 == 1) _1.Source = ColorDigit[4].Source;
-            else if (NScore % 10 == 1) _1.Source = ColorDigit[5].Source;
-            else if (NScore % 10 == 1) _1.Source = ColorDigit[6].Source;
-            else if (NScore % 10 == 1) _1.Source = ColorDigit[7].Source;
-            else if (NScore % 10 == 1) _1.Source = ColorDigit[8].Source;
-            else if (NScore % 10 == 1) _1.Source = ColorDigit[9].Source;
+            else if (NScore % 10 == 2) _1.Source = ColorDigit[2].Source;
+            else if (NScore % 10 == 3) _1.Source = ColorDigit[3].Source;
+            else if (NScore % 10 == 4) _1.Source = ColorDigit[4].Source;
+            else if (NScore % 10 == 5) _1.Source = ColorDigit[5].Source;
+            else if (NScore % 10 == 6) _1.Source = ColorDigit[6].Source;
+            else if (NScore % 10 == 7) _1.Source = ColorDigit[7].Source;
+            else if (NScore % 10 == 8) _1.Source = ColorDigit[8].Source;
+            else if (NScore % 10 == 9) _1.Source = ColorDigit[9].Source;
             else return;
             _1.Visibility = Visibility.Visible;
 
@@ -642,21 +627,12 @@ namespace EatingFruit
                     DepthImagePoint HandLeftDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
                     ColorImagePoint HandLeftColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, HandLeftDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
 
-                    if (HandRightDepthPoint.Depth <= HandLeftDepthPoint.Depth)
-                    {
-                        //Canvas.SetLeft(Hand, HandRightColorPoint.X - hand.Width / 2);
-                        //Canvas.SetTop(Hand, HandRightColorPoint.Y - hand.Height / 2);
-                        //handdepth = HandRightDepthPoint.Depth;    
+                    if (HandRightDepthPoint.Depth <= HandLeftDepthPoint.Depth)    
                         UserHand = HandRightDepthPoint;
-                    }
+                  
                     else
-                    {
-                        //Canvas.SetLeft(Hand, HandLeftColorPoint.X - hand.Width / 2);
-                        //Canvas.SetTop(Hand, HandLeftColorPoint.Y - hand.Height / 2);
-                        //handdepth = HandLeftDepthPoint.Depth;
                         UserHand = HandLeftDepthPoint;
-                    }
-
+                    
                     Canvas.SetLeft(hand, UserHand.X * 2 - hand.Width / 2);
                     Canvas.SetTop(hand, UserHand.Y - hand.Width / 2);
 
@@ -815,8 +791,6 @@ namespace EatingFruit
         {
             //더블 애니메이션 하나 설정
             DoubleAnimation MyDoubleAnimation = new DoubleAnimation();
-
-            //if(SungHwaTopLeft.Y == shape.RenderTransform.Value.OffsetY )
             Random r1 = new Random();
             MyDoubleAnimation.From = 0; // 처음 시작 하는 값 from
             MyDoubleAnimation.To = 560; // 끝나는 값 to 
@@ -839,7 +813,6 @@ namespace EatingFruit
             Canvas.SetZIndex(_100, 5);
             Canvas.SetZIndex(_1000, 5);
             Canvas.SetZIndex(_10000, 5);
-
 
             Canvas.SetZIndex(s1, 5);
             Canvas.SetZIndex(s10, 5);
