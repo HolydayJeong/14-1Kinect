@@ -266,7 +266,7 @@ namespace SungJik_SungHwa
 
             if (initial == false)
             {
-                backGround.Play();
+
                 initial = true;
             }
 
@@ -293,6 +293,7 @@ namespace SungJik_SungHwa
 
         private void guide()
         {
+            backGround.Play();
             prepareKinect();
             introText.Visibility = System.Windows.Visibility.Visible;
             Canvas.SetTop(introText, (this.Height / 2) - 137);
@@ -351,6 +352,7 @@ namespace SungJik_SungHwa
                 break;*/
                 case 0:
                     counter++;
+                    prepareKinect();
                     introText.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide_2.png") as ImageSource;
                     Canvas.SetTop(introText, (titleCanvas.Height / 2) - 111);
                     Canvas.SetLeft(introText, (titleCanvas.Width / 2) - 230);
@@ -439,7 +441,7 @@ namespace SungJik_SungHwa
             {
                 return;
             }
-            if (SungJik_SungHwa.GLOBAL.SelectedGame == 1)
+            if (SungJik_SungHwa.GLOBAL.SelectedGame == 2)
             {
                 using (DepthImageFrame depth = e.OpenDepthImageFrame())
                 {
@@ -480,7 +482,7 @@ namespace SungJik_SungHwa
             Skeleton me = null;
             Console.WriteLine("Hello");
             GetSkeleton(e, ref me);
-            if (SungJik_SungHwa.GLOBAL.SelectedGame == 1)
+            if (SungJik_SungHwa.GLOBAL.SelectedGame == 2)
             {
                 if (me == null)
                     return;
@@ -566,7 +568,7 @@ namespace SungJik_SungHwa
             {
                 return;
             }
-            if (SungJik_SungHwa.GLOBAL.SelectedGame == 1)
+            if (SungJik_SungHwa.GLOBAL.SelectedGame == 2)
             {
                 using (DepthImageFrame depth = e.OpenDepthImageFrame())
                 {
