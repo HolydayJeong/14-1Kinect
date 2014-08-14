@@ -126,7 +126,7 @@ namespace SungJik_SungHwa
             }
             DIBI = new Dibi(this);
             Console.WriteLine("Main 1");
-            JUMP = new SkippingRoper(this);
+          //  JUMP = new SkippingRoper(this);
             Console.WriteLine("Main 2");
         }
         //준비가 되었을 때, 이벤트 

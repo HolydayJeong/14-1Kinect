@@ -5,10 +5,11 @@
     <Grid HorizontalAlignment="Left" Height="960" Margin="10,-16,-4,-4" VerticalAlignment="Top" Width="1280">
         <Canvas x:Name="canvas1" HorizontalAlignment="Center" Height="960" Margin="-10,35,0,-35" VerticalAlignment="Center" Width="1280">
             <Image x:Name="Screen" Height="960" Width="1280" Canvas.Top="10"/>
-            <Image x:Name="Background1" Height="960" Width="1365" Canvas.Top="10" Canvas.Left="-35"/>
-            <Image x:Name="Background2" Height="960" Width="1365" Canvas.Top="-155" Canvas.Left="-35" />
+            <Image x:Name="Background1" Height="960" Width="1435" Canvas.Top="10" Canvas.Left="-85"/>
+            <Image x:Name="Background2" Height="960" Width="1355" Canvas.Top="-155" Canvas.Left="-35" />
             <Image x:Name="SungHwa" Canvas.Left="1003" Canvas.Top="580" Width="245" Height="360"/>
-            <Image x:Name="Hand" Height="110" Canvas.Left="1130" Width="125" Canvas.Top="810"/>
+            <Image x:Name="Mou" Canvas.Left="10" Canvas.Top="580" Width="245" Height="360"/>
+            <Image x:Name="hand" Height="110" Canvas.Left="1130" Width="125" Canvas.Top="810"/>
 
             <Image x:Name="Ready" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="510" Canvas.Top="315"/>
             <Image x:Name="Go" HorizontalAlignment="Left" Height="120" VerticalAlignment="Top" Width="230" Canvas.Left="595" Canvas.Top="320"/>
@@ -19,16 +20,22 @@
             <Image x:Name="_10" Height="170" Canvas.Left="685" Canvas.Top="80" Width="90"/>
             <Image x:Name="_1" Height="170" Canvas.Left="775" Canvas.Top="80" Width="90"/>
 
-            <Image x:Name="m10000" Canvas.Left="1010" Canvas.Top="35" Height="85" Width="45"/>
-            <Image x:Name="m1000" Canvas.Left="1060" Canvas.Top="35" Height="85" Width="45"/>
-            <Image x:Name="m100" Canvas.Left="1110" Canvas.Top="35" Height="85" Width="45" />
-            <Image x:Name="m10" Canvas.Left="1160" Canvas.Top="35" Height="85" Width="45" />
-            <Image x:Name="m1" Canvas.Left="1210" Canvas.Top="35" Height="85" Width="45"/>
+            <Image x:Name="s10000" Canvas.Left="1010" Canvas.Top="35" Height="85" Width="45"/>
+            <Image x:Name="s1000" Canvas.Left="1060" Canvas.Top="35" Height="85" Width="45"/>
+            <Image x:Name="s100" Canvas.Left="1110" Canvas.Top="35" Height="85" Width="45" />
+            <Image x:Name="s10" Canvas.Left="1160" Canvas.Top="35" Height="85" Width="45" />
+            <Image x:Name="s1" Canvas.Left="1210" Canvas.Top="35" Height="85" Width="45"/>
+
+            <Image x:Name="m10000" Canvas.Left="0010" Canvas.Top="35" Height="85" Width="45"/>
+            <Image x:Name="m1000" Canvas.Left="0060" Canvas.Top="35" Height="85" Width="45"/>
+            <Image x:Name="m100" Canvas.Left="0110" Canvas.Top="35" Height="85" Width="45" />
+            <Image x:Name="m10" Canvas.Left="0160" Canvas.Top="35" Height="85" Width="45" />
+            <Image x:Name="m1" Canvas.Left="0210" Canvas.Top="35" Height="85" Width="45"/>
 
             <Image x:Name="Home" Width="115" Height="123" Canvas.Left="505" Canvas.Top="280" />
             <Image x:Name="Replay" Width="124" Height="124" Canvas.Left="720" Canvas.Top="280"/>
-            <Image x:Name="SungGiF" Height="660" Canvas.Left="505" Canvas.Top="280" Width="475"/>
-
+            <Image x:Name="SungGIF" Height="660" Canvas.Left="773" Canvas.Top="320" Width="475"/>
+            <Image x:Name="MouGIF" Height="660" Canvas.Left="60" Canvas.Top="320" Width="475"/>
 
         </Canvas>
     </Grid>
