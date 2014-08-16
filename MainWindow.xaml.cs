@@ -23,6 +23,10 @@ namespace SungJik_SungHwa
     class GLOBAL
     {
         public static int SelectedGame = 0;
+        public static bool StartGame = false;
+        public static int FruitCounter = 0;
+        public static BitmapSource kinectScreen;
+
     }
     /// <summary>
     /// MainWindow.xaml에 대한 상호 작용 논리
@@ -50,13 +54,20 @@ namespace SungJik_SungHwa
         Skeleton[] allSkeletons = new Skeleton[SKELETON_COUNT];
 
         List<Image> images;
+        List<Image> menuList;
         //private Window1 ReadyWindow;
 
         Boolean locker = false;
         PressButton Press;
-       
+
         Dibi DIBI;
         SkippingRoper JUMP;
+        Fruit FRUIT;
+
+        MediaPlayer monkeySound = new MediaPlayer();
+
+        static WriteableBitmap writeableBitmap;
+
 
         string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "/Main/";
 
@@ -70,11 +81,19 @@ namespace SungJik_SungHwa
         private void InitializeButtons()
         {
             images = new List<Image> { Dibi, Jump, Fruit };
+            menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "menu1.png")) });
+            menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "menu1_on.png")) });
+            menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "menu2.png")) });
+            menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "menu2_on.png")) });
+            menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "menu3.png")) });
+            menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "menu3_on.png")) });
+                
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Hand.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "mouse.png") as ImageSource;
+            Guide.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide_0.png") as ImageSource;
 
             //창 가운데로 배치
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
@@ -84,11 +103,18 @@ namespace SungJik_SungHwa
             //키넥트가 연결되어 있는지 확인한다. 만일 연결되어 있으면 선언한 sensor와 연결된 kinect 정보를 준다. 
 
             if (KinectSensor.KinectSensors.Count > 0)
+            {
                 sensor = KinectSensor.KinectSensors[0];
+                Console.WriteLine("Main in1");
+            }
 
+            Console.WriteLine(sensor.Status.ToString());
+
+            while (sensor.Status != KinectStatus.Connected) ;
             //연결에 성공하면.. 
             if (sensor.Status == KinectStatus.Connected)
             {
+                Console.WriteLine("Main in2");
                 //색깔정보
                 sensor.ColorStream.Enable();
                 //깊이정보
@@ -126,35 +152,45 @@ namespace SungJik_SungHwa
             }
             DIBI = new Dibi(this);
             Console.WriteLine("Main 1");
-          //  JUMP = new SkippingRoper(this);
+            JUMP = new SkippingRoper(this);
             Console.WriteLine("Main 2");
+            FRUIT = new Fruit(this);
+            Console.WriteLine("Main 3");
+            monkeySound.Open(new Uri(baseDirectory + "main_monkey.mp3"));
         }
         //준비가 되었을 때, 이벤트 
         void sensor_AllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
-            // 받아오는 정보를 colorFrame에 받아온다. 
-            using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
-            {
-                if (colorFrame == null)
+                // 받아오는 정보를 colorFrame에 받아온다. 
+                using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
+                {
+                    if (colorFrame == null)
+                        return;
+                    //pixel의 크기 초기화 
+                    byte[] pixels = new byte[colorFrame.PixelDataLength];
+
+                    //pixel 의 정보 담아오기 
+                    colorFrame.CopyPixelDataTo(pixels);
+                    //stride = r, g,b, none 의 정보가 하나의 pixel에 있기에 *4를 한다.
+                    int stride = colorFrame.Width * 4;
+
+                    SungJik_SungHwa.GLOBAL.kinectScreen = BitmapSource.Create(colorFrame.Width, colorFrame.Height, 96, 96, PixelFormats.Bgr32, null, pixels, stride);
+                    //writeableBitmap = new WriteableBitmap(colorFrame.Width, colorFrame.Height, 96, 96, PixelFormats.Bgr32, null, pixels, stride);
+                    //screen image의 source를 결정해준다. 
+                    Screen.Source = SungJik_SungHwa.GLOBAL.kinectScreen;
+
+                    pixels = null;
+
+                }
+                Skeleton me = null;
+                GetSkelton(e, ref me);
+
+                if (me == null)
+                {
+                    monkeySound.Pause();
                     return;
-                //pixel의 크기 초기화 
-                byte[] pixels = new byte[colorFrame.PixelDataLength];
-
-                //pixel 의 정보 담아오기 
-                colorFrame.CopyPixelDataTo(pixels);
-                //stride = r, g,b, none 의 정보가 하나의 pixel에 있기에 *4를 한다.
-                int stride = colorFrame.Width * 4;
-
-                //screen image의 source를 결정해준다. 
-                Screen.Source = BitmapSource.Create(colorFrame.Width, colorFrame.Height, 96, 96, PixelFormats.Bgr32, null, pixels, stride);
-
-            }
-            Skeleton me = null;
-            GetSkelton(e, ref me);
-
-            if (me == null)
-                return;
-            GetCameraPoint(me, e);
+                }
+                GetCameraPoint(me, e);
         }
 
         private void GetSkelton(AllFramesReadyEventArgs e, ref Skeleton me)
@@ -174,7 +210,6 @@ namespace SungJik_SungHwa
         {
             if (SungJik_SungHwa.GLOBAL.SelectedGame == 0)
             {
-
                 using (DepthImageFrame depth = e.OpenDepthImageFrame())
                 {
                     if (depth == null || sensor == null)
@@ -213,6 +248,8 @@ namespace SungJik_SungHwa
                     {
                         gamestate = 1;  // lock 역할
 
+                        monkeySound.Play();
+
                         Point targetTopLeft = new Point(Canvas.GetLeft(Jump), Canvas.GetTop(Jump));
                         targetTopLeft.X /= 2;
                         targetTopLeft.Y /= 2;
@@ -228,6 +265,7 @@ namespace SungJik_SungHwa
 
                     else if (gamestate == 2)
                     {
+                        monkeySound.Pause();
                         Begin.Visibility = System.Windows.Visibility.Hidden;
 
                         Menu(ALL, baseDirectory);
@@ -276,7 +314,6 @@ namespace SungJik_SungHwa
                         }
                         if (clicked == 0)
                             Press.reset(ref Hand);
-
                     }
                 }
             }
@@ -284,6 +321,7 @@ namespace SungJik_SungHwa
 
         private void Menu_Click(int i)
         {
+            Screen.Source = null;
             switch (i)
             {
                 case DIBIPRESSED:
@@ -294,13 +332,15 @@ namespace SungJik_SungHwa
                 case JUMPPRESSED:
                     JUMP.Show();
                     SungJik_SungHwa.GLOBAL.SelectedGame = 2;
+                    SungJik_SungHwa.GLOBAL.StartGame = true;
                     this.Hide();
-                    return;                  
+                    return;
                 case FRUITPRESSED:
-                    Fruit fruit = new Fruit();
-                    App.Current.MainWindow = fruit;
-                    this.Close();
-                    fruit.Show();
+                    FRUIT.Show();
+                    SungJik_SungHwa.GLOBAL.SelectedGame = 3;
+                    SungJik_SungHwa.GLOBAL.FruitCounter++;
+                    SungJik_SungHwa.GLOBAL.StartGame = true;
+                    this.Hide();
                     return;
             }
         }
@@ -316,27 +356,29 @@ namespace SungJik_SungHwa
                         Jump.Visibility = System.Windows.Visibility.Hidden;
                         Fruit.Visibility = System.Windows.Visibility.Hidden;
                         Hand.Visibility = System.Windows.Visibility.Hidden;
+                        Guide.Visibility = System.Windows.Visibility.Hidden;
                         break;
                     case DIBIPRESSED:
-                        Dibi.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "menu1_on.png") as ImageSource;
+                        Dibi.Source = menuList[1].Source;
                         Dibi.Visibility = System.Windows.Visibility.Visible;
                         break;
                     case JUMPPRESSED:
-                        Jump.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "menu2_on.png") as ImageSource;
+                        Jump.Source = menuList[3].Source;
                         Jump.Visibility = System.Windows.Visibility.Visible;
                         break;
                     case FRUITPRESSED:
-                        Fruit.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "menu3_on.png") as ImageSource;
+                        Fruit.Source = menuList[5].Source;
                         Fruit.Visibility = System.Windows.Visibility.Visible;
                         break;
                     case ALL:
-                        Dibi.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "menu1.png") as ImageSource;
+                        Dibi.Source = menuList[0].Source;
                         Dibi.Visibility = System.Windows.Visibility.Visible;
-                        Jump.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "menu2.png") as ImageSource;
+                        Jump.Source = menuList[2].Source;
                         Jump.Visibility = System.Windows.Visibility.Visible;
-                        Fruit.Source = new ImageSourceConverter().ConvertFromString(ImagePath + "menu3.png") as ImageSource;
+                        Fruit.Source = menuList[4].Source;
                         Fruit.Visibility = System.Windows.Visibility.Visible;
                         Hand.Visibility = System.Windows.Visibility.Visible;
+                        Guide.Visibility = System.Windows.Visibility.Visible;
                         break;
                 }
             }));
@@ -344,6 +386,7 @@ namespace SungJik_SungHwa
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            sensor.Stop();
         }
     }
 }

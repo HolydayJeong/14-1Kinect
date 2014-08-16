@@ -63,11 +63,18 @@ namespace EatingFruit
 
         DepthImagePoint UserHand;
 
-        public Fruit()
+        public MainWindow Main;
+
+        public Fruit(MainWindow Main)
         {
+            Console.WriteLine("Fruit1");
             InitializeComponent();
-            ReadyGame();
+            Console.WriteLine("Fruit2");
+            //ReadyGame();
+            Console.WriteLine("Fruit3");
             InitUI();
+            Console.WriteLine("Fruit4");
+            this.Main = Main;
         }
 
 
@@ -104,20 +111,23 @@ namespace EatingFruit
 
         void ReadyGame()
         {
-            var FruitScore = new System.Windows.Controls.Image();
-            FruitScore.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "score.png") as ImageSource;
+            if (SungJik_SungHwa.GLOBAL.SelectedGame == 3)
+            {
+                var FruitScore = new System.Windows.Controls.Image();
+                FruitScore.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "score.png") as ImageSource;
 
-            var Guide = new System.Windows.Controls.Image();
-            Guide.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide.png") as ImageSource;
+                var Guide = new System.Windows.Controls.Image();
+                Guide.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide.png") as ImageSource;
 
-            //Top, Left, 프로퍼티로 애니메이션을 주기 위해 일부러 캔버스에 담았다.
-            FruitScoreCanvas.Children.Add(FruitScore);
-            GuideCanvas.Children.Add(Guide);
+                //Top, Left, 프로퍼티로 애니메이션을 주기 위해 일부러 캔버스에 담았다.
+                FruitScoreCanvas.Children.Add(FruitScore);
+                GuideCanvas.Children.Add(Guide);
 
-            //원을 품고 있는 캔버스를 다시 자식으로 
-            canvas1.Children.Add(FruitScoreCanvas);
-            canvas1.Children.Add(GuideCanvas);
-            DoubleAnimation_Ready();
+                //원을 품고 있는 캔버스를 다시 자식으로 
+                canvas1.Children.Add(FruitScoreCanvas);
+                canvas1.Children.Add(GuideCanvas);
+                DoubleAnimation_Ready();
+            }
         }
 
         //애니메이션을 제어하기 위한 변수 
@@ -377,32 +387,32 @@ namespace EatingFruit
         //준비가 되었을 때, 이벤트 
         void sensor_AllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
-            // 받아오는 정보를 colorFrame에 받아온다. 
-            using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
+            if (SungJik_SungHwa.GLOBAL.SelectedGame == 3)
             {
-                if (colorFrame == null) return;
+                // 받아오는 정보를 colorFrame에 받아온다. 
+                using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
+                {
+                    if (colorFrame == null) return;
 
-                //pixel의 크기 초기화 
-                byte[] pixels = new byte[colorFrame.PixelDataLength];
+                    //pixel의 크기 초기화 
+                    byte[] pixels = new byte[colorFrame.PixelDataLength];
 
-                //pixel 의 정보 담아오기 
-                colorFrame.CopyPixelDataTo(pixels);
+                    //pixel 의 정보 담아오기 
+                    colorFrame.CopyPixelDataTo(pixels);
 
-                //stride = r,g,b, none 의 정보가 하나의 pixel에 있기에 *4를 한다.
-                int stride = colorFrame.Width * 4;
+                    //stride = r,g,b, none 의 정보가 하나의 pixel에 있기에 *4를 한다.
+                    int stride = colorFrame.Width * 4;
 
-                //screen image의 source를 결정해준다. 
-                Screen.Source = BitmapSource.Create(colorFrame.Width, colorFrame.Height, 96, 96, PixelFormats.Bgr32,
-                                                    null, pixels, stride);
+                    //screen image의 source를 결정해준다. 
+                    //Screen.Source = BitmapSource.Create(colorFrame.Width, colorFrame.Height, 96, 96, PixelFormats.Bgr32, null, pixels, stride);
+                }
+                Skeleton me = null;
+                GetSkelton(e, ref me);
+
+                if (me == null)
+                    return;
+                StartGame(me, e); //게임을 시작.
             }
-            Skeleton me = null;
-            GetSkelton(e, ref me);
-
-            if (me == null)
-                return;
-            StartGame(me, e); //게임을 시작.
-
-
         }
 
         void Score(int Score, int check)
@@ -599,92 +609,112 @@ namespace EatingFruit
         //게임을 startButton을 누르고 시작한다. 
         private void StartGame(Skeleton me, AllFramesReadyEventArgs e)
         {
-            using (DepthImageFrame depth = e.OpenDepthImageFrame())
+            if (SungJik_SungHwa.GLOBAL.SelectedGame == 3)
             {
-                Point HomeTopLeft = new Point(Canvas.GetLeft(Home), Canvas.GetTop(Home));
-                Point ReplayTopLeft = new Point(Canvas.GetLeft(Replay), Canvas.GetTop(Replay));
-                if (depth == null || sensor == null)
-                    return;
-
-                // 게임 시작 
-                if (gameState == playing)
+                if (SungJik_SungHwa.GLOBAL.StartGame == true)
                 {
-                    //rendering - Hipcenter  
-                    CoordinateMapper coorMap = new CoordinateMapper(sensor);
-                    DepthImagePoint kneeDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.KneeRight].Position, depth.Format);
-                    ColorImagePoint kneeColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, kneeDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
-                    Canvas.SetLeft(SungHwa, kneeColorPoint.X - SungHwa.Width / 2);
-                    // Canvas.SetTop(SungHwa, kneeColorPoint.Y - SungHwa.Height / 2);
-                    Canvas.SetTop(SungHwa, 580);
-                }
-
-                if (gameState == option)
-                {
-                    //Right hand 좌표 잡기 
-                    CoordinateMapper coorMap = new CoordinateMapper(sensor);
-                    DepthImagePoint HandRightDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandRight].Position, depth.Format);
-                    ColorImagePoint HandRightColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, HandRightDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
-                    DepthImagePoint HandLeftDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
-                    ColorImagePoint HandLeftColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, HandLeftDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
-
-                    if (HandRightDepthPoint.Depth <= HandLeftDepthPoint.Depth)
-                        UserHand = HandRightDepthPoint;
-
-                    else
-                        UserHand = HandLeftDepthPoint;
-
-                    Canvas.SetLeft(hand, UserHand.X * 2 - hand.Width / 2);
-                    Canvas.SetTop(hand, UserHand.Y - hand.Width / 2);
-
-                    //home button 클릭시 
-                    if ((Canvas.GetLeft(hand) + hand.Width / 2) > Canvas.GetLeft(Home) &&
-                          (Canvas.GetLeft(hand) + hand.Width / 2) < Canvas.GetLeft(Home) + Home.ActualWidth &&
-                          (Canvas.GetTop(hand) + hand.Height / 2) > Canvas.GetTop(Home) &&
-                          (Canvas.GetTop(hand) + hand.Height / 2) < Canvas.GetTop(Home) + Home.ActualHeight)
+                    if(SungJik_SungHwa.GLOBAL.FruitCounter==1)
                     {
-                        Home.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "home_fruit_on.png") as ImageSource;
-                        Replay.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "re_fruit.png") as ImageSource;
-
-                        Press.detectPressure(UserHand.Depth, ref hand);
-                        if (Press.isConfirmed() == true)
-                        {
-                            Press.reset(ref hand);
-                            gameover.Stop();
-                            MainWindow next = new MainWindow();
-                            App.Current.MainWindow = next;
-                            this.Close();
-                            next.Show();
+                        SungJik_SungHwa.GLOBAL.StartGame = false;
+                        Console.WriteLine("1: "+SungJik_SungHwa.GLOBAL.FruitCounter);
+                        ReadyGame();
+                    }
+                    else
+                    {
+                        SungJik_SungHwa.GLOBAL.StartGame = false;
+                        Console.WriteLine("other: " +SungJik_SungHwa.GLOBAL.FruitCounter);
+                        RestartGame();
+                    }
+                    
+                }
+                if (SungJik_SungHwa.GLOBAL.StartGame == false)
+                {
+                    using (DepthImageFrame depth = e.OpenDepthImageFrame())
+                    {
+                        Point HomeTopLeft = new Point(Canvas.GetLeft(Home), Canvas.GetTop(Home));
+                        Point ReplayTopLeft = new Point(Canvas.GetLeft(Replay), Canvas.GetTop(Replay));
+                        if (depth == null || sensor == null)
                             return;
-                        }
-                    }
 
-                    //Replay Button 클릭시 
-                    else if ((Canvas.GetLeft(hand) + hand.Width / 2) > Canvas.GetLeft(Replay) &&
-                          (Canvas.GetLeft(hand) + hand.Width / 2) < Canvas.GetLeft(Replay) + Replay.ActualWidth &&
-                          (Canvas.GetTop(hand) + hand.Height / 2) > Canvas.GetTop(Replay) &&
-                          (Canvas.GetTop(hand) + hand.Height / 2) < Canvas.GetTop(Replay) + Replay.ActualHeight)
-                    {
-                        Home.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "home_fruit.png") as ImageSource;
-                        Replay.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "re_fruit_on.png") as ImageSource;
-
-                        Press.detectPressure(UserHand.Depth, ref hand);
-                        if (Press.isConfirmed() == true)
+                        // 게임 시작 
+                        if (gameState == playing)
                         {
-                            Press.reset(ref hand);
-                            gameover.Stop();
-                            RestartGame();
+                            //rendering - Hipcenter  
+                            CoordinateMapper coorMap = new CoordinateMapper(sensor);
+                            DepthImagePoint kneeDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.KneeRight].Position, depth.Format);
+                            ColorImagePoint kneeColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, kneeDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
+                            Canvas.SetLeft(SungHwa, kneeColorPoint.X - SungHwa.Width / 2);
+                            // Canvas.SetTop(SungHwa, kneeColorPoint.Y - SungHwa.Height / 2);
+                            Canvas.SetTop(SungHwa, 580);
                         }
-                    }
 
-                    //아무것도 안눌렀을 때, 
-                    else
-                    {
-                        Home.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "home_fruit.png") as ImageSource;
-                        Replay.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "re_fruit.png") as ImageSource;
-                        Press.reset(ref hand);
+                        if (gameState == option)
+                        {
+                            //Right hand 좌표 잡기 
+                            CoordinateMapper coorMap = new CoordinateMapper(sensor);
+                            DepthImagePoint HandRightDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandRight].Position, depth.Format);
+                            ColorImagePoint HandRightColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, HandRightDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
+                            DepthImagePoint HandLeftDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
+                            ColorImagePoint HandLeftColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, HandLeftDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
+
+                            if (HandRightDepthPoint.Depth <= HandLeftDepthPoint.Depth)
+                                UserHand = HandRightDepthPoint;
+
+                            else
+                                UserHand = HandLeftDepthPoint;
+
+                            Canvas.SetLeft(hand, UserHand.X * 2 - hand.Width / 2);
+                            Canvas.SetTop(hand, UserHand.Y - hand.Width / 2);
+
+                            //home button 클릭시 
+                            if ((Canvas.GetLeft(hand) + hand.Width / 2) > Canvas.GetLeft(Home) &&
+                                  (Canvas.GetLeft(hand) + hand.Width / 2) < Canvas.GetLeft(Home) + Home.ActualWidth &&
+                                  (Canvas.GetTop(hand) + hand.Height / 2) > Canvas.GetTop(Home) &&
+                                  (Canvas.GetTop(hand) + hand.Height / 2) < Canvas.GetTop(Home) + Home.ActualHeight)
+                            {
+                                Home.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "home_fruit_on.png") as ImageSource;
+                                Replay.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "re_fruit.png") as ImageSource;
+
+                                Press.detectPressure(UserHand.Depth, ref hand);
+                                if (Press.isConfirmed() == true)
+                                {
+                                    Press.reset(ref hand);
+                                    gameover.Stop();
+                                    Main.Show();
+                                    SungJik_SungHwa.GLOBAL.SelectedGame = 0;
+                                    this.Hide();
+                                    return;
+                                }
+                            }
+
+                            //Replay Button 클릭시 
+                            else if ((Canvas.GetLeft(hand) + hand.Width / 2) > Canvas.GetLeft(Replay) &&
+                                  (Canvas.GetLeft(hand) + hand.Width / 2) < Canvas.GetLeft(Replay) + Replay.ActualWidth &&
+                                  (Canvas.GetTop(hand) + hand.Height / 2) > Canvas.GetTop(Replay) &&
+                                  (Canvas.GetTop(hand) + hand.Height / 2) < Canvas.GetTop(Replay) + Replay.ActualHeight)
+                            {
+                                Home.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "home_fruit.png") as ImageSource;
+                                Replay.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "re_fruit_on.png") as ImageSource;
+
+                                Press.detectPressure(UserHand.Depth, ref hand);
+                                if (Press.isConfirmed() == true)
+                                {
+                                    Press.reset(ref hand);
+                                    gameover.Stop();
+                                    RestartGame();
+                                }
+                            }
+
+                            //아무것도 안눌렀을 때, 
+                            else
+                            {
+                                Home.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "home_fruit.png") as ImageSource;
+                                Replay.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "re_fruit.png") as ImageSource;
+                                Press.reset(ref hand);
+                            }
+                        }
                     }
                 }
-
             }
         }
 
@@ -1107,6 +1137,7 @@ namespace EatingFruit
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            sensor.Stop();
         }
     }
 }
