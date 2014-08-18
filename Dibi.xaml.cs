@@ -96,7 +96,7 @@ namespace SungJik_SungHwa
 
         Random random = new Random();
 
-        System.Media.SoundPlayer startsong = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "startsong.wav");
+        System.Media.SoundPlayer startsong = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "dibi\\startsong.wav");
         System.Media.SoundPlayer dibisong = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "dibi\\dibidibi.wav");
         System.Media.SoundPlayer bgm1 = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "dibi\\No Spam Polka-wav.wav");    // bgm 틀기
         System.Media.SoundPlayer winSound = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "dibi\\win.wav");

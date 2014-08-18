@@ -67,13 +67,9 @@ namespace EatingFruit
 
         public Fruit(MainWindow Main)
         {
-            Console.WriteLine("Fruit1");
             InitializeComponent();
-            Console.WriteLine("Fruit2");
             //ReadyGame();
-            Console.WriteLine("Fruit3");
             InitUI();
-            Console.WriteLine("Fruit4");
             this.Main = Main;
         }
 
@@ -1108,6 +1104,7 @@ namespace EatingFruit
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            
             //키넥트가 연결되어 있는지 확인한다. 만일 연결되어 있으면 선언한 sensor와 연결된 kinect 정보를 준다. 
             if (KinectSensor.KinectSensors.Count > 0)
                 sensor = KinectSensor.KinectSensors[0];
@@ -1126,7 +1123,7 @@ namespace EatingFruit
                 sensor.SkeletonStream.EnableTrackingInNearRange = true;
                 sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
                 */
-
+            
                 //kinect 가 준비하면 이벤트를 발생시키라는 명령문 
                 //sensor.AllFramesReady += sensor_AllFramesReady;
                 sensor.AllFramesReady += new EventHandler<AllFramesReadyEventArgs>(sensor_AllFramesReady);
@@ -1134,6 +1131,8 @@ namespace EatingFruit
                 //sensor를 시작한다. thread와 같다고 보면 된다. 
                 sensor.Start();
             }
+              
+             
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

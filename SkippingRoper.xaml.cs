@@ -138,7 +138,7 @@ namespace SungJik_SungHwa
         {
             sensor.Stop();
         }
-
+        
         //윈도우가 불러오면 하는 이벤트
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {

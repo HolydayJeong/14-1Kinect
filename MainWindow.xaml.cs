@@ -17,6 +17,7 @@ using Microsoft.Kinect;
 using WpfAnimatedGif;
 using EatingFruit;
 using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace SungJik_SungHwa
 {
@@ -54,7 +55,7 @@ namespace SungJik_SungHwa
         Skeleton[] allSkeletons = new Skeleton[SKELETON_COUNT];
 
         List<Image> images;
-        List<Image> menuList;
+        List<Image> menuList = new List<Image>();
         //private Window1 ReadyWindow;
 
         Boolean locker = false;
@@ -69,7 +70,7 @@ namespace SungJik_SungHwa
         static WriteableBitmap writeableBitmap;
 
 
-        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "/Main/";
+        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "Main\\";
 
         public MainWindow()
         {
@@ -81,13 +82,14 @@ namespace SungJik_SungHwa
         private void InitializeButtons()
         {
             images = new List<Image> { Dibi, Jump, Fruit };
+            Console.WriteLine(baseDirectory+"menu1.png");
             menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "menu1.png")) });
             menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "menu1_on.png")) });
             menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "menu2.png")) });
             menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "menu2_on.png")) });
             menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "menu3.png")) });
             menuList.Add(new Image() { Source = new BitmapImage(new Uri(baseDirectory + "menu3_on.png")) });
-                
+            Console.WriteLine(baseDirectory);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -102,6 +104,8 @@ namespace SungJik_SungHwa
 
             //키넥트가 연결되어 있는지 확인한다. 만일 연결되어 있으면 선언한 sensor와 연결된 kinect 정보를 준다. 
 
+            
+
             if (KinectSensor.KinectSensors.Count > 0)
             {
                 sensor = KinectSensor.KinectSensors[0];
@@ -109,7 +113,6 @@ namespace SungJik_SungHwa
             }
 
             Console.WriteLine(sensor.Status.ToString());
-
             while (sensor.Status != KinectStatus.Connected) ;
             //연결에 성공하면.. 
             if (sensor.Status == KinectStatus.Connected)
@@ -151,12 +154,10 @@ namespace SungJik_SungHwa
 
             }
             DIBI = new Dibi(this);
-            Console.WriteLine("Main 1");
             JUMP = new SkippingRoper(this);
-            Console.WriteLine("Main 2");
             FRUIT = new Fruit(this);
-            Console.WriteLine("Main 3");
             monkeySound.Open(new Uri(baseDirectory + "main_monkey.mp3"));
+
         }
         //준비가 되었을 때, 이벤트 
         void sensor_AllFramesReady(object sender, AllFramesReadyEventArgs e)
@@ -178,7 +179,7 @@ namespace SungJik_SungHwa
                     //writeableBitmap = new WriteableBitmap(colorFrame.Width, colorFrame.Height, 96, 96, PixelFormats.Bgr32, null, pixels, stride);
                     //screen image의 source를 결정해준다. 
                     Screen.Source = SungJik_SungHwa.GLOBAL.kinectScreen;
-
+                    
                     pixels = null;
 
                 }
