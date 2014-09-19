@@ -1,22 +1,22 @@
 ﻿<Window x:Class="SungJik_SungHwa.SkippingRoper"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="960" Width="1280" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="MainWindow" Height="768" Width="1024" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="633*"/>
             <ColumnDefinition Width="19*"/>
         </Grid.ColumnDefinitions>
-        <Canvas x:Name="mainCanvas" Height="960" VerticalAlignment="Top" Width="1280" Grid.ColumnSpan="2" Margin="0,-1,-8,0">
-            <Image x:Name="Screen" HorizontalAlignment="Left" Height="960" VerticalAlignment="Top" Width="1280"/>
-            <Image x:Name="Me" HorizontalAlignment="Left" Height="496" VerticalAlignment="Top" Width="448" Canvas.Left="314" Canvas.Top="410" Visibility="Hidden"/>
-            <Image x:Name="Opponent" HorizontalAlignment="Left" Height="496" VerticalAlignment="Top" Width="448" Canvas.Left="603" Canvas.Top="410" Visibility="Hidden"/>
-            <Image x:Name="GuideText" Canvas.Left="370" HorizontalAlignment="Center" Canvas.Top = "200"  Visibility="Hidden"/>
-            <Image x:Name ="SungJik" Height="400" Canvas.Left="220" Canvas.Top="200" Width="400" Visibility="Hidden"/>
-            <Image x:Name ="Pig" Height="400" Canvas.Left="445" Canvas.Top="200" Width="400"  Visibility="Hidden"/>
-            <Image x:Name = "Mice"  Height="400" Canvas.Left="668" Canvas.Top="200" Width="400"  Visibility="Hidden"/>
-            <Image x:Name="Home"  Height="114" Canvas.Left="440" Canvas.Top="380" Width="114" Visibility="Hidden"  />
-            <Image x:Name = "Replay"  Height="114" Canvas.Left="728" Canvas.Top="380" Width="114"  Visibility="Hidden" />
+        <Canvas x:Name="mainCanvas" Height="768" VerticalAlignment="Top" Width="1024" Grid.ColumnSpan="2" Margin="0,-1,-8,0">
+            <Image x:Name="Screen" HorizontalAlignment="Left" Height="768" VerticalAlignment="Top" Width="1024"/>
+            <Image x:Name="Me" HorizontalAlignment="Left" Height="396.8" VerticalAlignment="Top" Width="358.4" Canvas.Left="251.2" Canvas.Top="328" Visibility="Hidden"/>
+            <Image x:Name="Opponent" HorizontalAlignment="Left" Height="396.8" VerticalAlignment="Top" Width="358.4" Canvas.Left="482.4" Canvas.Top="328" Visibility="Hidden"/>
+            <Image x:Name="GuideText" Canvas.Left="296" HorizontalAlignment="Center" Canvas.Top = "160"  Visibility="Hidden"/>
+            <Image x:Name ="SungJik" Height="320" Canvas.Left="176" Canvas.Top="200" Width="320" Visibility="Hidden"/>
+            <Image x:Name ="Pig" Height="320" Canvas.Left="356" Canvas.Top="200" Width="320"  Visibility="Hidden"/>
+            <Image x:Name = "Mice"  Height="320" Canvas.Left="534.4" Canvas.Top="200" Width="320"  Visibility="Hidden"/>
+            <Image x:Name="Home"  Height="91.2" Canvas.Left="352" Canvas.Top="304" Width="91.2" Visibility="Hidden"  />
+            <Image x:Name = "Replay"  Height="91.2" Canvas.Left="582.4" Canvas.Top="304" Width="91.2"  Visibility="Hidden" />
         </Canvas>
     </Grid>
 </Window>
