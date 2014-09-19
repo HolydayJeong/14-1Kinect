@@ -57,6 +57,8 @@ namespace SungJik_SungHwa
         const int VISIBLE = 19;
         const int NOBODY = 120;
 
+        double resolution = 0.8;    // 해상도 변경될시 여기를 조정하세요
+
         SungJik_SungHwa.PressButton Press = new SungJik_SungHwa.PressButton(AppDomain.CurrentDomain.BaseDirectory + "Main\\mouse.png", AppDomain.CurrentDomain.BaseDirectory + "Main\\mouse_pull.png");
 
         public MainWindow Main;
@@ -261,9 +263,6 @@ namespace SungJik_SungHwa
 
                     ColorImagePoint headColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, headDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
 
-                    Canvas.SetLeft(Soong, headColorPoint.X - Soong.Width / 2);
-                    Canvas.SetTop(Soong, headColorPoint.Y - Soong.Width / 2);
-
                     int HandLength = Math.Abs(RElbowDepthPoint.Y - RWristDepthPoint.Y) * 2;
                     int ElboDistance = RElbowDepthPoint.X - LElbowDepthPoint.X;
 
@@ -290,10 +289,10 @@ namespace SungJik_SungHwa
                     else if (gamestate == 2)    //스킵용
                     {
                         Point targetTopLeft = new Point(Canvas.GetLeft(skip), Canvas.GetTop(skip));
-                        targetTopLeft.X = targetTopLeft.X / 2;
+                        targetTopLeft.X = targetTopLeft.X / 2;  // 이미 xaml에서 줄인 상태라 따로 안줄여도 됨
                         targetTopLeft.Y = targetTopLeft.Y / 2;
 
-                        if (RHandDepthPoint.X > targetTopLeft.X && RHandDepthPoint.X < targetTopLeft.X + skip.ActualWidth / 2 && RHandDepthPoint.Y > targetTopLeft.Y && RHandDepthPoint.Y < targetTopLeft.Y + skip.ActualHeight / 2)
+                        if (RHandDepthPoint.X * resolution > targetTopLeft.X && RHandDepthPoint.X * resolution < targetTopLeft.X + skip.ActualWidth / 2 && RHandDepthPoint.Y * resolution > targetTopLeft.Y && RHandDepthPoint.Y * resolution < targetTopLeft.Y + skip.ActualHeight / 2)
                         {
                             Press.reset();
                             skip.Source = backgroundList[1].Source;
@@ -440,7 +439,7 @@ namespace SungJik_SungHwa
 
                         //해상도 확장으로 인한 변수 값 조정 
                         //(해상도 줄이면 이곳을 주석처리하고 이미지 크기에 /2 지우면 됨)
-                        replayTopLeft.X = replayTopLeft.X / 2;
+                        replayTopLeft.X = replayTopLeft.X / 2;     // 이미 xaml에서 줄인 상태라 따로 안줄여도 됨
                         replayTopLeft.Y = replayTopLeft.Y / 2;
                         homeTopLeft.X = homeTopLeft.X / 2;
                         homeTopLeft.Y = homeTopLeft.Y / 2;
@@ -451,8 +450,8 @@ namespace SungJik_SungHwa
                         else
                             UserHand = LHandDepthPoint;
 
-                        Canvas.SetLeft(hand, UserHand.X * 2 - hand.Width / 2);  // *2 는 해상도 확장으로 인한 변수 값 조정
-                        Canvas.SetTop(hand, UserHand.Y * 2 - hand.Width / 2);   // *2 는 해상도 확장으로 인한 변수 값 조정
+                        Canvas.SetLeft(hand, (UserHand.X * 2 - hand.Width / 2)* resolution);  // *2 는 해상도 확장으로 인한 변수 값 조정
+                        Canvas.SetTop(hand, (UserHand.Y * 2 - hand.Width / 2)* resolution);   // *2 는 해상도 확장으로 인한 변수 값 조정
 
                         if (Nobody > NOBODY)
                         {
@@ -460,7 +459,8 @@ namespace SungJik_SungHwa
                             return;
                         }
                         // 리플레이
-                        else if (UserHand.X > replayTopLeft.X && UserHand.X < replayTopLeft.X + replay.ActualWidth / 2 && UserHand.Y > replayTopLeft.Y && UserHand.Y < replayTopLeft.Y + replay.ActualHeight / 2)
+                        else if (UserHand.X * resolution > replayTopLeft.X && UserHand.X * resolution < replayTopLeft.X + replay.ActualWidth / 2 && UserHand.Y * resolution > replayTopLeft.Y
+                            && UserHand.Y * resolution < replayTopLeft.Y + replay.ActualHeight / 2)
                         {
                             Menu(REPLAYPRESSED, baseDirectory);
                             Press.detectPressure(UserHand.Depth, ref hand);
@@ -476,7 +476,8 @@ namespace SungJik_SungHwa
                             }
                         }
                         // 홈으로 가기
-                        else if (UserHand.X > homeTopLeft.X && UserHand.X < homeTopLeft.X + home.ActualWidth / 2 && UserHand.Y > homeTopLeft.Y && UserHand.Y < homeTopLeft.Y + home.ActualHeight / 2)
+                        else if (UserHand.X * resolution > homeTopLeft.X && UserHand.X * resolution < homeTopLeft.X + home.ActualWidth / 2 && UserHand.Y * resolution > homeTopLeft.Y
+                            && UserHand.Y * resolution < homeTopLeft.Y + home.ActualHeight / 2)
                         {
                             Menu(HOMEPRESSED, baseDirectory);
                             Press.detectPressure(UserHand.Depth, ref hand);

@@ -123,6 +123,10 @@ namespace SungJik_SungHwa
         //메w인 화면
         public SkippingRoper(MainWindow Main)
         {
+            backGround.Open(new Uri(baseDirectory + "background.mp3"));
+            backGround.Stop();
+            gameover.Open(new Uri(baseDirectory + "gameOver.mp3"));
+            gameover.Stop();
             Pressing = new PressButton(baseDirectory + "mouse.png", baseDirectory + "mouse_pull.png");
             //backGround.Open(new Uri(baseDirectory + "background.wav"));
             Console.WriteLine("Jump");
@@ -276,7 +280,7 @@ namespace SungJik_SungHwa
 
         public void guide()
         {
-            backGround.Open(new Uri(baseDirectory + "background.mp3"));
+            backGround.Play();
             prepareKinect();
             introText.Visibility = System.Windows.Visibility.Visible;
             Canvas.SetTop(introText, (this.Height / 2) - 137);
@@ -517,7 +521,7 @@ namespace SungJik_SungHwa
                             stopPause = false;
                             backGround.Stop();
                             if (jump == false)
-                                gameover.Open(new Uri(baseDirectory + "gameOver.mp3"));
+                                gameover.Play();
                             else
                                 win.Play();
                             Hand.Visibility = System.Windows.Visibility.Visible;

@@ -43,6 +43,8 @@ namespace SungJik_SungHwa
         const int LEFT = 0;
         const int RIGHT = 1;
 
+        double resolution = 0.8;
+
         int pressingHand = RIGHT;
 
         //kinect sensor를 선언함 
@@ -228,16 +230,16 @@ namespace SungJik_SungHwa
                         if (Press.isPressed() == true && pressingHand == LEFT) { }
                         else
                         {
-                            Canvas.SetLeft(Hand, handRightColorPoint.X - Hand.Width / 2);
-                            Canvas.SetTop(Hand, handRightColorPoint.Y - Hand.Height / 2);
+                            Canvas.SetLeft(Hand, (handRightColorPoint.X - Hand.Width / 2 )*resolution);  // resolution 추가된 이유 : 해상도를 몇배 떨어트려서 다 보일수 있도록함( 밑에 잘렸었음)
+                            Canvas.SetTop(Hand, (handRightColorPoint.Y - Hand.Height / 2) * resolution);
                             handDepth = handRightDepthPoint.Depth;
                             pressingHand = RIGHT;
                         }
                     }
                     if ((Press.isPressed() == true && pressingHand == LEFT) || (handRightDepthPoint.Depth > handLeftDepthPoint.Depth))
                     {
-                        Canvas.SetLeft(Hand, handLeftColorPoint.X - Hand.Width / 2);
-                        Canvas.SetTop(Hand, handLeftColorPoint.Y - Hand.Height / 2);
+                        Canvas.SetLeft(Hand, (handLeftColorPoint.X - Hand.Width / 2)*resolution);
+                        Canvas.SetTop(Hand, (handLeftColorPoint.Y - Hand.Height / 2) * resolution);
                         handDepth = handLeftDepthPoint.Depth;
                         pressingHand = LEFT;
                     }
@@ -252,8 +254,8 @@ namespace SungJik_SungHwa
                         monkeySound.Play();
 
                         Point targetTopLeft = new Point(Canvas.GetLeft(Jump), Canvas.GetTop(Jump));
-                        targetTopLeft.X /= 2;
-                        targetTopLeft.Y /= 2;
+                        targetTopLeft.X = targetTopLeft.X / 2;   // 이미 xaml에서 줄여진 상태이기때문에 따로 resolution 안곱해도 되
+                        targetTopLeft.Y = targetTopLeft.Y / 2;
                         box.Text = "TopLeft X : " + targetTopLeft.X + "Width : " + Jump.ActualWidth + " TopLeft Y : " + targetTopLeft.Y + " Height : " + Jump.ActualHeight + "Body X: " + bodyDepthPoint.X + "Body Y: " + bodyDepthPoint.Y;
                         //if (bodyDepthPoint.X > targetTopLeft.X && bodyDepthPoint.X < targetTopLeft.X + Jump.ActualWidth/2 && bodyDepthPoint.Y > targetTopLeft.Y && bodyDepthPoint.Y < targetTopLeft.Y + Jump.ActualHeight)
                         if (bodyDepthPoint.X > 310 && bodyDepthPoint.X < 350 && bodyDepthPoint.Y > 230 && bodyDepthPoint.Y < 280)
@@ -282,10 +284,10 @@ namespace SungJik_SungHwa
                             box.Text = "Target Name " + target.Name + "TopLeft X : " + targetTopLeft.X + " TopLeft Y : " + targetTopLeft.Y + " Hand X : " + (Canvas.GetLeft(Hand) + Hand.Width / 2) + " Hand Y : " + (Canvas.GetTop(Hand) + Hand.Width / 2) + "Body X: " + bodyDepthPoint.X * 2 + "Body Y: " + bodyDepthPoint.Y * 2 + "gamestate : " + gamestate + " I : " + i + "locker : " + locker;
                             if (locker == false)
                             {
-                                if (Canvas.GetLeft(Hand) + Hand.Width / 2 > targetTopLeft.X &&
-                                       Canvas.GetLeft(Hand) + Hand.Width / 2 < targetTopLeft.X + target.ActualWidth &&
-                                       Canvas.GetTop(Hand) + Hand.Height / 2 > targetTopLeft.Y &&
-                                       Canvas.GetTop(Hand) + Hand.Height / 2 < targetTopLeft.Y + target.ActualHeight)
+                                if ((Canvas.GetLeft(Hand) + Hand.Width / 2) > targetTopLeft.X &&      // resolution 안곱하는 이유 -> 아마도 둘다 상대적인 위치라서??  곱하면 이상하게 나온당
+                                       (Canvas.GetLeft(Hand) + Hand.Width / 2) < targetTopLeft.X + target.ActualWidth &&
+                                       (Canvas.GetTop(Hand) + Hand.Height / 2) > targetTopLeft.Y &&
+                                       (Canvas.GetTop(Hand) + Hand.Height / 2) < targetTopLeft.Y + target.ActualHeight)
                                 {
                                     clicked = 1;
                                     box.Text = "Pressing";
