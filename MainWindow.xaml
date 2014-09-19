@@ -1,16 +1,17 @@
 ﻿<Window x:Class="SungJik_SungHwa.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="960" Width="1280" Loaded="Window_Loaded" Closing="Window_Closing">
-    <Grid Height="960" Name="User_ViewGrid" Width="1280">
-        <Canvas Height="960" HorizontalAlignment="Left" Margin="2,-1,0,0" Name="canvas1" VerticalAlignment="Top" Width="1280">
-            <Image Name="Screen" Height="960"  Stretch="Fill" Width="1280" Canvas.Top="10" />
-            <Image Name="Dibi" Source="bin/Debug/Main/menu1.png" Canvas.Left="120" Canvas.Top="404" Height="364"  Width="240" Visibility="Visible"/>
-            <Image Name="Jump" Source="bin/Debug/Main/menu2.png" Canvas.Left="479" Canvas.Top="404" Height="364"  Width="240" Visibility="Visible"/>
-            <Image Name="Fruit" Source="bin/Debug/Main/menu3.png" Canvas.Left="828" Canvas.Top="404" Height="364"  Width="240" Visibility="Visible" />
-            <Image Canvas.Left="1116" Canvas.Top="562" Height="45" Name="Hand" Stretch="Fill" Width="45"/>
-            <Image Name="Begin" Height="960" Width="1270" Canvas.Left="10"/>
-            <TextBox Name="box" Height="105" Canvas.Left="120" TextWrapping="Wrap" Text="TextBox" Canvas.Top="51" FontSize="30" Width="1120"/>
+        Title="MainWindow" Height="768" Width="1024" Loaded="Window_Loaded" Closing="Window_Closing">
+    <Grid Height="768" Name="User_ViewGrid" Width="1024">
+        <Canvas Height="768" HorizontalAlignment="Left" Margin="2,-1,0,0" Name="canvas1" VerticalAlignment="Top" Width="1024">
+            <Image Name="Screen" Height="768"  Stretch="Fill" Width="1024" Canvas.Top="10" />
+            <Image Name="Guide" Canvas.Left="231" Canvas.Top="80" Height="101"  Width="560" Visibility="Visible"/>
+            <Image Name="Dibi" Source="bin/Debug/Main/menu1.png" Canvas.Left="160" Canvas.Top="323" Height="290"  Width="192" Visibility="Visible"/>
+            <Image Name="Jump" Source="bin/Debug/Main/menu2.png" Canvas.Left="412" Canvas.Top="323" Height="290"  Width="192" Visibility="Visible"/>
+            <Image Name="Fruit" Source="bin/Debug/Main/menu3.png" Canvas.Left="662" Canvas.Top="323" Height="290"  Width="192" Visibility="Visible" />
+            <Image Canvas.Left="500" Canvas.Top="562" Height="45" Name="Hand" Stretch="Fill" Width="45"/>
+            <Image Name="Begin" Height="768" Width="1024" Canvas.Left="0" Canvas.Top="0"/>
+            <TextBox Name="box" Height="84" Canvas.Left="96" TextWrapping="Wrap" Text="TextBox" Canvas.Top="51" FontSize="30" Width="1120" Visibility="Hidden"/>
         </Canvas>
     </Grid>
 </Window>

@@ -72,7 +72,6 @@ namespace SungJik_SungHwa
         Boolean scoring = false;
         Boolean stop = false;
         Boolean stopPause = true;
-        Boolean initial = false;
         Skeleton[] allSkeletons = new Skeleton[SKELOTON_COUNT];
 
         string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "줄넘기\\";
@@ -105,7 +104,8 @@ namespace SungJik_SungHwa
 
         MediaPlayer gameover = new MediaPlayer();
         MediaPlayer backGround = new MediaPlayer();
-        MediaPlayer[] cheers = new MediaPlayer[7];
+        //MediaPlayer[] cheers = new MediaPlayer[7];
+        MediaPlayer cheers = new MediaPlayer();
         System.Media.SoundPlayer win = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/줄넘기/" + "monkey.wav");
 
 
@@ -123,25 +123,26 @@ namespace SungJik_SungHwa
         //메w인 화면
         public SkippingRoper(MainWindow Main)
         {
-            Console.WriteLine("여기야");
+            backGround.Open(new Uri(baseDirectory + "background.mp3"));
+            backGround.Stop();
+            gameover.Open(new Uri(baseDirectory + "gameOver.mp3"));
+            gameover.Stop();
             Pressing = new PressButton(baseDirectory + "mouse.png", baseDirectory + "mouse_pull.png");
-            Console.WriteLine("여기야1");
             //backGround.Open(new Uri(baseDirectory + "background.wav"));
-
+            Console.WriteLine("Jump");
             InitializeComponent();
-            Console.WriteLine("여기야2");
+            Console.WriteLine("Jump 1");
             InitUI();
-            Console.WriteLine("여기야3");
+            Console.WriteLine("Jump 2");
             this.Main = Main;
-            Console.WriteLine("여기야4");
         }
 
         //윈도우가 닫히는 이벤트: 아무것도 하지 않는다
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
+            sensor.Stop();
         }
-
+        
         //윈도우가 불러오면 하는 이벤트
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -187,17 +188,8 @@ namespace SungJik_SungHwa
 
         private void InitUI()
         {
-            for (int j = 0; j < 7; j++)
-            {
-                cheers[j] = new MediaPlayer();
-                cheers[j].Open(new Uri(baseDirectory + "cheer\\cheer_" + (j + 1).ToString() + ".wav"));
-            }
-
-            sound.Open(new Uri(baseDirectory + "jump.wav"));
-            gameover.Open(new Uri(baseDirectory + "gameOver.mp3"));
-            backGround.Open(new Uri(baseDirectory + "background.mp3"));
-
-
+            Console.WriteLine("Jump UI 1");
+            
             for (int i = 0; i < FRAME_MAX; i++)
             {
                 rope[i] = new Image();
@@ -243,6 +235,7 @@ namespace SungJik_SungHwa
             Canvas.SetTop(skipButton, 500);
             Canvas.SetLeft(skipButton, 800);
 
+
             Canvas.SetTop(GuideText, (titleCanvas.Height / 3) - 100);
             Canvas.SetLeft(GuideText, (titleCanvas.Width / 3));
 
@@ -263,12 +256,6 @@ namespace SungJik_SungHwa
             mainCanvas.Children.Add(ready);
             mainCanvas.Children.Add(WinLose);
             mainCanvas.Children.Add(Hand);
-
-            if (initial == false)
-            {
-
-                initial = true;
-            }
 
         }
 
@@ -291,7 +278,7 @@ namespace SungJik_SungHwa
 
         }
 
-        private void guide()
+        public void guide()
         {
             backGround.Play();
             prepareKinect();
@@ -305,7 +292,7 @@ namespace SungJik_SungHwa
             animation.From = 0.0;
             animation.To = 0.0;
             animation.AccelerationRatio = 0.0;
-            animation.Duration = new Duration(TimeSpan.FromSeconds(7));
+            animation.Duration = new Duration(TimeSpan.FromSeconds(4));
             animation.FillBehavior = FillBehavior.Stop;
             animation.Completed += animation_Completed;
             titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
@@ -352,14 +339,13 @@ namespace SungJik_SungHwa
                 break;*/
                 case 0:
                     counter++;
-                    prepareKinect();
                     introText.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide_2.png") as ImageSource;
                     Canvas.SetTop(introText, (titleCanvas.Height / 2) - 111);
                     Canvas.SetLeft(introText, (titleCanvas.Width / 2) - 230);
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
-                    animation.Duration = new Duration(TimeSpan.FromSeconds(4));
+                    animation.Duration = new Duration(TimeSpan.FromSeconds(2));
                     animation.FillBehavior = FillBehavior.Stop;
                     animation.Completed += animation_Completed;
                     titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
@@ -372,7 +358,7 @@ namespace SungJik_SungHwa
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
-                    animation.Duration = new Duration(TimeSpan.FromSeconds(4));
+                    animation.Duration = new Duration(TimeSpan.FromSeconds(2));
                     animation.FillBehavior = FillBehavior.Stop;
                     animation.Completed += animation_Completed;
                     titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
@@ -385,7 +371,7 @@ namespace SungJik_SungHwa
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
-                    animation.Duration = new Duration(TimeSpan.FromSeconds(3));
+                    animation.Duration = new Duration(TimeSpan.FromSeconds(2));
                     animation.FillBehavior = FillBehavior.Stop;
                     animation.Completed += animation_Completed;
                     titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
@@ -398,7 +384,7 @@ namespace SungJik_SungHwa
                     animation.From = 0.0;
                     animation.To = 0.0;
                     animation.AccelerationRatio = 0.0;
-                    animation.Duration = new Duration(TimeSpan.FromSeconds(3));
+                    animation.Duration = new Duration(TimeSpan.FromSeconds(2));
                     animation.FillBehavior = FillBehavior.Stop;
                     animation.Completed += animation_Completed;
                     titleCanvas.BeginAnimation(Canvas.TopProperty, animation);
@@ -480,70 +466,78 @@ namespace SungJik_SungHwa
         {
 
             Skeleton me = null;
-            Console.WriteLine("Hello");
             GetSkeleton(e, ref me);
             if (SungJik_SungHwa.GLOBAL.SelectedGame == 2)
             {
-                if (me == null)
-                    return;
-                if (gameState == BEGINNING)
+                if (SungJik_SungHwa.GLOBAL.StartGame == true)
                 {
-                    skipIntro(me, e);
-                }
+                    SungJik_SungHwa.GLOBAL.StartGame = false;
+                    guide();
 
-                if (gameState == SELECTING)
+                }
+                if (SungJik_SungHwa.GLOBAL.StartGame == false)
                 {
                     if (me == null)
-                    {
-                        GuideText.Visibility = System.Windows.Visibility.Visible;
                         return;
+                    if (gameState == BEGINNING)
+                    {
+                        skipIntro(me, e);
                     }
 
-                    if (selected == false)
+                    if (gameState == SELECTING)
                     {
-                        //14/07/24 : count down이 보이도록
-                        GuideText.Visibility = System.Windows.Visibility.Visible;
-                        SungJik.Visibility = System.Windows.Visibility.Visible;
-                        Pig.Visibility = System.Windows.Visibility.Visible;
-                        Mice.Visibility = System.Windows.Visibility.Visible;
-                        SelectCharacter(me, e);
-                    }
-                }
-                if (gameState == PLAYING)
-                {
-                    if (selected == true)
-                    {
-                        StartGame(me, e);
+                        if (me == null)
+                        {
+                            GuideText.Visibility = System.Windows.Visibility.Visible;
+                            return;
+                        }
 
+                        if (selected == false)
+                        {
+                            //14/07/24 : count down이 보이도록
+                            GuideText.Visibility = System.Windows.Visibility.Visible;
+                            SungJik.Visibility = System.Windows.Visibility.Visible;
+                            Pig.Visibility = System.Windows.Visibility.Visible;
+                            Mice.Visibility = System.Windows.Visibility.Visible;
+                            SelectCharacter(me, e);
+                        }
+                    }
+                    if (gameState == PLAYING)
+                    {
+                        if (selected == true)
+                        {
+                            StartGame(me, e);
+
+                        }
+
+                        if (stop == false && start == true)
+                        {
+                            isJumped2(e, me);
+                        }
+
+                        if (stop == true && stopPause == true)
+                        {
+                            gameState = END;
+                            stopPause = false;
+                            backGround.Stop();
+                            if (jump == false)
+                                gameover.Play();
+                            else
+                                win.Play();
+                            Hand.Visibility = System.Windows.Visibility.Visible;
+                            Replay.Visibility = System.Windows.Visibility.Visible;
+                            Home.Visibility = System.Windows.Visibility.Visible;
+                            WinLose.Visibility = System.Windows.Visibility.Visible;
+                            result();
+                        }
                     }
 
-                    if (stop == false && start == true)
+                    if (gameState == END)
                     {
-                        isJumped2(e, me);
-                    }
-
-                    if (stop == true && stopPause == true)
-                    {
-                        gameState = END;
-                        stopPause = false;
-                        backGround.Stop();
-                        if (jump == false)
-                            gameover.Play();
-                        else
-                            win.Play();
-                        Hand.Visibility = System.Windows.Visibility.Visible;
-                        Replay.Visibility = System.Windows.Visibility.Visible;
-                        Home.Visibility = System.Windows.Visibility.Visible;
-                        WinLose.Visibility = System.Windows.Visibility.Visible;
-                        result();
-                    }
-                }
-
-                if (gameState == END)
-                {
-                    if (stop == true)
-                    {
-                        replayHome(me, e);
+                        if (stop == true)
+                        {
+                            replayHome(me, e);
+                        }
                     }
                 }
             }
@@ -570,137 +564,140 @@ namespace SungJik_SungHwa
             }
             if (SungJik_SungHwa.GLOBAL.SelectedGame == 2)
             {
-                using (DepthImageFrame depth = e.OpenDepthImageFrame())
+                if (SungJik_SungHwa.GLOBAL.StartGame == false)
                 {
-                    if (depth == null) return;
-                    GuideText.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide_2.png") as ImageSource;
-                    //손목위치 찾기
-                    CoordinateMapper coorMap = new CoordinateMapper(sensor);
-                    DepthImagePoint HandRightDepthImagePoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandRight].Position, depth.Format);
-                    ColorImagePoint HandRightColorImagePoint = coorMap.MapDepthPointToColorPoint(depth.Format, HandRightDepthImagePoint, ColorImageFormat.RawBayerResolution1280x960Fps12);
-
-                    DepthImagePoint HandLeftDepthImagePoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
-                    ColorImagePoint HandLeftColorImagePoint = coorMap.MapDepthPointToColorPoint(depth.Format, HandLeftDepthImagePoint, ColorImageFormat.RawBayerResolution1280x960Fps12);
-                    //손위치 (내 오른쪽 손에 연결한다)
-                    if ((PressingHand == RIGHT && Pressing.isPressed() == true) || (HandRightDepthImagePoint.Depth <= HandLeftDepthImagePoint.Depth))
+                    using (DepthImageFrame depth = e.OpenDepthImageFrame())
                     {
-                        if (PressingHand == LEFT && Pressing.isPressed() == true) { }
-                        else
+                        if (depth == null) return;
+                        GuideText.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide_2.png") as ImageSource;
+                        //손목위치 찾기
+                        CoordinateMapper coorMap = new CoordinateMapper(sensor);
+                        DepthImagePoint HandRightDepthImagePoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandRight].Position, depth.Format);
+                        ColorImagePoint HandRightColorImagePoint = coorMap.MapDepthPointToColorPoint(depth.Format, HandRightDepthImagePoint, ColorImageFormat.RawBayerResolution1280x960Fps12);
+
+                        DepthImagePoint HandLeftDepthImagePoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.HandLeft].Position, depth.Format);
+                        ColorImagePoint HandLeftColorImagePoint = coorMap.MapDepthPointToColorPoint(depth.Format, HandLeftDepthImagePoint, ColorImageFormat.RawBayerResolution1280x960Fps12);
+                        //손위치 (내 오른쪽 손에 연결한다)
+                        if ((PressingHand == RIGHT && Pressing.isPressed() == true) || (HandRightDepthImagePoint.Depth <= HandLeftDepthImagePoint.Depth))
                         {
-                            Canvas.SetLeft(Hand, HandRightColorImagePoint.X - Hand.Width / 2);
-                            Canvas.SetTop(Hand, HandRightColorImagePoint.Y - Hand.Height / 2);
-                            handdepth = HandRightDepthImagePoint.Depth;
-                            PressingHand = RIGHT;
-                        }
-                    }
-                    if ((PressingHand == LEFT && Pressing.isPressed() == true) || (HandRightDepthImagePoint.Depth > HandLeftDepthImagePoint.Depth))
-                    {
-                        Canvas.SetLeft(Hand, HandLeftColorImagePoint.X - Hand.Width / 2);
-                        Canvas.SetTop(Hand, HandLeftColorImagePoint.Y - Hand.Height / 2);
-                        handdepth = HandLeftDepthImagePoint.Depth;
-                        PressingHand = LEFT;
-                    }
-                    if (gameState == SELECTING)
-                    {
-                        //위치 지정시
-                        if ((
-                            (Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(SungJik) + 90 - Pressing.wideRange()) &&
-                            (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(SungJik) + 290 + Pressing.wideRange()) &&
-                            (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(SungJik) + 80 - Pressing.wideRange()) &&
-                            (Canvas.GetTop(Hand) + Hand.Height / 2 < Canvas.GetTop(SungJik) + SungJik.Height + Pressing.wideRange())))
-                        {
-                            SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].jump) as ImageSource;
-                            Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].wait) as ImageSource;
-                            Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].wait) as ImageSource;
-
-
-                            Pressing.detectPressure(handdepth, ref Hand);
-
-                            if (Pressing.isConfirmed() == true)
+                            if (PressingHand == LEFT && Pressing.isPressed() == true) { }
+                            else
                             {
-                                gameState = PLAYING;
-                                Pressing.reset(ref Hand);
-
-                                selected = true;
-                                selectedChar = SUNGJIK;
-                                countingDown();
-                            }
-
-                        }
-
-                        else if ((
-                            (Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(Pig) + 90 - Pressing.wideRange()) &&
-                            (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(Pig) + 290 + Pressing.wideRange()) &&
-                            (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(Pig) + 80 - Pressing.wideRange()) &&
-                            (Canvas.GetTop(Hand) + Hand.Height / 2 < Canvas.GetTop(Pig) + Pig.Height + Pressing.wideRange())))
-                        {
-                            Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].jump) as ImageSource;
-                            SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].wait) as ImageSource;
-                            Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].wait) as ImageSource;
-
-                            Pressing.detectPressure(handdepth, ref Hand);
-
-                            if (Pressing.isConfirmed() == true)
-                            {
-                                gameState = PLAYING;
-
-                                Pressing.reset(ref Hand);
-                                selected = true;
-                                selectedChar = PIG;
-                                countingDown();
+                                Canvas.SetLeft(Hand, HandRightColorImagePoint.X - Hand.Width / 2);
+                                Canvas.SetTop(Hand, HandRightColorImagePoint.Y - Hand.Height / 2);
+                                handdepth = HandRightDepthImagePoint.Depth;
+                                PressingHand = RIGHT;
                             }
                         }
-                        else if ((
-                            (Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(Mice) + 90 - Pressing.wideRange()) &&
-                            (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(Mice) + 290 + Pressing.wideRange()) &&
-                            (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(Mice) + 80 - Pressing.wideRange()) &&
-                            (Canvas.GetTop(Hand) + Hand.Height / 2 < Canvas.GetTop(Mice) + Mice.Height + Pressing.wideRange())))
+                        if ((PressingHand == LEFT && Pressing.isPressed() == true) || (HandRightDepthImagePoint.Depth > HandLeftDepthImagePoint.Depth))
                         {
-                            Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].jump) as ImageSource;
-                            SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].wait) as ImageSource;
-                            Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].wait) as ImageSource;
-
-                            Pressing.detectPressure(HandRightDepthImagePoint.Depth, ref Hand);
-
-                            if (Pressing.isConfirmed() == true)
+                            Canvas.SetLeft(Hand, HandLeftColorImagePoint.X - Hand.Width / 2);
+                            Canvas.SetTop(Hand, HandLeftColorImagePoint.Y - Hand.Height / 2);
+                            handdepth = HandLeftDepthImagePoint.Depth;
+                            PressingHand = LEFT;
+                        }
+                        if (gameState == SELECTING)
+                        {
+                            //위치 지정시
+                            if ((
+                                (Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(SungJik) + 90 - Pressing.wideRange()) &&
+                                (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(SungJik) + 290 + Pressing.wideRange()) &&
+                                (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(SungJik) + 80 - Pressing.wideRange()) &&
+                                (Canvas.GetTop(Hand) + Hand.Height / 2 < Canvas.GetTop(SungJik) + SungJik.Height + Pressing.wideRange())))
                             {
-                                gameState = PLAYING;
-                                Pressing.reset(ref Hand);
+                                SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].jump) as ImageSource;
+                                Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].wait) as ImageSource;
+                                Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].wait) as ImageSource;
 
-                                selected = true;
-                                selectedChar = MICE;
-                                countingDown();
+
+                                Pressing.detectPressure(handdepth, ref Hand);
+
+                                if (Pressing.isConfirmed() == true)
+                                {
+                                    gameState = PLAYING;
+                                    Pressing.reset(ref Hand);
+
+                                    selected = true;
+                                    selectedChar = SUNGJIK;
+                                    countingDown();
+                                }
+
                             }
 
-                        }
-                        else
-                        {
-                            Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].wait
-                                ) as ImageSource;
-                            SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].wait) as ImageSource;
-                            Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].wait) as ImageSource;
-                            Pressing.reset(ref Hand);
-                        }
-                    }
-
-                    if (gameState == PLAYING)
-                    {
-                        if (selected == true)
-                        {
-                            Random rand = new Random();
-                            do
+                            else if ((
+                                (Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(Pig) + 90 - Pressing.wideRange()) &&
+                                (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(Pig) + 290 + Pressing.wideRange()) &&
+                                (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(Pig) + 80 - Pressing.wideRange()) &&
+                                (Canvas.GetTop(Hand) + Hand.Height / 2 < Canvas.GetTop(Pig) + Pig.Height + Pressing.wideRange())))
                             {
-                                oppChar = rand.Next(3);
-                            } while (oppChar == selectedChar);
-                            Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].wait) as ImageSource;
-                            Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].wait) as ImageSource;
-                            rope[0].Visibility = System.Windows.Visibility.Visible;
-                            Me.Visibility = System.Windows.Visibility.Visible;
-                            Opponent.Visibility = System.Windows.Visibility.Visible;
-                            SungJik.Visibility = System.Windows.Visibility.Hidden;
-                            Pig.Visibility = System.Windows.Visibility.Hidden;
-                            Mice.Visibility = System.Windows.Visibility.Hidden;
-                            Hand.Visibility = System.Windows.Visibility.Hidden;
+                                Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].jump) as ImageSource;
+                                SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].wait) as ImageSource;
+                                Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].wait) as ImageSource;
+
+                                Pressing.detectPressure(handdepth, ref Hand);
+
+                                if (Pressing.isConfirmed() == true)
+                                {
+                                    gameState = PLAYING;
+
+                                    Pressing.reset(ref Hand);
+                                    selected = true;
+                                    selectedChar = PIG;
+                                    countingDown();
+                                }
+                            }
+                            else if ((
+                                (Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(Mice) + 90 - Pressing.wideRange()) &&
+                                (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(Mice) + 290 + Pressing.wideRange()) &&
+                                (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(Mice) + 80 - Pressing.wideRange()) &&
+                                (Canvas.GetTop(Hand) + Hand.Height / 2 < Canvas.GetTop(Mice) + Mice.Height + Pressing.wideRange())))
+                            {
+                                Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].jump) as ImageSource;
+                                SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].wait) as ImageSource;
+                                Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].wait) as ImageSource;
+
+                                Pressing.detectPressure(HandRightDepthImagePoint.Depth, ref Hand);
+
+                                if (Pressing.isConfirmed() == true)
+                                {
+                                    gameState = PLAYING;
+                                    Pressing.reset(ref Hand);
+
+                                    selected = true;
+                                    selectedChar = MICE;
+                                    countingDown();
+                                }
+
+                            }
+                            else
+                            {
+                                Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].wait
+                                    ) as ImageSource;
+                                SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].wait) as ImageSource;
+                                Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].wait) as ImageSource;
+                                Pressing.reset(ref Hand);
+                            }
+                        }
+
+                        if (gameState == PLAYING)
+                        {
+                            if (selected == true)
+                            {
+                                Random rand = new Random();
+                                do
+                                {
+                                    oppChar = rand.Next(3);
+                                } while (oppChar == selectedChar);
+                                Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].wait) as ImageSource;
+                                Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].wait) as ImageSource;
+                                rope[0].Visibility = System.Windows.Visibility.Visible;
+                                Me.Visibility = System.Windows.Visibility.Visible;
+                                Opponent.Visibility = System.Windows.Visibility.Visible;
+                                SungJik.Visibility = System.Windows.Visibility.Hidden;
+                                Pig.Visibility = System.Windows.Visibility.Hidden;
+                                Mice.Visibility = System.Windows.Visibility.Hidden;
+                                Hand.Visibility = System.Windows.Visibility.Hidden;
+                            }
                         }
                     }
                 }
@@ -733,52 +730,35 @@ namespace SungJik_SungHwa
         //발좌표 추적
         private void StartGame(Skeleton me, AllFramesReadyEventArgs e)
         {
-            Random random = new Random();
-            if (me == null || e == null) return;
-            using (DepthImageFrame depth = e.OpenDepthImageFrame())
+            if (SungJik_SungHwa.GLOBAL.SelectedGame == 2)
             {
-                if (depth == null) return;
-                if (frameNum < rope.Length / 2)
+                Random random = new Random();
+                if (me == null || e == null) return;
+                using (DepthImageFrame depth = e.OpenDepthImageFrame())
                 {
-                    Canvas.SetZIndex(Opponent, 2);
-                    Canvas.SetZIndex(Me, 1);
-                    Canvas.SetZIndex(rope[frameNum], 0);
-                }
-                else
-                {
-                    Canvas.SetZIndex(Opponent, 1);
-                    Canvas.SetZIndex(rope[frameNum], 2);
-                    Canvas.SetZIndex(Me, 0);
-                }
-                if (me == null || depth == null || sensor == null)
-                {
-                    if (start == false)
-                        return;
-                }
-
-                if (begin == true && frameNum < 8 && frameNum > 0 && start == true && jump == true)
-                {
-                    Canvas.SetTop(Me, 400);
-                    Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].jump) as ImageSource;
-                    if (oppoJump == true)
+                    if (depth == null) return;
+                    if (frameNum < rope.Length / 2)
                     {
-                        Canvas.SetTop(Opponent, 400);
-                        Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].jump) as ImageSource;
+                        Canvas.SetZIndex(Opponent, 2);
+                        Canvas.SetZIndex(Me, 1);
+                        Canvas.SetZIndex(rope[frameNum], 0);
                     }
                     else
                     {
-                        Canvas.SetTop(Opponent, 410);
-                        Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].miss) as ImageSource;
-                        stop = true;
-
+                        Canvas.SetZIndex(Opponent, 1);
+                        Canvas.SetZIndex(rope[frameNum], 2);
+                        Canvas.SetZIndex(Me, 0);
+                    }
+                    if (me == null || depth == null || sensor == null)
+                    {
+                        if (start == false)
+                            return;
                     }
 
-                }
-                else
-                    if (begin == true && frameNum < 8 && frameNum > 0 && start == true && jump == false)
+                    if (begin == true && frameNum < 8 && frameNum > 0 && start == true && jump == true)
                     {
-                        Canvas.SetTop(Me, 410);
-                        Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].miss) as ImageSource;
+                        Canvas.SetTop(Me, 400);
+                        Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].jump) as ImageSource;
                         if (oppoJump == true)
                         {
                             Canvas.SetTop(Opponent, 400);
@@ -788,31 +768,50 @@ namespace SungJik_SungHwa
                         {
                             Canvas.SetTop(Opponent, 410);
                             Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].miss) as ImageSource;
+                            stop = true;
+
                         }
-                        stop = true;
 
                     }
                     else
+                        if (begin == true && frameNum < 8 && frameNum > 0 && start == true && jump == false)
+                        {
+                            Canvas.SetTop(Me, 410);
+                            Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].miss) as ImageSource;
+                            if (oppoJump == true)
+                            {
+                                Canvas.SetTop(Opponent, 400);
+                                Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].jump) as ImageSource;
+                            }
+                            else
+                            {
+                                Canvas.SetTop(Opponent, 410);
+                                Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].miss) as ImageSource;
+                            }
+                            stop = true;
+
+                        }
+                        else
+                        {
+
+                            Canvas.SetTop(Me, 410);
+                            Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].wait) as ImageSource;
+                            Canvas.SetTop(Opponent, 410);
+                            Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].wait) as ImageSource;
+                        }
+
+
+                    if (frameNum == 1)
                     {
-
-                        Canvas.SetTop(Me, 410);
-                        Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].wait) as ImageSource;
-                        Canvas.SetTop(Opponent, 410);
-                        Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].wait) as ImageSource;
+                        if (scoring == true && stop == false && time % 2 == 0)
+                        {
+                            Console.WriteLine("날뛴다");
+                            //cheers[random.Next(7)].Play();
+                            cheers.Open(new Uri(baseDirectory + "cheer\\cheer_" + (random.Next(7)).ToString() + ".wav"));
+                        }
+                        scoring = false;
                     }
-
-
-                if (frameNum == 1)
-                {
-                    if (scoring == true && stop == false && time % 2 == 0)
-                    {
-                        cheers[random.Next(7)].Play();
-                    }
-                    scoring = false;
                 }
-
-
-
             }
         }
 
@@ -874,7 +873,7 @@ namespace SungJik_SungHwa
                         time++;
                         jump = true;
                         scoring = true;
-                        sound.Play();
+                        sound.Open(new Uri(baseDirectory + "jump.wav"));
 
                     }
                     else
@@ -1068,7 +1067,6 @@ namespace SungJik_SungHwa
             oppoJump = false;
             scoring = false;
             stopPause = true;
-            initial = false;
 
             gameover.Stop();
             win.Stop();
@@ -1093,11 +1091,36 @@ namespace SungJik_SungHwa
 
         private void goHome()
         {
+            selected = false;
+            begin = false;
+            start = false;
+            jump = false;
+            oppoJump = false;
+            scoring = false;
+            stopPause = true;
+
+            gameover.Stop();
+            win.Stop();
+
+            time = 0;
+
+            Replay.Visibility = System.Windows.Visibility.Hidden;
+            Home.Visibility = System.Windows.Visibility.Hidden;
+            Me.Visibility = System.Windows.Visibility.Hidden;
+            Opponent.Visibility = System.Windows.Visibility.Hidden;
+            rope[1].Visibility = System.Windows.Visibility.Hidden;
+            rope[2].Visibility = System.Windows.Visibility.Hidden;
+            WinLose.Visibility = System.Windows.Visibility.Hidden;
+
+            titleCanvas.Visibility = System.Windows.Visibility.Visible;
+            skipButton.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "skip.png") as ImageSource;
+            counter = 0;
+
             Main.Show();
             SungJik_SungHwa.GLOBAL.SelectedGame = 0;
+            gameState = BEGINNING;
             this.Hide();
             return;
         }
-
-    }
+    }   
 }
