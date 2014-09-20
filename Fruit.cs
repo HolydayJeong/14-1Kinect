@@ -85,8 +85,8 @@ namespace EatingFruit
             SungHwa.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "sung_basket.png") as ImageSource;
             Mou.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "mou_basket.png") as ImageSource;
             hand.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "mouse.png") as ImageSource;
-            hand.Width = 45;
-            hand.Height = 45;
+            hand.Width = 45 * 0.8;
+            hand.Height = 45* 0.8 ;
 
             Replay.Visibility = Visibility.Hidden;
             Home.Visibility = Visibility.Hidden;
@@ -245,7 +245,7 @@ namespace EatingFruit
 
                     //쥐 
                     MouAnimation.From = 0.0;
-                    MouAnimation.To = 1050;
+                    MouAnimation.To = 1000;
                     MouAnimation.AccelerationRatio = 1;
                     MouAnimation.Duration = new Duration(TimeSpan.FromSeconds(4));
                     MouAnimation.FillBehavior = FillBehavior.Stop;
@@ -348,9 +348,9 @@ namespace EatingFruit
             {
                 case 0:
                     counter1++;
-                    start = 1050;
+                    start = 1000;
                     MouAnimation.From = start;
-                    end = r2.Next(10, 1050);
+                    end = r2.Next(10, 1000);
                     MouAnimation.To = end;
                     MouAnimation.AccelerationRatio = 1;
                     MouAnimation.Duration = new Duration(TimeSpan.FromSeconds(3));
@@ -364,10 +364,10 @@ namespace EatingFruit
                     MouAnimation.From = start;
 
                     Console.WriteLine(start);
-                    if (start + 300 > 1050)
+                    if (start + 300 > 100)
                         end = r2.Next(10, start - 300);
                     else
-                        end = r2.Next(start + 300, 1050);
+                        end = r2.Next(start + 300, 1000);
                     MouAnimation.To = end;
                     MouAnimation.AccelerationRatio = 1;
                     MouAnimation.Duration = new Duration(TimeSpan.FromSeconds(2));
@@ -639,9 +639,9 @@ namespace EatingFruit
                             CoordinateMapper coorMap = new CoordinateMapper(sensor);
                             DepthImagePoint kneeDepthPoint = coorMap.MapSkeletonPointToDepthPoint(me.Joints[JointType.KneeRight].Position, depth.Format);
                             ColorImagePoint kneeColorPoint = coorMap.MapDepthPointToColorPoint(depth.Format, kneeDepthPoint, ColorImageFormat.RgbResolution1280x960Fps12);
-                            Canvas.SetLeft(SungHwa, kneeColorPoint.X - SungHwa.Width / 2);
+                            Canvas.SetLeft(SungHwa, kneeColorPoint.X * 0.8  - SungHwa.Width / 2);
                             // Canvas.SetTop(SungHwa, kneeColorPoint.Y - SungHwa.Height / 2);
-                            Canvas.SetTop(SungHwa, 580);
+                            Canvas.SetTop(SungHwa, 580 *0.8 );
                         }
 
                         if (gameState == option)
@@ -659,8 +659,8 @@ namespace EatingFruit
                             else
                                 UserHand = HandLeftDepthPoint;
 
-                            Canvas.SetLeft(hand, UserHand.X * 2 - hand.Width / 2);
-                            Canvas.SetTop(hand, UserHand.Y - hand.Width / 2);
+                            Canvas.SetLeft(hand, UserHand.X * 0.8 - hand.Width / 2);
+                            Canvas.SetTop(hand, UserHand.Y * 0.8 - hand.Width / 2);
 
                             //home button 클릭시 
                             if ((Canvas.GetLeft(hand) + hand.Width / 2) > Canvas.GetLeft(Home) &&
@@ -748,47 +748,47 @@ namespace EatingFruit
                 if (i % 8 == 0) // 바나나
                 {
                     canvasPool1[i] = new Canvas();
-                    InitShape(canvasPool1[i], "bnn_1.png", r1.Next(60, 1180), r1.Next(4, 9), r1.Next(1, 50));
+                    InitShape(canvasPool1[i], "bnn_1.png", r1.Next(60, 1000), r1.Next(4, 9), r1.Next(1, 50));
                 }
                 else if (i % 8 == 1) //수박 
                 {
                     canvasPool1[i] = new Canvas();
-                    InitShape(canvasPool1[i], "wm_1.png", r1.Next(60, 1180), r1.Next(4, 9), r1.Next(1, 50));
+                    InitShape(canvasPool1[i], "wm_1.png", r1.Next(60, 1000), r1.Next(4, 9), r1.Next(1, 50));
                 }
                 else if (i % 8 == 2) // 복숭아
                 {
                     canvasPool1[i] = new Canvas();
-                    InitShape(canvasPool1[i], "pe_1.png", r1.Next(60, 1180), r1.Next(4, 9), r1.Next(1, 50));
+                    InitShape(canvasPool1[i], "pe_1.png", r1.Next(60, 1000), r1.Next(4, 9), r1.Next(1, 50));
                 }
 
                 else if (i % 8 == 3) //똥 
                 {
                     canvasPool1[i] = new Canvas();
-                    InitShape(canvasPool1[i], "dd_1.png", r1.Next(60, 1180), r1.Next(4, 9), r1.Next(1, 50));
+                    InitShape(canvasPool1[i], "dd_1.png", r1.Next(60, 1000), r1.Next(4, 9), r1.Next(1, 50));
                 }
 
                 else if (i % 8 == 4) //메론
                 {
                     canvasPool1[i] = new Canvas();
-                    InitShape(canvasPool1[i], "melon_1.png", r1.Next(60, 1180), r1.Next(4, 9), r1.Next(1, 50));
+                    InitShape(canvasPool1[i], "melon_1.png", r1.Next(60, 1000), r1.Next(4, 9), r1.Next(1, 50));
                 }
 
                 else if (i % 8 == 5) // 썩은 바나나 
                 {
                     canvasPool1[i] = new Canvas();
-                    InitShape(canvasPool1[i], "rbnn_1.png", r1.Next(60, 1180), r1.Next(4, 9), r1.Next(1, 50));
+                    InitShape(canvasPool1[i], "rbnn_1.png", r1.Next(60, 1000), r1.Next(4, 9), r1.Next(1, 50));
                 }
 
                 else if (i % 8 == 6) // 레인보우바나나 
                 {
                     canvasPool1[i] = new Canvas();
-                    InitShape(canvasPool1[i], "rb_1.png", r1.Next(60, 1180), r1.Next(4, 9), r1.Next(1, 50));
+                    InitShape(canvasPool1[i], "rb_1.png", r1.Next(60, 1000), r1.Next(4, 9), r1.Next(1, 50));
                 }
 
                 else // 여친
                 {
                     canvasPool1[i] = new Canvas();
-                    InitShape(canvasPool1[i], "wsung.png", r1.Next(60, 1180), r1.Next(4, 9), r1.Next(1, 50));
+                    InitShape(canvasPool1[i], "wsung.png", r1.Next(60, 1000), r1.Next(4, 9), r1.Next(1, 50));
                 }
             }
         }
@@ -798,11 +798,11 @@ namespace EatingFruit
             //Image 초기화 
             var Image = new System.Windows.Controls.Image();
             Image.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + address) as ImageSource;
-            Image.Width = 70;
-            Image.Height = 70;
+            Image.Width = 70*0.8;
+            Image.Height = 70 * 0.8;
 
-            shape.Width = 70;
-            shape.Height = 70;
+            shape.Width = 70 * 0.8;
+            shape.Height = 70 * 0.8;
 
             //Top, Left, 프로퍼티로 애니메이션을 주기 위해 일부러 캔버스에 담았다.
             shape.Children.Add(Image);
@@ -819,7 +819,7 @@ namespace EatingFruit
             DoubleAnimation MyDoubleAnimation = new DoubleAnimation();
             Random r1 = new Random();
             MyDoubleAnimation.From = 0; // 처음 시작 하는 값 from
-            MyDoubleAnimation.To = 560; // 끝나는 값 to 
+            MyDoubleAnimation.To = 560 * 0.8; // 끝나는 값 to 
 
             Canvas.SetZIndex(Background1, 1);
             Canvas.SetZIndex(shape, 2);
@@ -878,7 +878,7 @@ namespace EatingFruit
                     (Xpos < Canvas.GetLeft(Mou) - 15 || Xpos > (Canvas.GetLeft(Mou) + Mou.ActualWidth) + 15))
                 {
                     //Console.WriteLine(Canvas.GetLeft(SungHwa) + " " + (Canvas.GetLeft(SungHwa) + 100) + " " + Xpos);
-                    MyAnimation.From = 560; // 처음 시작 하는 값 from
+                    MyAnimation.From = 560 * 0.8; // 처음 시작 하는 값 from
                     MyAnimation.To = this.Height; // 끝나는 값 to 
                     Canvas.SetLeft(shape, Xpos);  // 바나나 X좌표 위치 
 
