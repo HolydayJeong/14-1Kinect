@@ -114,6 +114,8 @@ namespace EatingFruit
 
                 var Guide = new System.Windows.Controls.Image();
                 Guide.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide.png") as ImageSource;
+                Guide.Width = 1024;
+                Guide.Height = 768;
 
                 //Top, Left, 프로퍼티로 애니메이션을 주기 위해 일부러 캔버스에 담았다.
                 FruitScoreCanvas.Children.Add(FruitScore);
