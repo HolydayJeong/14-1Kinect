@@ -105,7 +105,7 @@ namespace SungJik_SungHwa
         MediaPlayer gameover = new MediaPlayer();
         MediaPlayer backGround = new MediaPlayer();
         //MediaPlayer[] cheers = new MediaPlayer[7];
-        MediaPlayer cheers = new MediaPlayer();
+        MediaPlayer[] cheers = new MediaPlayer[7];
         System.Media.SoundPlayer win = new System.Media.SoundPlayer(AppDomain.CurrentDomain.BaseDirectory + "/줄넘기/" + "monkey.wav");
 
 
@@ -127,6 +127,14 @@ namespace SungJik_SungHwa
             backGround.Stop();
             gameover.Open(new Uri(baseDirectory + "gameOver.mp3"));
             gameover.Stop();
+            for (int i = 0; i < 7; i++)
+            {
+                cheers[i] = new MediaPlayer();
+                cheers[i].Open(new Uri(baseDirectory + "cheer\\cheer_" + i + ".wav"));
+                cheers[i].Stop();
+            }
+            sound.Open(new Uri(baseDirectory + "jump.wav"));
+            sound.Stop();
             Pressing = new PressButton(baseDirectory + "mouse.png", baseDirectory + "mouse_pull.png");
             //backGround.Open(new Uri(baseDirectory + "background.wav"));
             Console.WriteLine("Jump");
@@ -194,6 +202,8 @@ namespace SungJik_SungHwa
             {
                 rope[i] = new Image();
                 rope[i].Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "rope\\rope_" + (i).ToString() + ".png") as ImageSource;
+                rope[i].Height = 800;
+                rope[i].Width = 1040;
                 addresses[i] = "rope\\rope_" + (i).ToString() + ".png";
             }
             SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].wait) as ImageSource;
@@ -201,8 +211,8 @@ namespace SungJik_SungHwa
             Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].wait) as ImageSource;
 
             Hand.Visibility = System.Windows.Visibility.Visible;
-            Hand.Width = 45;
-            Hand.Height = 45;
+            Hand.Width = 45.0 * 0.8;
+            Hand.Height = 45.0 * 0.8;
             Hand.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "mouse.png") as ImageSource;
 
             Replay.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "re_jump.png") as ImageSource;
@@ -212,31 +222,31 @@ namespace SungJik_SungHwa
             WinLose.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "YOU-LOSE.gif") as ImageSource;
 
             go.Visibility = System.Windows.Visibility.Hidden;
-            Canvas.SetLeft(go, 520);
-            Canvas.SetTop(go, 200);
+            Canvas.SetLeft(go, 416);
+            Canvas.SetTop(go, 160);
 
             ready.Visibility = System.Windows.Visibility.Hidden;
-            Canvas.SetLeft(ready, 450);
-            Canvas.SetTop(ready, 200);
+            Canvas.SetLeft(ready, 400);
+            Canvas.SetTop(ready, 160);
 
 
             WinLose.Visibility = System.Windows.Visibility.Hidden;
-            Canvas.SetLeft(WinLose, 460);
-            Canvas.SetTop(WinLose, 200);
+            Canvas.SetLeft(WinLose, 368);
+            Canvas.SetTop(WinLose, 160);
 
-            titleCanvas.Width = 1300;
-            titleCanvas.Height = 1000;
-            ropeCanvas.Width = 1300;
-            ropeCanvas.Height = 1000;
+            titleCanvas.Width = 1040;
+            titleCanvas.Height = 800;
+            ropeCanvas.Width = 1040;
+            ropeCanvas.Height = 800;
 
             //14/07/24 : skip 버튼의 크기 및 정하기
             skipButton.Visibility = System.Windows.Visibility.Visible;
             skipButton.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "skip.png") as ImageSource;
-            Canvas.SetTop(skipButton, 500);
-            Canvas.SetLeft(skipButton, 800);
+            Canvas.SetTop(skipButton, 380);
+            Canvas.SetLeft(skipButton, 590);
 
 
-            Canvas.SetTop(GuideText, (titleCanvas.Height / 3) - 100);
+            Canvas.SetTop(GuideText, (titleCanvas.Height / 3) - 80);
             Canvas.SetLeft(GuideText, (titleCanvas.Width / 3));
 
             introText.Visibility = System.Windows.Visibility.Hidden;
@@ -247,6 +257,7 @@ namespace SungJik_SungHwa
             foreach (Image ropef in rope)
             {
                 ropeCanvas.Children.Add(ropef);
+
                 ropef.Visibility = System.Windows.Visibility.Hidden;
             }
 
@@ -452,7 +463,7 @@ namespace SungJik_SungHwa
                         Canvas.SetTop(Hand, HandLeftColorImagePoint.Y - Hand.Height / 2);
                         handdepth = HandLeftDepthImagePoint.Depth;
                     }
-                    if ((Canvas.GetLeft(Hand) + Hand.Width / 2 > 800) && (Canvas.GetLeft(Hand) + Hand.Width / 2 < 880) && (Canvas.GetTop(Hand) + Hand.Height / 2 > 500) && (Canvas.GetTop(Hand) + Hand.Height / 2 < 645))
+                    if ((Canvas.GetLeft(Hand) + Hand.Width / 2 > 590) && (Canvas.GetLeft(Hand) + Hand.Width / 2 < 735) && (Canvas.GetTop(Hand) + Hand.Height / 2 > 380) && (Canvas.GetTop(Hand) + Hand.Height / 2 < 460))
                     {
                         skipButton.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "skip_on.png") as ImageSource;
                         counter = 4;
@@ -569,6 +580,7 @@ namespace SungJik_SungHwa
                     using (DepthImageFrame depth = e.OpenDepthImageFrame())
                     {
                         if (depth == null) return;
+                        Canvas.SetLeft(GuideText, (titleCanvas.Width / 2) - 230);
                         GuideText.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + "guide_2.png") as ImageSource;
                         //손목위치 찾기
                         CoordinateMapper coorMap = new CoordinateMapper(sensor);
@@ -583,16 +595,16 @@ namespace SungJik_SungHwa
                             if (PressingHand == LEFT && Pressing.isPressed() == true) { }
                             else
                             {
-                                Canvas.SetLeft(Hand, HandRightColorImagePoint.X - Hand.Width / 2);
-                                Canvas.SetTop(Hand, HandRightColorImagePoint.Y - Hand.Height / 2);
+                                Canvas.SetLeft(Hand, (HandRightColorImagePoint.X * 0.8) - Hand.Width / 2);
+                                Canvas.SetTop(Hand, (HandRightColorImagePoint.Y * 0.8) - Hand.Height / 2);
                                 handdepth = HandRightDepthImagePoint.Depth;
                                 PressingHand = RIGHT;
                             }
                         }
                         if ((PressingHand == LEFT && Pressing.isPressed() == true) || (HandRightDepthImagePoint.Depth > HandLeftDepthImagePoint.Depth))
                         {
-                            Canvas.SetLeft(Hand, HandLeftColorImagePoint.X - Hand.Width / 2);
-                            Canvas.SetTop(Hand, HandLeftColorImagePoint.Y - Hand.Height / 2);
+                            Canvas.SetLeft(Hand, (HandLeftColorImagePoint.X * 0.8) - Hand.Width / 2);
+                            Canvas.SetTop(Hand, (HandLeftColorImagePoint.Y * 0.8) - Hand.Height / 2);
                             handdepth = HandLeftDepthImagePoint.Depth;
                             PressingHand = LEFT;
                         }
@@ -600,9 +612,9 @@ namespace SungJik_SungHwa
                         {
                             //위치 지정시
                             if ((
-                                (Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(SungJik) + 90 - Pressing.wideRange()) &&
-                                (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(SungJik) + 290 + Pressing.wideRange()) &&
-                                (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(SungJik) + 80 - Pressing.wideRange()) &&
+                                (Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(SungJik) + 72 - Pressing.wideRange()) &&
+                                (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(SungJik) + 232 + Pressing.wideRange()) &&
+                                (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(SungJik) + 64 - Pressing.wideRange()) &&
                                 (Canvas.GetTop(Hand) + Hand.Height / 2 < Canvas.GetTop(SungJik) + SungJik.Height + Pressing.wideRange())))
                             {
                                 SungJik.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[SUNGJIK].jump) as ImageSource;
@@ -625,9 +637,9 @@ namespace SungJik_SungHwa
                             }
 
                             else if ((
-                                (Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(Pig) + 90 - Pressing.wideRange()) &&
-                                (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(Pig) + 290 + Pressing.wideRange()) &&
-                                (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(Pig) + 80 - Pressing.wideRange()) &&
+                                (Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(Pig) + 72 - Pressing.wideRange()) &&
+                                (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(Pig) + 232 + Pressing.wideRange()) &&
+                                (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(Pig) + 64 - Pressing.wideRange()) &&
                                 (Canvas.GetTop(Hand) + Hand.Height / 2 < Canvas.GetTop(Pig) + Pig.Height + Pressing.wideRange())))
                             {
                                 Pig.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[PIG].jump) as ImageSource;
@@ -647,9 +659,9 @@ namespace SungJik_SungHwa
                                 }
                             }
                             else if ((
-                                (Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(Mice) + 90 - Pressing.wideRange()) &&
-                                (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(Mice) + 290 + Pressing.wideRange()) &&
-                                (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(Mice) + 80 - Pressing.wideRange()) &&
+                                (Canvas.GetLeft(Hand) + Hand.Width / 2 > Canvas.GetLeft(Mice) + 72 - Pressing.wideRange()) &&
+                                (Canvas.GetLeft(Hand) + Hand.Width / 2 < Canvas.GetLeft(Mice) + 232 + Pressing.wideRange()) &&
+                                (Canvas.GetTop(Hand) + Hand.Height / 2 > Canvas.GetTop(Mice) + 64 - Pressing.wideRange()) &&
                                 (Canvas.GetTop(Hand) + Hand.Height / 2 < Canvas.GetTop(Mice) + Mice.Height + Pressing.wideRange())))
                             {
                                 Mice.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[MICE].jump) as ImageSource;
@@ -726,7 +738,7 @@ namespace SungJik_SungHwa
             mainCanvas.BeginAnimation(Canvas.TopProperty, animation);
 
         }
-
+        int cheernum;
         //발좌표 추적
         private void StartGame(Skeleton me, AllFramesReadyEventArgs e)
         {
@@ -757,16 +769,16 @@ namespace SungJik_SungHwa
 
                     if (begin == true && frameNum < 8 && frameNum > 0 && start == true && jump == true)
                     {
-                        Canvas.SetTop(Me, 400);
+                        Canvas.SetTop(Me, 318);
                         Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].jump) as ImageSource;
                         if (oppoJump == true)
                         {
-                            Canvas.SetTop(Opponent, 400);
+                            Canvas.SetTop(Opponent, 318);
                             Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].jump) as ImageSource;
                         }
                         else
                         {
-                            Canvas.SetTop(Opponent, 410);
+                            Canvas.SetTop(Opponent, 328);
                             Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].miss) as ImageSource;
                             stop = true;
 
@@ -776,16 +788,16 @@ namespace SungJik_SungHwa
                     else
                         if (begin == true && frameNum < 8 && frameNum > 0 && start == true && jump == false)
                         {
-                            Canvas.SetTop(Me, 410);
+                            Canvas.SetTop(Me, 328);
                             Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].miss) as ImageSource;
                             if (oppoJump == true)
                             {
-                                Canvas.SetTop(Opponent, 400);
+                                Canvas.SetTop(Opponent, 318);
                                 Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].jump) as ImageSource;
                             }
                             else
                             {
-                                Canvas.SetTop(Opponent, 410);
+                                Canvas.SetTop(Opponent, 328);
                                 Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].miss) as ImageSource;
                             }
                             stop = true;
@@ -794,9 +806,9 @@ namespace SungJik_SungHwa
                         else
                         {
 
-                            Canvas.SetTop(Me, 410);
+                            Canvas.SetTop(Me, 328);
                             Me.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[selectedChar].wait) as ImageSource;
-                            Canvas.SetTop(Opponent, 410);
+                            Canvas.SetTop(Opponent, 328);
                             Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].wait) as ImageSource;
                         }
 
@@ -805,11 +817,16 @@ namespace SungJik_SungHwa
                     {
                         if (scoring == true && stop == false && time % 2 == 0)
                         {
-                            Console.WriteLine("날뛴다");
+                            cheers[cheernum].Stop();
+                            cheernum = random.Next(7);
                             //cheers[random.Next(7)].Play();
-                            cheers.Open(new Uri(baseDirectory + "cheer\\cheer_" + (random.Next(7)).ToString() + ".wav"));
+                            cheers[cheernum].Play();
                         }
                         scoring = false;
+                    }
+                    if(frameNum == FRAME_MAX/2)
+                    {
+                        sound.Stop();
                     }
                 }
             }
@@ -839,9 +856,9 @@ namespace SungJik_SungHwa
             }
 
         }
-        int originalRFoot = 0;
-        int originalLFoot = 0;
-        int originalHead = 0;
+        double originalRFoot = 0;
+        double originalLFoot = 0;
+        double originalHead = 0;
         private void isJumped2(AllFramesReadyEventArgs e, Skeleton me)
         {
             if (e == null || me == null)
@@ -862,18 +879,18 @@ namespace SungJik_SungHwa
                 ColorImagePoint head = coorMap.MapDepthPointToColorPoint(depth.Format, headDepth, ColorImageFormat.RawBayerResolution1280x960Fps12);
                 if (frameNum == FRAME_MAX - 4)
                 {
-                    originalRFoot = footR.Y;
-                    originalLFoot = footL.Y;
-                    originalHead = head.Y;
+                    originalRFoot = footR.Y * 0.8;
+                    originalLFoot = footL.Y * 0.8;
+                    originalHead = head.Y * 0.8;
                 }
                 else if (frameNum == 0 && begin == true)
                 {
-                    if ((Math.Abs(footR.Y - originalRFoot) >= 10 || Math.Abs(footL.Y - originalLFoot) >= 10) && (Math.Abs(head.Y - originalHead) >= 10))
+                    if ((Math.Abs((footR.Y * 0.8) - originalRFoot) >= 10 || Math.Abs((footL.Y * 0.8) - originalLFoot) >= 10) && (Math.Abs((head.Y * 0.8) - originalHead) >= 10))
                     {
                         time++;
                         jump = true;
                         scoring = true;
-                        sound.Open(new Uri(baseDirectory + "jump.wav"));
+                        sound.Play();
 
                     }
                     else
@@ -897,7 +914,7 @@ namespace SungJik_SungHwa
                     else
                     {
                         oppoJump = false;
-                        Canvas.SetTop(Opponent, 410);
+                        Canvas.SetTop(Opponent, 328);
                         Opponent.Source = new ImageSourceConverter().ConvertFromString(baseDirectory + characters[oppChar].miss) as ImageSource;
                     }
                 }
@@ -929,8 +946,8 @@ namespace SungJik_SungHwa
 
         private void result()
         {
-            Canvas.SetTop(Me, 410);
-            Canvas.SetTop(Opponent, 410);
+            Canvas.SetTop(Me, 328);
+            Canvas.SetTop(Opponent, 328);
 
             DoubleAnimation animation = new DoubleAnimation();
 
@@ -989,16 +1006,16 @@ namespace SungJik_SungHwa
                     if (PressingHand == LEFT && Pressing.isPressed() == true) { }
                     else
                     {
-                        Canvas.SetLeft(Hand, HandRightColorImagePoint.X - Hand.Width / 2);
-                        Canvas.SetTop(Hand, HandRightColorImagePoint.Y - Hand.Height / 2);
+                        Canvas.SetLeft(Hand, (HandRightColorImagePoint.X * 0.8) - Hand.Width / 2);
+                        Canvas.SetTop(Hand, (HandRightColorImagePoint.Y * 0.8) - Hand.Height / 2);
                         handdepth = HandRightDepthImagePoint.Depth;
                         PressingHand = RIGHT;
                     }
                 }
                 if ((PressingHand == LEFT && Pressing.isPressed() == true) || (HandRightDepthImagePoint.Depth > HandLeftDepthImagePoint.Depth))
                 {
-                    Canvas.SetLeft(Hand, HandLeftColorImagePoint.X - Hand.Width / 2);
-                    Canvas.SetTop(Hand, HandLeftColorImagePoint.Y - Hand.Height / 2);
+                    Canvas.SetLeft(Hand, (HandLeftColorImagePoint.X * 0.8) - Hand.Width / 2);
+                    Canvas.SetTop(Hand, (HandLeftColorImagePoint.Y * 0.8) - Hand.Height / 2);
                     PressingHand = LEFT;
                 }
                 if (gameState == END)
